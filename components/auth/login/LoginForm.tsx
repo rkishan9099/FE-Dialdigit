@@ -19,6 +19,7 @@ import { RHFCheckbox } from "@/hooks/hook-form/RHFCheckbox";
 import Link from "next/link";
 import { PATH_AUTH } from "@/routes/paths";
 import { login } from "@/actions/authActions";
+import toast from "react-hot-toast";
 
 const LinkStyled = styled(Link)(({ theme }) => ({
   textDecoration: "none",
@@ -28,7 +29,7 @@ const LinkStyled = styled(Link)(({ theme }) => ({
 type FormValues ={
   email:string
   password:string
-  remember_me:boolean
+  rememberMe:boolean
 }
 
 const LoginForm = () => {
@@ -38,12 +39,12 @@ const LoginForm = () => {
   const schema = yup.object().shape({
     email: yup.string().required("Email Field Is Required").email(),
     password: yup.string().required("Password is  Required"),
-    remember_me:yup.boolean()
+    rememberMe:yup.boolean()
   });
   const defaultValues:FormValues={
     email:'',
     password:'',
-    remember_me:false
+    rememberMe:false
   }
   const methods = useForm({
     defaultValues:defaultValues,
@@ -53,8 +54,8 @@ const LoginForm = () => {
   const { handleSubmit, watch, reset } = methods;
 
   const onSubmit = async (data:any) => {
-   await login(data)
-  };
+  const res = await login(data)
+    };
 
   return (
     <>
@@ -100,7 +101,7 @@ const LoginForm = () => {
             justifyContent: "space-between",
           }}
         >
-          <RHFCheckbox name="remember_me" label="Remember Me" />
+          <RHFCheckbox name="rememberMe" label="Remember Me" />
           <Typography component={LinkStyled} href={PATH_AUTH.forgotPassword}>
             Forgot Password?
           </Typography>

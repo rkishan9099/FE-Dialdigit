@@ -1,10 +1,9 @@
-import { auth } from '@/auth';
+import { currentUser } from '@/lib copy/auth';
 import React from 'react'
-const AnalyticPage = () => {
-  const session:any = auth();
-  console.debug('sessio',session?.user)
+const AnalyticPage =  async () => {
+  const user = await currentUser();
   return (
-    <div>AnalyticPage {session?.user?.name}</div>
+    <div>AnalyticPage {user?.name}</div>
   )
 }
 

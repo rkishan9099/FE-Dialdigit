@@ -1,7 +1,7 @@
 import AuthLayout from '@/components/WebLayout/AuthLayout'
 import Layout from '@/components/WebLayout/Layout'
-import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { Metadata } from 'next/types'
 
 const inter = Inter({ subsets: ['latin'] })
 

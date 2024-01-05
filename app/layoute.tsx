@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import '../globals.css'
 import 'react-perfect-scrollbar/dist/css/styles.css'
@@ -8,6 +7,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 // ** Global css styles
 import '@/styles/globals.css'
 import Layout from '@/components/WebLayout/Layout'
+import { Metadata } from 'next/types'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {

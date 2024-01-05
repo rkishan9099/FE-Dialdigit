@@ -1,4 +1,11 @@
-import { string } from "yup"
+import * as yup from "yup";
+
+
+ export  const LoginSchema = yup.object().shape({
+    email: yup.string().required("Email Field Is Required").email(),
+    password: yup.string().required("Password is  Required"),
+    rememberMe:yup.boolean()
+  });
 
 export type LoginParams = {
     email: string

@@ -3,7 +3,7 @@ import { AuthApiUrl } from "@/configs/apiUrlConstant";
 import { LoginParams } from "@/types/authType";
 
 class Auth{
-  async handleLogin(data:LoginParams){
+  async handleLogin(data:any){
     try {
       const response = await axiosInstance.post(AuthApiUrl.login,data);
       if(response?.data?.statusCode===200 && response?.data?.status==="success"){

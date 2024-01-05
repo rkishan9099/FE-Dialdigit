@@ -34,9 +34,14 @@ export const {
       if (token.sub && session.user) {
         session.user.id = token.sub;
       }
-
       if(token.user){
         session.user = token.user
+      }
+      if(token?.refreshToken){
+      session.refreshToken =token?.refreshToken
+      }
+      if(token?.accessToken){
+        session.accessToken=token?.accessToken
       }
       return session;
     },
@@ -45,6 +50,7 @@ export const {
       if(user){
         token.user =user as UserDataType
         token.accessToken =user?.accessToken
+        token.refreshToken =user?.refreshToken
       }
       return token;
     }
