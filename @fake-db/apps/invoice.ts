@@ -1,8 +1,8 @@
 // ** Mock Adapter
+import { getDateRange } from '@/@core/utils/get-daterange'
 import mock from '@/@fake-db/mock'
 
 // ** Utils Import
-import { getDateRange } from '@/@core/utils/get-daterange'
 
 // ** Types
 import { InvoiceType } from '@/types/apps/invoiceTypes'
@@ -846,7 +846,7 @@ mock.onGet('/apps/invoice/invoices').reply(config => {
       const range = getDateRange(start, end)
       const invoiceDate = new Date(invoice.issuedDate)
 
-      range.filter(date => {
+      range.filter((date:any) => {
         const rangeDate = new Date(date)
         if (
           invoiceDate.getFullYear() === rangeDate.getFullYear() &&

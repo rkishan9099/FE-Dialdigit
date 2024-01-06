@@ -6,10 +6,8 @@ export default {
   providers: [
     Credentials({
       async authorize(credentials) {
-      const res = await  AuthService.handleLogin(credentials)
-      console.log('res',res)
-      throw new Error('Invalid  Email')
-      return null;
+      const user = await  AuthService.handleLogin(credentials)
+      return user;
       }
     })
   ],

@@ -20,42 +20,59 @@ import Link from "next/link";
 import { PATH_AUTH } from "@/routes/paths";
 import { login } from "@/actions/authActions";
 import toast from "react-hot-toast";
+import { useSearchParams } from "next/navigation";
 
 const LinkStyled = styled(Link)(({ theme }) => ({
   textDecoration: "none",
   color: `${theme.palette.primary.main} !important`,
 }));
 
-type FormValues ={
-  email:string
-  password:string
-  rememberMe:boolean
-}
+type FormValues = {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+};
 
 const LoginForm = () => {
+   const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
   const theme = useTheme();
-  const [showPass,setShowPass]=useState(false)
+  const [showPass, setShowPass] = useState(false);
 
   const schema = yup.object().shape({
     email: yup.string().required("Email Field Is Required").email(),
     password: yup.string().required("Password is  Required"),
-    rememberMe:yup.boolean()
+    rememberMe: yup.boolean(),
   });
-  const defaultValues:FormValues={
-    email:'',
-    password:'',
-    rememberMe:false
-  }
+  const defaultValues: FormValues = {
+    email: "",
+    password: "",
+    rememberMe: false,
+  };
   const methods = useForm({
-    defaultValues:defaultValues,
+    defaultValues: defaultValues,
     resolver: yupResolver(schema),
   });
 
   const { handleSubmit, watch, reset } = methods;
 
-  const onSubmit = async (data:any) => {
-  const res = await login(data)
-    };
+  const onSubmit = async (data: any) => {
+    try {
+      const res: any = await login(data,callbackUrl);
+      switch (res?.status) {
+        case "success":
+          toast.success(res?.message);
+          break;
+        case "error":
+          toast.error(res?.message);
+          break;
+        default:
+          "";
+      }
+    } catch (error) {
+      toast.error("Something Went Wrong");
+    }
+  };
 
   return (
     <>
@@ -73,13 +90,14 @@ const LoginForm = () => {
           size="small"
           label="Password"
           placeholder="******"
-          type={showPass?'text' :"password"}
+          type={showPass ? "text" : "password"}
+          autoComplete="off"
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
                   edge="end"
-                  onClick={()=>setShowPass((prev:boolean)=>!prev)}
+                  onClick={() => setShowPass((prev: boolean) => !prev)}
                   onMouseDown={(e) => e.preventDefault()}
                   aria-label="toggle password visibility"
                 >
