@@ -2,16 +2,18 @@ import * as events from "events";
 import { UA, WebSocketInterface, debug } from "jssip";
 import { RTCSession } from "jssip/lib/RTCSession";
 import { SessionManager, SipModel, SipConstants, SipSession, SipAudioElements, normalizeNumber } from ".";
-import { SipSessionState } from "./sip-type";
+import { ConnectingStatus, RegisterState, SipSessionState } from "./sip-type";
 import {
   ConnectedEvent,
   IncomingRTCSessionEvent,
   RegisteredEvent,
   ConnectingEvent,
-  UnRegisteredEvent,DisconnectEvent
+  UnRegisteredEvent, DisconnectEvent
 } from "jssip/lib/UA"
 import { formatPhoneNumber } from "./sip-utils";
 import toast from "react-hot-toast";
+import { store } from "@/store";
+import { setConnectedInfo, setRegistererState } from "@/store/dialer/sip";
 
 export default class SipUA extends events.EventEmitter {
   #ua: UA;
@@ -20,7 +22,138 @@ export default class SipUA extends events.EventEmitter {
 
   constructor() {
     super();
-   toast.success('User Agent Register')
+    debug.enable("JsSIP:*");
+    const client = {
+      username: '1001',
+      password: 'hello1234',
+      name: 'kishan'
+    }
+    const settings = {
+      pcConfig: {
+        iceServers: [{ urls: ["stun:stun.l.google.com:19302"] }],
+      },
+      wsUri: 'wss://switch1.digitechnobits.com:7443',
+      register: true,
+    };
+    this.#sessionManager = new SessionManager();
+    this.#rtcConfig = settings.pcConfig;
+    this.#ua = new UA({
+      uri: `sip:${client.username}@switch1.digitechnobits.com`,
+      password: client.password,
+      display_name: client.name,
+      sockets: [new WebSocketInterface(settings.wsUri)],
+      register: settings.register,
+    });
+    this.#ua.on("connecting", (data: ConnectingEvent) => {
+      this.emit(SipConstants.UA_CONNECTING, { ...data, client })
+      const connectedInfo = {
+        connected: false,
+        connectingStatus: ConnectingStatus.Connecting
+      }
+
+      store.dispatch(setConnectedInfo(connectedInfo))
+
+    }
+    );
+    this.#ua.on("connected", (data: ConnectedEvent) => {
+      console.log('connected;========================================')
+      const connectedInfo = {
+        connected: true,
+        connectingStatus: ConnectingStatus.Connected
+      }
+
+      store.dispatch(setConnectedInfo(connectedInfo))
+      toast.success('User Agent connected')
+      this.emit(SipConstants.UA_CONNECTED, { ...data, client })
+
+    }
+
+    );
+    this.#ua.on("disconnected", (data: DisconnectEvent) => {
+      const connectedInfo = {
+        connected: false,
+        connectingStatus: ConnectingStatus.Disconnected
+      }
+
+      store.dispatch(setConnectedInfo(connectedInfo))
+      this.emit(SipConstants.UA_DISCONNECTED, {
+        ...data,
+        client,
+      })
+      toast.error('User Agent disconnected')
+
+    }
+
+    );
+    this.#ua.on("registered", (data: RegisteredEvent) => {
+      console.log('registered;========================================')
+      store.dispatch(setRegistererState(RegisterState.REGISTERED))
+      this.emit(SipConstants.UA_REGISTERED, { ...data, client })
+    }),
+      this.#ua.on("unregistered", (data: UnRegisteredEvent) => {
+        store.dispatch(setRegistererState(RegisterState.UNREGISTERED))
+        this.emit(SipConstants.UA_UNREGISTERED, {
+          ...data,
+          client,
+        })
+      }
+
+      );
+    this.#ua.on("registrationFailed", (data: UnRegisteredEvent) => {
+      store.dispatch(setRegistererState(RegisterState.UNREGISTERED))
+
+      this.emit(SipConstants.UA_UNREGISTERED, {
+        ...data,
+        client,
+      })
+    }
+
+    );
+
+    this.#ua.on("newRTCSession", (data: IncomingRTCSessionEvent) => {
+      const rtcSession: RTCSession = data.session;
+      const session: SipSession = new SipSession(
+        rtcSession,
+        this.#rtcConfig,
+        new SipAudioElements()
+      );
+
+      this.#sessionManager.newSession(session);
+      session.on(SipConstants.SESSION_RINGING, (args) =>
+        this.updateSession(SipConstants.SESSION_RINGING, session, args, client)
+      );
+      session.on(SipConstants.SESSION_ANSWERED, (args) =>
+        this.updateSession(SipConstants.SESSION_ANSWERED, session, args, client)
+      );
+      session.on(SipConstants.SESSION_FAILED, (args) =>
+        this.updateSession(SipConstants.SESSION_FAILED, session, args, client)
+      );
+      session.on(SipConstants.SESSION_ENDED, (args) =>
+        this.updateSession(SipConstants.SESSION_ENDED, session, args, client)
+      );
+      session.on(SipConstants.SESSION_MUTED, (args) =>
+        this.updateSession(SipConstants.SESSION_MUTED, session, args, client)
+      );
+      session.on(SipConstants.SESSION_HOLD, (args) =>
+        this.updateSession(SipConstants.SESSION_HOLD, session, args, client)
+      );
+      session.on(SipConstants.SESSION_UNHOLD, (args) =>
+        this.updateSession(SipConstants.SESSION_UNHOLD, session, args, client)
+      );
+      session.on(SipConstants.SESSION_ICE_READY, (args) =>
+        this.updateSession(
+          SipConstants.SESSION_ICE_READY,
+          session,
+          args,
+          client
+        )
+      );
+      session.on(SipConstants.SESSION_ACTIVE, (args) => {
+        this.updateSession(SipConstants.SESSION_ACTIVE, session, args, client);
+      });
+      session.setActive(true);
+    });
+    this.start()
   }
 
   updateSession(

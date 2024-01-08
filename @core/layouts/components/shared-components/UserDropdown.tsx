@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, SyntheticEvent, Fragment } from 'react'
+import { useState, SyntheticEvent, Fragment, useEffect } from 'react'
 
 // ** Next Import
 import { useRouter } from 'next/navigation'
@@ -24,6 +24,10 @@ import { Settings } from '@/@core/context/settingsContext'
 import { signOut } from '@/auth'
 import { logout } from '@/actions/authActions'
 import { PATH_DASHBOARD } from '@/routes/paths'
+import { red } from '@mui/material/colors'
+import { RegisterState } from '@/lib/Sip/sip-type'
+import { useSelector } from 'react-redux'
+import { SipUA } from '@/lib/Sip'
 
 interface Props {
   settings: Settings
@@ -50,6 +54,7 @@ const UserDropdown = (props: Props) => {
 
   // ** States
   const [anchorEl, setAnchorEl] = useState<Element | null>(null)
+  const {regState,connected}=  useSelector((state:any)=>state.sip)
 
   // ** Hooks
   const router = useRouter()
@@ -88,13 +93,18 @@ const UserDropdown = (props: Props) => {
     handleDropdownClose()
   }
 
+  useEffect(()=>{
+    new SipUA()
+  },[])
+
   return (
     <Fragment>
       <Badge
         overlap='circular'
         onClick={handleDropdownOpen}
         sx={{ ml: 2, cursor: 'pointer' }}
-        badgeContent={<BadgeContentSpan />}
+        badgeContent={<BadgeContentSpan 
+         sx={{ background: regState === RegisterState.REGISTERED&& connected ? '#44b700' : '#c72828' }}/>}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right'
@@ -128,7 +138,7 @@ const UserDropdown = (props: Props) => {
               <Avatar alt='John Doe' src='/images/avatars/1.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
             </Badge>
             <Box sx={{ display: 'flex', ml: 2.5, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 500 }}>John Doe</Typography>
+              <Typography sx={{ fontWeight: 500 }}>John Doe ddd</Typography>
               <Typography variant='body2'>Admin</Typography>
             </Box>
           </Box>

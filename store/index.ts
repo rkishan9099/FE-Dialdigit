@@ -8,6 +8,7 @@ import email from '@/store/apps/email'
 import invoice from '@/store/apps/invoice'
 import calendar from '@/store/apps/calendar'
 import permissions from '@/store/apps/permissions'
+import  sip from '@/store/dialer/sip'
 
 export const store = configureStore({
   reducer: {
@@ -16,7 +17,8 @@ export const store = configureStore({
     email,
     invoice,
     calendar,
-    permissions
+    permissions,
+    sip
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

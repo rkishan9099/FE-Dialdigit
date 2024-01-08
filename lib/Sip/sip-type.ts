@@ -1,10 +1,11 @@
 import SipSession from "./SipSession";
+import { UA_UNREGISTERED } from "./sip-constants";
 
 
 export enum ConnectingStatus {
   Connected = 'connected',
-  Failed = 'Failed',
-  Connecting = 'Connecting'
+  Disconnected = 'disconnected',
+  Connecting = 'connecting'
 }
 export enum CallReasonFor {
   Repos = 'Repos',
@@ -78,4 +79,9 @@ export interface SipSettings {
   sipPassword: string;
   sipDisplayName: string;
   apiKey: string;
+}
+
+export enum RegisterState {
+  UNREGISTERED ="unregistered",
+  REGISTERED ="registered",
 }
