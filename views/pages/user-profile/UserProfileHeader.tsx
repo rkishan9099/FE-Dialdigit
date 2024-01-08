@@ -18,6 +18,9 @@ import Icon from '@/@core/components/icon'
 
 // ** Types
 import { ProfileHeaderType } from '@/@fake-db/types'
+import { ProfileData } from '@/@fake-db/pages/profile'
+import { useSession } from 'next-auth/react'
+import { useAuth } from '@/hooks/useAuth'
 
 const ProfilePicture = styled('img')(({ theme }) => ({
   width: 108,
@@ -30,18 +33,15 @@ const ProfilePicture = styled('img')(({ theme }) => ({
 }))
 
 const UserProfileHeader = () => {
-  // ** State
-  const [data, setData] = useState<ProfileHeaderType | null>(null)
 
-  useEffect(() => {
-    axios.get('/pages/profile-header').then(response => {
-      setData(response.data)
-    })
-  }, [])
+  const {user}= useAuth();
+  // ** State
+
+  const data = ProfileData.profileHeader
 
   const designationIcon = data?.designationIcon || 'tabler:briefcase'
 
-  return data !== null ? (
+  return user !== null ? (
     <Card>
       <CardMedia
         component='img'
@@ -74,7 +74,7 @@ const UserProfileHeader = () => {
         >
           <Box sx={{ mb: [6, 0], display: 'flex', flexDirection: 'column', alignItems: ['center', 'flex-start'] }}>
             <Typography variant='h5' sx={{ mb: 2.5 }}>
-              {data.fullName}
+              {user?.name}
             </Typography>
             <Box
               sx={{
@@ -85,16 +85,13 @@ const UserProfileHeader = () => {
             >
               <Box sx={{ mr: 4, display: 'flex', alignItems: 'center', '& svg': { mr: 1.5, color: 'text.secondary' } }}>
                 <Icon fontSize='1.25rem' icon={designationIcon} />
-                <Typography sx={{ color: 'text.secondary' }}>{data.designation}</Typography>
+                <Typography sx={{ color: 'text.secondary' }}>{user?.roles?.name}</Typography>
               </Box>
-              <Box sx={{ mr: 4, display: 'flex', alignItems: 'center', '& svg': { mr: 1.5, color: 'text.secondary' } }}>
+              {/* <Box sx={{ mr: 4, display: 'flex', alignItems: 'center', '& svg': { mr: 1.5, color: 'text.secondary' } }}>
                 <Icon fontSize='1.25rem' icon='tabler:map-pin' />
                 <Typography sx={{ color: 'text.secondary' }}>{data.location}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', '& svg': { mr: 1.5, color: 'text.secondary' } }}>
-                <Icon fontSize='1.25rem' icon='tabler:calendar' />
-                <Typography sx={{ color: 'text.secondary' }}>Joined {data.joiningDate}</Typography>
-              </Box>
+              </Box> */}
+    
             </Box>
           </Box>
           <Button variant='contained' sx={{ '& svg': { mr: 2 } }}>

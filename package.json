@@ -41,6 +41,7 @@
     "i18next-browser-languagedetector": "^7.2.0",
     "i18next-http-backend": "^2.4.2",
     "jsonwebtoken": "^9.0.2",
+    "jssip": "^3.10.1",
     "keen-slider": "^6.8.6",
     "moment": "^2.29.4",
     "next": "14.0.4",

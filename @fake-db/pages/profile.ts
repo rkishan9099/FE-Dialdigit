@@ -19,13 +19,13 @@ interface DataType {
   connections: ConnectionsTabType[]
 }
 
-const data: DataType = {
+export const ProfileData: DataType = {
   profileHeader: {
     location: 'Vatican City',
     joiningDate: 'April 2021',
     fullName: 'Belle Ferguson',
     designation: 'UX Designer',
-    profileImg: '/images/avatars/14.png',
+    profileImg: '/images/avatars/11.png',
     designationIcon: 'tabler:color-swatch',
     coverImg: '/images/pages/profile-banner.png'
   },
@@ -662,11 +662,11 @@ mock.onGet('/pages/profile').reply((config:any) => {
   const { tab = '' } = config.params ?? ''
 
   // @ts-ignore
-  return [200, data[tab]]
+  return [200, ProfileData[tab]]
 })
 
 mock.onGet('/pages/profile-header').reply(() => {
-  return [200, data.profileHeader]
+  return [200, ProfileData.profileHeader]
 })
 
 mock.onGet('/pages/profile-table').reply((config:any) => {

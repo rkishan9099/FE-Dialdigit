@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
+        "allsessions",
         "apexcharts",
         "atleast",
+        "auxout",
         "callcenter",
         "casl",
         "chartjs",
@@ -11,8 +13,11 @@
         "daygrid",
         "digitechnobits",
         "fullcalendar",
+        "Holded",
         "hookform",
         "Iconify",
+        "ismuted",
+        "jssip",
         "kishan",
         "languagedetector",
         "prismjs",
@@ -24,6 +29,7 @@
         "tabler",
         "tailwindcss",
         "timegrid",
+        "UNHOLD",
         "Vuexy"
     ],
     "projectManager.git.baseFolders": [

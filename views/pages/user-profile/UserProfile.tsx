@@ -1,8 +1,8 @@
+'use client'
 // ** React Imports
 import { useState, useEffect, ReactElement, SyntheticEvent } from 'react'
 
 // ** Next Import
-import { useRouter } from 'next/router'
 
 // ** MUI Components
 import Tab from '@mui/material/Tab'
@@ -34,6 +34,7 @@ import Profile from '@/views/pages/user-profile/profile'
 import Projects from '@/views/pages/user-profile/projects'
 import Connections from '@/views/pages/user-profile/connections'
 import UserProfileHeader from '@/views/pages/user-profile/UserProfileHeader'
+import { useRouter } from 'next/navigation'
 
 const TabList = styled(MuiTabList)<TabListProps>(({ theme }) => ({
   borderBottom: '0 !important',
@@ -74,13 +75,9 @@ const UserProfile = ({ tab, data }: { tab: string; data: UserProfileActiveTab })
   const hideText = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
 
   const handleChange = (event: SyntheticEvent, value: string) => {
-    setIsLoading(true)
     setActiveTab(value)
     router
-      .push({
-        pathname: `/pages/user-profile/${value.toLowerCase()}`
-      })
-      .then(() => setIsLoading(false))
+      .push(`/user-profile/${value.toLowerCase()}`)
   }
 
   useEffect(() => {
@@ -107,7 +104,7 @@ const UserProfile = ({ tab, data }: { tab: string; data: UserProfileActiveTab })
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
-        <UserProfileHeader />
+        <UserProfileHeader/>
       </Grid>
       {activeTab === undefined ? null : (
         <Grid item xs={12}>
@@ -159,16 +156,11 @@ const UserProfile = ({ tab, data }: { tab: string; data: UserProfileActiveTab })
                 </TabList>
               </Grid>
               <Grid item xs={12}>
-                {isLoading ? (
-                  <Box sx={{ mt: 6, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-                    <CircularProgress sx={{ mb: 4 }} />
-                    <Typography>Loading...</Typography>
-                  </Box>
-                ) : (
+               
                   <TabPanel sx={{ p: 0 }} value={activeTab}>
                     {tabContentList[activeTab]}
                   </TabPanel>
-                )}
+              
               </Grid>
             </Grid>
           </TabContext>

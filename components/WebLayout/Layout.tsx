@@ -18,6 +18,9 @@ import AuthGuard from "@/@core/components/auth/AuthGuard";
 import FallbackSpinner from "@/@core/components/spinner";
 import AclGuard from "@/@core/components/auth/AclGuard";
 import { defaultACLObj } from "@/configs/acl";
+import { Provider } from "react-redux";
+import { store } from "@/store";
+import { SessionProvider } from 'next-auth/react'
 
 type PropsType = {
   children: React.ReactNode;
@@ -40,6 +43,7 @@ const Guard = ({ children, authGuard, guestGuard }: GuardProps) => {
   }
 }
 
+
 const Layout = ({ children, type }: PropsType) => {
   const contentHeightFixed = false;
   const setConfig: any = undefined;
@@ -51,7 +55,8 @@ const Layout = ({ children, type }: PropsType) => {
   const aclAbilities = defaultACLObj
   return (
       <NextAppDirEmotionCacheProvider options={{ key: 'mui' }}>
-     
+     <Provider store={store}>
+
         <SettingsProvider>
           <SettingsConsumer>
             {({ settings }) => {
@@ -83,6 +88,8 @@ const Layout = ({ children, type }: PropsType) => {
             }}
           </SettingsConsumer>
         </SettingsProvider>
+             </Provider>
+
       </NextAppDirEmotionCacheProvider>
   );
 };

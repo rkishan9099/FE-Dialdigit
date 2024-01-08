@@ -47,5 +47,12 @@ export const PATH_DASHBOARD = {
     root: path('', '/callcenter/ivr'),
     new: path('', '/callcenter/ivr/new'),
     edit: (slug: string) => path('', `/callcenter/ivr/${slug}/edit`)
+  },
+  userAccount:{
+    profile:path('','/user-profiles/profile'),
+    view:(tab: string) => path('', `/user-profiles/${tab}`)
+  },
+  settings:{
+    accountSettings:path(ROOTS_DASHBOARD,'/account-settings/account')
   }
 }

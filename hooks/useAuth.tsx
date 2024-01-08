@@ -1,4 +1,6 @@
-import { useContext } from 'react'
-import { AuthContext } from '@/context/AuthContext'
+import { useSession } from "next-auth/react"
 
-export const useAuth = () => useContext(AuthContext)
+export const useAuth =  ()=>{
+    const session = useSession();
+    return {user:session?.data?.user,roles:session?.data?.user?.roles}
+}

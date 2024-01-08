@@ -1,3 +1,4 @@
+'use client'
 // ** MUI Components
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
@@ -10,6 +11,9 @@ import Icon from '@/@core/components/icon'
 
 // ** Types
 import { ProfileTeamsType, ProfileTabCommonType } from '@/@fake-db/types'
+import { currentUser } from '@/lib/auth'
+import { UserDataType } from '@/types/authType'
+import { useAuth } from '@/hooks/useAuth'
 
 interface Props {
   teams: ProfileTeamsType[]
@@ -79,9 +83,18 @@ const renderTeams = (arr: ProfileTeamsType[]) => {
   }
 }
 
-const AboutOverivew = (props: Props) => {
-  const { teams, about, contacts, overview } = props
-
+const AboutOverivew  = (props: Props) => {
+  const { teams, overview } = props
+const   {user}=useAuth();
+const  about= [
+      { property: 'Full Name', value:user?.name || '', icon: 'tabler:user' },
+      { property: 'Status', value: user?.status ===1?'active':"in-active", icon: 'tabler:check' },
+      { property: 'Role', value: user?.roles?.name||'', icon: 'tabler:crown' },
+    ];
+    const contacts= [
+      { property: 'Contact', value: user?.mobile||'', icon: 'tabler:phone-call' },
+      { property: 'Email', value: user?.email||'', icon: 'tabler:mail' }
+    ]
   return (
     <Grid container spacing={6}>
       <Grid item xs={12}>
@@ -99,13 +112,7 @@ const AboutOverivew = (props: Props) => {
               </Typography>
               {renderList(contacts)}
             </Box>
-            <div>
-              <Typography variant='body2' sx={{ mb: 4, color: 'text.disabled', textTransform: 'uppercase' }}>
-                Teams
-              </Typography>
-              {renderTeams(teams)}
-            </div>
-          </CardContent>
+         </CardContent>
         </Card>
       </Grid>
       <Grid item xs={12}>
