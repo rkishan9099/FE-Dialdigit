@@ -7,6 +7,8 @@ declare module "next-auth" {
     user: UserDataType;
       accessToken?:string
     refreshToken?:string
+     sipExtension?:string
+    sipPassword?:string
   }
   interface User extends UserDataType{
   }

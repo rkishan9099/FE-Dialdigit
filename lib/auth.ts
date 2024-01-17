@@ -11,3 +11,16 @@ export const currentRole = async () => {
 
   return session?.user?.roles;
 };
+
+export const sipExtension = async () => {
+  const session = await auth();
+
+  return session?.user?.sipExtension;
+};
+
+
+export const  sipPassword =async ()=>{
+  const session =await auth();
+  
+  return session?.user?.sipPassword
+}

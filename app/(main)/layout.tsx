@@ -10,6 +10,7 @@ import '@/styles/globals.css'
 import Layout from '@/components/WebLayout/Layout'
 import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/auth'
+import { encode } from '@/Utils/utils'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {

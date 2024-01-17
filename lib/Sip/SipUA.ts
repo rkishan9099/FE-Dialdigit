@@ -14,31 +14,20 @@ import { formatPhoneNumber } from "./sip-utils";
 import toast from "react-hot-toast";
 import { store } from "@/store";
 import { setConnectedInfo, setRegistererState } from "@/store/dialer/sip";
+import { currentUser } from "../auth";
 
 export default class SipUA extends events.EventEmitter {
   #ua: UA;
   #rtcConfig: RTCConfiguration;
   #sessionManager: SessionManager;
 
-  constructor() {
+  constructor(client: SipModel.ClientAuth, settings: SipModel.ClientOptions) {
     super();
     debug.enable("JsSIP:*");
-    const client = {
-      username: '1001',
-      password: 'hello1234',
-      name: 'kishan'
-    }
-    const settings = {
-      pcConfig: {
-        iceServers: [{ urls: ["stun:stun.l.google.com:19302"] }],
-      },
-      wsUri: 'wss://switch1.digitechnobits.com:7443',
-      register: true,
-    };
     this.#sessionManager = new SessionManager();
     this.#rtcConfig = settings.pcConfig;
     this.#ua = new UA({
-      uri: `sip:${client.username}@switch1.digitechnobits.com`,
+      uri: `sip:${client.username}`,
       password: client.password,
       display_name: client.name,
       sockets: [new WebSocketInterface(settings.wsUri)],
@@ -154,6 +143,10 @@ export default class SipUA extends events.EventEmitter {
       session.setActive(true);
     });
     this.start()
+  }
+  static async createUA(){
+    const user = await currentUser();
+    console.log('login user',user)
   }
 
   updateSession(

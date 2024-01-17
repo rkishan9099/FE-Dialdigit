@@ -42,6 +42,8 @@ export type LoginParams = {
     updatedAt?:string
     accessToken?:string
     refreshToken?:string
+    sipExtension?:string
+    sipPassword?:string
   }
   
   export type AuthServiceType = {

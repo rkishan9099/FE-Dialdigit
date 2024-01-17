@@ -18,3 +18,5 @@ export const UA_REGISTERED: string = "registered";
 export const UA_UNREGISTERED: string = "unregistered";
 export const UA_START: string = "start";
 export const UA_STOP: string = "stop";
+export const sipDomain:string='switch1.digitechnobits.com';
+export const sipServerAddress:string='wss://switch1.digitechnobits.com:7443';

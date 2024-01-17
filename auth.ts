@@ -36,6 +36,8 @@ export const {
       }
       if(token.user){
         session.user = token.user
+        session.sipExtension =token?.user?.sipExtension
+        session.sipPassword=token?.user?.sipPassword
       }
       if(token?.refreshToken){
       session.refreshToken =token?.refreshToken
@@ -43,6 +45,7 @@ export const {
       if(token?.accessToken){
         session.accessToken=token?.accessToken
       }
+    
       return session;
     },
     async jwt({ token,user }) {

@@ -21,13 +21,13 @@ import Icon from '@/@core/components/icon'
 
 // ** Type Imports
 import { Settings } from '@/@core/context/settingsContext'
-import { signOut } from '@/auth'
 import { logout } from '@/actions/authActions'
 import { PATH_DASHBOARD } from '@/routes/paths'
-import { red } from '@mui/material/colors'
 import { RegisterState } from '@/lib/Sip/sip-type'
 import { useSelector } from 'react-redux'
-import { SipUA } from '@/lib/Sip'
+import useSipFunctionality from '@/hooks/useSipFunctionality'
+import useSipClient from '@/hooks/dialer/useSipClient'
+import { useAuth } from '@/hooks/useAuth'
 
 interface Props {
   settings: Settings
@@ -55,7 +55,9 @@ const UserDropdown = (props: Props) => {
   // ** States
   const [anchorEl, setAnchorEl] = useState<Element | null>(null)
   const {regState,connected}=  useSelector((state:any)=>state.sip)
+  const {user}=useAuth();
 
+const {createUA}=useSipClient();
   // ** Hooks
   const router = useRouter()
 
@@ -93,9 +95,14 @@ const UserDropdown = (props: Props) => {
     handleDropdownClose()
   }
 
+  
+
   useEffect(()=>{
-    new SipUA()
+  createUA()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
+
+
 
   return (
     <Fragment>
@@ -138,8 +145,8 @@ const UserDropdown = (props: Props) => {
               <Avatar alt='John Doe' src='/images/avatars/1.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
             </Badge>
             <Box sx={{ display: 'flex', ml: 2.5, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 500 }}>John Doe ddd</Typography>
-              <Typography variant='body2'>Admin</Typography>
+              <Typography sx={{ fontWeight: 500 }}>{user?.name}</Typography>
+              <Typography variant='body2'>{user?.sipExtension}</Typography>
             </Box>
           </Box>
         </Box>
