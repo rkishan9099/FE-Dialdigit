@@ -1,6 +1,6 @@
-'use client'
+"use client";
 import RootStyleRegistry from "@/app/emotion";
-import React, { ReactNode } from "react";
+import React, { ReactNode, Suspense, lazy } from "react";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import {
@@ -16,11 +16,14 @@ import NextAppDirEmotionCacheProvider from "@/@core/theme/EmotionCache";
 import GuestGuard from "@/@core/components/auth/GuestGuard";
 import AuthGuard from "@/@core/components/auth/AuthGuard";
 import FallbackSpinner from "@/@core/components/spinner";
-import AclGuard from "@/@core/components/auth/AclGuard";
 import { defaultACLObj } from "@/configs/acl";
 import { Provider } from "react-redux";
 import { store } from "@/store";
-import { SessionProvider } from 'next-auth/react'
+import { SessionProvider } from "next-auth/react";
+
+
+const AclGuard = lazy(()=>import("@/@core/components/auth/AclGuard"));
+
 
 type PropsType = {
   children: React.ReactNode;
@@ -28,69 +31,74 @@ type PropsType = {
 };
 
 type GuardProps = {
-  authGuard: boolean
-  guestGuard: boolean
-  children: ReactNode
-}
+  authGuard: boolean;
+  guestGuard: boolean;
+  children: ReactNode;
+};
 
 const Guard = ({ children, authGuard, guestGuard }: GuardProps) => {
   if (guestGuard) {
-    return <GuestGuard fallback={<FallbackSpinner />}>{children}</GuestGuard>
+    return <GuestGuard fallback={<FallbackSpinner />}>{children}</GuestGuard>;
   } else if (!guestGuard && !authGuard) {
-    return <>{children}</>
+    return <>{children}</>;
   } else {
-    return <AuthGuard fallback={<FallbackSpinner />}>{children}</AuthGuard>
+    return <AuthGuard fallback={<FallbackSpinner />}>{children}</AuthGuard>;
   }
-}
-
+};
 
 const Layout = ({ children, type }: PropsType) => {
   const contentHeightFixed = false;
   const setConfig: any = undefined;
 
-  const authGuard = true
+  const authGuard = true;
 
-  const guestGuard =  false
+  const guestGuard = false;
 
-  const aclAbilities = defaultACLObj
+  const aclAbilities = defaultACLObj;
   return (
-      <NextAppDirEmotionCacheProvider options={{ key: 'mui' }}>
-     <Provider store={store}>
-
+    <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
+      <Provider store={store}>
         <SettingsProvider>
           <SettingsConsumer>
             {({ settings }) => {
               return (
                 <ThemeComponent settings={settings}>
-                   <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    {type === "main" && (
+                      <Guard authGuard={authGuard} guestGuard={guestGuard}>
+                        <Suspense fallback={<FallbackSpinner />}>
 
-                  {type==='main' && 
-                  
-                  <Guard authGuard={authGuard} guestGuard={guestGuard}>
-                        <AclGuard aclAbilities={aclAbilities} guestGuard={guestGuard} authGuard={authGuard}>
-                          <UserLayout contentHeightFixed={contentHeightFixed}>
-                    {children}
-                  </UserLayout>
+                        <AclGuard
+                          aclAbilities={aclAbilities}
+                          guestGuard={guestGuard}
+                          authGuard={authGuard}
+                        >
+                          <Suspense fallback={<h1>Loading</h1>}>
+ <UserLayout contentHeightFixed={contentHeightFixed}>
+                            {children}
+                          </UserLayout>
+                          </Suspense>
+                         
                         </AclGuard>
-                  </Guard>
-                   }
-                  {type==='auth' && <BlankLayout>{children}</BlankLayout>}
-                 
-                  <ReactHotToast>
-                    <Toaster
-                      position={settings.toastPosition}
-                      toastOptions={{ className: "react-hot-toast" }}
-                    />
-                  </ReactHotToast>
+                        </Suspense>
+                      </Guard>
+                    )}
+                    {type === "auth" && <BlankLayout>{children}</BlankLayout>}
+
+                    <ReactHotToast>
+                      <Toaster
+                        position={settings.toastPosition}
+                        toastOptions={{ className: "react-hot-toast" }}
+                      />
+                    </ReactHotToast>
                   </LocalizationProvider>
                 </ThemeComponent>
               );
             }}
           </SettingsConsumer>
         </SettingsProvider>
-             </Provider>
-
-      </NextAppDirEmotionCacheProvider>
+      </Provider>
+    </NextAppDirEmotionCacheProvider>
   );
 };
 

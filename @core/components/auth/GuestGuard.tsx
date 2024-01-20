@@ -18,7 +18,7 @@ const GuestGuard = (props: GuestGuardProps) => {
       name: 'John Doe',
       role: 'Admin'
     },
-    loading: false
+    loading: true
   }
   const router = useRouter()
 

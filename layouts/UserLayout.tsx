@@ -21,6 +21,7 @@ import HorizontalNavItems from '@/navigation/horizontal'
 import VerticalAppBarContent from './components/vertical/AppBarContent'
 import HorizontalAppBarContent from './components/horizontal/AppBarContent'
 
+
 // ** Hook Import
 import { useSettings } from '@/@core/hooks/useSettings'
 

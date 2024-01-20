@@ -39,8 +39,9 @@ const AclGuard = (props: AclGuardProps) => {
   const auth ={
     user: {
       name: 'John Doe',
-      role: 'admin'
-    }
+      role: 'USER'
+    },
+    loading:true
   }
   
   const router = useRouter()

@@ -20,6 +20,7 @@ import ShortcutsDropdown, { ShortcutsType } from '@/@core/layouts/components/sha
 
 // ** Hook Import
 import { useAuth } from '@/hooks/useAuth'
+import { Suspense } from 'react'
 
 interface Props {
   hidden: boolean
@@ -140,7 +141,8 @@ const AppBarContent = (props: Props) => {
   }
 
   return (
-    <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+  
+ <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       <Box className='actions-left' sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
         {hidden && !settings.navHidden ? (
           <IconButton color='inherit' sx={{ ml: -2.75 }} onClick={toggleNavVisibility}>
@@ -150,17 +152,21 @@ const AppBarContent = (props: Props) => {
         {auth.user && <Autocomplete hidden={hidden} settings={settings} />}
       </Box>
       <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
-        <LanguageDropdown settings={settings} saveSettings={saveSettings} />
+        {/* <LanguageDropdown settings={settings} saveSettings={saveSettings} /> */}
         <ModeToggler settings={settings} saveSettings={saveSettings} />
         {auth.user && (
           <>
+            <Suspense fallback={'lsdfghj'}>
+
             <ShortcutsDropdown settings={settings} shortcuts={shortcuts} />
+            </Suspense>
             <NotificationDropdown settings={settings} notifications={notifications} />
             <UserDropdown settings={settings} />
           </>
         )}
       </Box>
     </Box>
+   
   )
 }
 
