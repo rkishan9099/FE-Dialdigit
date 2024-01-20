@@ -20,9 +20,9 @@ import Icon from '@/@core/components/icon'
 
 // ** Layout Import
 import BlankLayout from '@/@core/layouts/BlankLayout'
+import FooterIllustrationsV2 from '@/@core/views/auth/FooterIllustrationsV2'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from '@/views/pages/auth/FooterIllustrationsV2'
 
 // Styled Components
 const ForgotPasswordIllustration = styled('img')(({ theme }) => ({

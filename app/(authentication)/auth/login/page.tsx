@@ -18,9 +18,8 @@ import themeConfig from '@/configs/themeConfig'
 import { useSettings } from '@/@core/hooks/useSettings'
 
 // ** Demo Imports
-import FooterIllustrationsV2 from '@/views/pages/auth/FooterIllustrationsV2'
 import LoginForm from '@/components/auth/login/LoginForm'
-
+import FooterIllustrationsV2 from '@/@core/views/auth/FooterIllustrationsV2'
 interface State {
   password: string
   showPassword: boolean
