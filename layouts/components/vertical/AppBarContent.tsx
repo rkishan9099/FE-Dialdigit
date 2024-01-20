@@ -9,7 +9,6 @@ import Icon from '@/@core/components/icon'
 import { Settings } from '@/@core/context/settingsContext'
 
 // ** Components
-import Autocomplete from '@/layouts/components/Autocomplete'
 import ModeToggler from '@/@core/layouts/components/shared-components/ModeToggler'
 import UserDropdown from '@/@core/layouts/components/shared-components/UserDropdown'
 import LanguageDropdown from '@/@core/layouts/components/shared-components/LanguageDropdown'
@@ -149,7 +148,7 @@ const AppBarContent = (props: Props) => {
             <Icon fontSize='1.5rem' icon='tabler:menu-2' />
           </IconButton>
         ) : null}
-        {auth.user && <Autocomplete hidden={hidden} settings={settings} />}
+        {/* {auth.user && <Autocomplete hidden={hidden} settings={settings} />} */}
       </Box>
       <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
         {/* <LanguageDropdown settings={settings} saveSettings={saveSettings} /> */}

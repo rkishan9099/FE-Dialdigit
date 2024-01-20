@@ -3,7 +3,6 @@
 import { auth, signIn, signOut } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes/routes";
 import { AuthService } from "@/services/authService";
-import email from "@/store/apps/email";
 import { LoginParams, LoginSchema } from "@/types/authType";
 import { AuthError } from "next-auth";
 import * as yup from "yup";
