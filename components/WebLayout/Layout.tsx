@@ -1,6 +1,5 @@
 "use client";
-import RootStyleRegistry from "@/app/emotion";
-import React, { ReactNode, Suspense, lazy } from "react";
+import React, { ReactNode, Suspense, lazy, useEffect } from "react";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import {
@@ -19,7 +18,7 @@ import FallbackSpinner from "@/@core/components/spinner";
 import { defaultACLObj } from "@/configs/acl";
 import { Provider } from "react-redux";
 import { store } from "@/store";
-import { SessionProvider } from "next-auth/react";
+import useSipClient from "@/hooks/dialer/useSipClient";
 
 
 const AclGuard = lazy(()=>import("@/@core/components/auth/AclGuard"));
@@ -55,6 +54,12 @@ const Layout = ({ children, type }: PropsType) => {
   const guestGuard = false;
 
   const aclAbilities = defaultACLObj;
+
+
+
+
+
+
   return (
     <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
       <Provider store={store}>

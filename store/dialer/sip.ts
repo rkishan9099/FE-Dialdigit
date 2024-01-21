@@ -1,10 +1,12 @@
 import { SipUA } from "@/lib/Sip";
 import { ConnectingStatus, RegisterState } from "@/lib/Sip/sip-type";
+import { SipSliceType } from "@/types/dialer/SipSlice";
 import { createSlice } from "@reduxjs/toolkit";
+import { SessionStatus } from "jssip/lib/RTCSession";
 
 
-const initialState ={
- userAgent:{},
+const initialState:SipSliceType ={
+ userAgent:null,
  connectingStatus: ConnectingStatus.Disconnected,
  connected:false,
  regState:RegisterState.UNREGISTERED,

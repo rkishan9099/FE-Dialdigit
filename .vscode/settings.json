@@ -11,15 +11,20 @@
         "Customizer",
         "datepicker",
         "daygrid",
+        "dialpadbuttons",
         "digitechnobits",
         "fullcalendar",
         "Holded",
         "hookform",
+        "iconamoon",
         "Iconify",
         "ismuted",
         "jssip",
         "kishan",
         "languagedetector",
+        "lightgray",
+        "lucide",
+        "PQRS",
         "prismjs",
         "ramani",
         "reduxjs",
@@ -31,7 +36,8 @@
         "testsip",
         "timegrid",
         "UNHOLD",
-        "Vuexy"
+        "Vuexy",
+        "WXYZ"
     ],
     "projectManager.git.baseFolders": [
         "C:\\Program Files\\Git"

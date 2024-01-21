@@ -144,11 +144,7 @@ export default class SipUA extends events.EventEmitter {
     });
     this.start()
   }
-  static async createUA(){
-    const user = await currentUser();
-    console.log('login user',user)
-  }
-
+ 
   updateSession(
     field: string,
     session: SipSession,
@@ -169,11 +165,11 @@ export default class SipUA extends events.EventEmitter {
     this.emit(SipConstants.UA_STOP);
   }
 
-  call(number: string): void {
+  call(number: string,video:boolean=false,extraHeaders=[]): void {
     let normalizedNumber: string = normalizeNumber(number);
     this.#ua.call(normalizedNumber, {
-      extraHeaders: [`X-Original-Number:${number}`],
-      mediaConstraints: { audio: true, video: false },
+      extraHeaders: [`X-Original-Number:${number}`,...extraHeaders],
+      mediaConstraints: { audio: true, video: video },
       pcConfig: this.#rtcConfig,
     });
   }
@@ -234,7 +230,7 @@ export default class SipUA extends events.EventEmitter {
     }
   }
 
-  terminate(sipCode: number, reason: string, id: string | undefined): void {
+  terminate(sipCode: number, reason: string, id: string | undefined=undefined): void {
     if (id) {
       this.#sessionManager.getSession(id).terminate(sipCode, reason);
     } else {

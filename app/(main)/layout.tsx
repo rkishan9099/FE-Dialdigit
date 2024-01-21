@@ -28,14 +28,8 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SessionProvider session={session}>
-
         <Layout type='main'>{children}</Layout>
          {/* use This Element for audio call */}
-      <audio id='mediaElement' controls />
-
-      {/* use call ringtone play  */}
-      <audio id='connectingRingTone' src='/sounds/ringtone.mp3' controls  loop />
-      <audio id='InComingConnectingRingTone' src='/sounds/ringtone.mp3' controls loop />
         </SessionProvider>
 
         </body>

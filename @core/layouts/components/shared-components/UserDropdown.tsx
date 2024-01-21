@@ -57,7 +57,6 @@ const UserDropdown = (props: Props) => {
   const {regState,connected}=  useSelector((state:any)=>state.sip)
   const {user}=useAuth();
 
-const {createUA}=useSipClient();
   // ** Hooks
   const router = useRouter()
 
@@ -97,11 +96,14 @@ const {createUA}=useSipClient();
 
   
 
+
+  const {createUA}=useSipClient();
+
   useEffect(()=>{
-  createUA()
+createUA()
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
-
 
 
   return (
