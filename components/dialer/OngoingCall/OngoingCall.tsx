@@ -8,7 +8,7 @@ const OngoingCall = () => {
   return (
     <>
       <Stack
-        sx={{ width:'auto', borderRadius: "15px" }}
+        sx={{ width:'100%', borderRadius: "15px" }}
       >
         <Card sx={{ borderRadius: "15px",boxShadow:theme.shadows[8] }}>
           <CallDetails />

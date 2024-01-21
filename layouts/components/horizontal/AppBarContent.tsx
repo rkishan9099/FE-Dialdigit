@@ -16,6 +16,7 @@ import ShortcutsDropdown, { ShortcutsType } from '@/@core/layouts/components/sha
 // ** Hook Import
 import { useAuth } from '@/hooks/useAuth'
 import DialerDropdown from '@/@core/layouts/components/shared-components/DialerDropdown'
+import OnGoingCallDropdown from '@/@core/layouts/components/shared-components/OnGoingCallDropdown'
 
 interface Props {
   hidden: boolean
@@ -134,6 +135,7 @@ const AppBarContent = (props: Props) => {
       {auth.user && (
         <>
            <DialerDropdown  settings={settings}  shortcuts={shortcuts}/>
+           <OnGoingCallDropdown  settings={settings}  shortcuts={shortcuts}/>
           <ShortcutsDropdown settings={settings} shortcuts={shortcuts} />
           <NotificationDropdown settings={settings} notifications={notifications} />
           <UserDropdown settings={settings} />

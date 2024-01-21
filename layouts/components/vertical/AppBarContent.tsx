@@ -21,6 +21,7 @@ import ShortcutsDropdown, { ShortcutsType } from '@/@core/layouts/components/sha
 import { useAuth } from '@/hooks/useAuth'
 import { Suspense } from 'react'
 import DialerDropdown from '@/@core/layouts/components/shared-components/DialerDropdown'
+import OnGoingCallDropdown from '@/@core/layouts/components/shared-components/OnGoingCallDropdown'
 
 interface Props {
   hidden: boolean
@@ -156,6 +157,8 @@ const AppBarContent = (props: Props) => {
         <ModeToggler settings={settings} saveSettings={saveSettings} />
         {auth.user && (
           <>
+          <OnGoingCallDropdown  settings={settings}  shortcuts={shortcuts}/>
+
             <DialerDropdown  settings={settings}  shortcuts={shortcuts}/>
             <ShortcutsDropdown settings={settings} shortcuts={shortcuts} />
            
