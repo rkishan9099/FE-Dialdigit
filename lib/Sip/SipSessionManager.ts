@@ -1,4 +1,7 @@
+import { store } from "@/store";
 import { SipSession, SipModel, SipConstants } from "./index";
+import { updateSipState } from "@/store/dialer/sip";
+import { OngoingSessionState } from "./sip-type";
 
 export default class SipSessionManager {
   #sessions: Map<string, SipModel.SipSessionState>;
@@ -25,6 +28,7 @@ export default class SipSessionManager {
       switch (field) {
         case SipConstants.SESSION_RINGING:
           state.status = args.status;
+          store.dispatch(updateSipState({key:"sessionState",value:OngoingSessionState.RINGING}))
           break;
         case SipConstants.SESSION_ANSWERED:
           state.status = args.status;

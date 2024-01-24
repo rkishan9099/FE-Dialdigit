@@ -1,5 +1,5 @@
-import { SipUA } from "@/lib/Sip";
-import { ConnectingStatus, RegisterState } from "@/lib/Sip/sip-type";
+import { SipSession, SipUA } from "@/lib/Sip";
+import { ConnectingStatus, OngoingSessionState, RegisterState } from "@/lib/Sip/sip-type";
 import { UA } from "jssip";
 
 export  interface SipSliceType{
@@ -7,5 +7,9 @@ export  interface SipSliceType{
     connectingStatus:ConnectingStatus
     connected:boolean
     regState:RegisterState
+    sessionState:OngoingSessionState|''
+    ongoingSession:SipSession|{}
+    sessionId:string
+    CallDirection:string
 
 }
