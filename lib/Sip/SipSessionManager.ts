@@ -28,7 +28,6 @@ export default class SipSessionManager {
       switch (field) {
         case SipConstants.SESSION_RINGING:
           state.status = args.status;
-          store.dispatch(updateSipState({key:"sessionState",value:OngoingSessionState.RINGING}))
           break;
         case SipConstants.SESSION_ANSWERED:
           state.status = args.status;

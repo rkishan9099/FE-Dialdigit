@@ -4,13 +4,15 @@ import { configureStore } from '@reduxjs/toolkit'
 // ** Reducers
 import  sip from '@/store/dialer/sip'
 
+
 export const store = configureStore({
   reducer: {
     sip
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
-      serializableCheck: false
+      serializableCheck: false,
+      isSerializable:false
     })
 })
 

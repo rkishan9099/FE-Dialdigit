@@ -11,17 +11,13 @@ import { Settings } from '@/@core/context/settingsContext'
 // ** Components
 import ModeToggler from '@/@core/layouts/components/shared-components/ModeToggler'
 import UserDropdown from '@/@core/layouts/components/shared-components/UserDropdown'
-import LanguageDropdown from '@/@core/layouts/components/shared-components/LanguageDropdown'
 import NotificationDropdown, {
   NotificationsType
 } from '@/@core/layouts/components/shared-components/NotificationDropdown'
 import ShortcutsDropdown, { ShortcutsType } from '@/@core/layouts/components/shared-components/ShortcutsDropdown'
 
 // ** Hook Import
-import { useAuth } from '@/hooks/useAuth'
-import { Suspense } from 'react'
-import DialerDropdown from '@/@core/layouts/components/shared-components/DialerDropdown'
-import OnGoingCallDropdown from '@/@core/layouts/components/shared-components/OnGoingCallDropdown'
+import CallDropdown from '@/@core/layouts/components/shared-components/CallDropdown'
 
 interface Props {
   hidden: boolean
@@ -157,9 +153,8 @@ const AppBarContent = (props: Props) => {
         <ModeToggler settings={settings} saveSettings={saveSettings} />
         {auth.user && (
           <>
-          <OnGoingCallDropdown  settings={settings}  shortcuts={shortcuts}/>
-
-            <DialerDropdown  settings={settings}  shortcuts={shortcuts}/>
+        
+           <CallDropdown settings={settings} />
             <ShortcutsDropdown settings={settings} shortcuts={shortcuts} />
            
             <NotificationDropdown settings={settings} notifications={notifications} />

@@ -215,6 +215,9 @@ export default class SipSession extends events.EventEmitter {
   get user() {
     return this.#rtcSession.remote_identity.uri.user;
   }
+  get displayName(){
+    return this.#rtcSession
+  }
 
   get active() {
     return this.#active;

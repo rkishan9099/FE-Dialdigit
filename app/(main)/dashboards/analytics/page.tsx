@@ -3,26 +3,33 @@ import IconifyIcon from "@/@core/components/icon";
 import DialPad from "@/components/dialer/Dialpad/DialPad";
 import OngoingCall from "@/components/dialer/OngoingCall/OngoingCall";
 import useSipClient from "@/hooks/dialer/useSipClient";
+import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
 import { useAuth } from "@/hooks/useAuth";
 import useSipFunctionality from "@/hooks/useSipFunctionality";
 import { SipUA } from "@/lib/Sip";
+import { RootState } from "@/store";
 import { Button, Divider, IconButton, Stack, TextField } from "@mui/material";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const { hangUp, createUA, call, disConnect } = useSipClient();
+  const { createUA, call, disConnect } = useSipClient();
+  const {sessions,sessionId}=useSelector((state:RootState)=>state.sip)
+  const {getSessionState}=useSipSessionManager();
   const [number, setNumber] = useState<string>("");
+  
 
   const connectHandler = async () => {
     await createUA();
   };
   const callHandler = () => {
-    call(number);
+    call(number,false);
   };
 
   const disconnectHandler = () => {
-    disConnect();
+  // console.debug(sessions.get(sessionId))
+  console.debug(getSessionState(sessionId))
   };
 
   return (
@@ -33,17 +40,7 @@ const DashboardPage = () => {
      </Stack>
 
 
-      <Stack sx={{ margin: "20px 0", width: "400px" }}>
-        <h4>Dial Number :{number}</h4>
-        <TextField
-          size="small"
-          label="Enter Number"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            setNumber(e.target.value);
-          }}
-          value={number}
-        />
-      </Stack>
+
       <Stack
         direction="row"
         divider={<Divider orientation="vertical" flexItem />}
@@ -58,12 +55,7 @@ const DashboardPage = () => {
         <Button variant={"contained"} onClick={callHandler}>
           Call
         </Button>
-        <Button variant={"contained"} onClick={() => hangUp()}>
-          Call hangUp
-        </Button>
-        <Button variant={"contained"} onClick={() => hangUp()}>
-          Call Hold
-        </Button>
+       
       </Stack>
     
     </>

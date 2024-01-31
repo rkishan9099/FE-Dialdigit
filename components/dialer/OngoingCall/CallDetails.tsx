@@ -2,6 +2,7 @@ import IconifyIcon from "@/@core/components/icon";
 import { IconButton, Stack, Typography, styled, useTheme } from "@mui/material";
 import React from "react";
 import CallActionButton from "./CallActionButton";
+import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
 
 const ProfilePicture = styled("img")(({ theme }) => ({
   width: 70,
@@ -15,6 +16,9 @@ const ProfilePicture = styled("img")(({ theme }) => ({
 
 const CallDetails = () => {
   const theme = useTheme();
+  const {getDialNumber,getActiveSession}=useSipSessionManager()
+  const dialNumber = getDialNumber();
+
   return (
     <>
       <Stack
@@ -49,19 +53,20 @@ const CallDetails = () => {
 
         <Stack justifyContent={"center"} alignItems={"center"}>
           <ProfilePicture src={"/images/avatars/1.png"} alt="profile-picture" />
-          <Typography
+          {/* <Typography
             sx={{
               color: theme.palette.primary.contrastText,
             }}
           >
             Kishan Ramani
-          </Typography>
+          </Typography> */}
           <Typography
-            sx={{
+            sx={{marginTop:'5px',
+            fontWeight:'bold',
               color: theme.palette.primary.contrastText,
             }}
           >
-            +91 9099458674
+            {dialNumber}
           </Typography>
         </Stack>
         <CallActionButton />
