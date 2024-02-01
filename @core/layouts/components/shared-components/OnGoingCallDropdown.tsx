@@ -40,7 +40,6 @@ export type ShortcutsType = {
 
 interface Props {
   settings: Settings
-  shortcuts: ShortcutsType[]
 }
 
 // ** Styled Menu component
@@ -82,7 +81,7 @@ const ScrollWrapper = ({ children, hidden }: { children: ReactNode; hidden: bool
 
 const OnGoingCallDropdown = (props: Props) => {
   // ** Props
-  const { shortcuts, settings } = props
+  const {  settings } = props
 
   // ** States
   const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null)

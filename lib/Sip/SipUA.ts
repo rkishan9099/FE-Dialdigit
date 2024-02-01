@@ -13,10 +13,11 @@ import {
 import { formatPhoneNumber } from "./sip-utils";
 import toast from "react-hot-toast";
 import { store } from "@/store";
-import { setConnectedInfo, setRegistererState } from "@/store/dialer/sip";
+import { setConnectedInfo, setRegistererState, updateSipState } from "@/store/dialer/sip";
 import { currentUser } from "../auth";
+import { setEngine } from "crypto";
 
-export default class SipUA extends events.EventEmitter {
+    export default class SipUA extends events.EventEmitter {
   #ua: UA;
   #rtcConfig: RTCConfiguration;
   #sessionManager: SessionManager;
@@ -107,6 +108,11 @@ export default class SipUA extends events.EventEmitter {
         new SipAudioElements()
       );
 
+console.debug('sessios',session)
+      store.dispatch(updateSipState({key:"ongoingSession",value:session}))
+      store.dispatch(updateSipState({key:"sessionId",value:session.id}))
+      console.debug('session',session.direction)
+      
       this.#sessionManager.newSession(session);
       session.on(SipConstants.SESSION_RINGING, (args) =>
         this.updateSession(SipConstants.SESSION_RINGING, session, args, client)
@@ -301,6 +307,12 @@ export default class SipUA extends events.EventEmitter {
       return this.#sessionManager.activeSession;
     } catch (error) {
       return null;
+    }
+  }
+
+  getSessionState(id:string=''){
+    if(id){
+      return this.#sessionManager.getSessionState(id)
     }
   }
   getDialNumber() {

@@ -1,4 +1,7 @@
+import { store } from "@/store";
 import { SipSession, SipModel, SipConstants } from "./index";
+import { updateSipState } from "@/store/dialer/sip";
+import { OngoingSessionState } from "./sip-type";
 
 export default class SipSessionManager {
   #sessions: Map<string, SipModel.SipSessionState>;

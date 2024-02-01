@@ -85,3 +85,9 @@ export enum RegisterState {
   UNREGISTERED ="unregistered",
   REGISTERED ="registered",
 }
+export enum OngoingSessionState {
+  RINGING = "ringing",
+  ANSWERED = "answered",
+  COMPLETED = "ended",
+  FAILED = "failed",
+}
