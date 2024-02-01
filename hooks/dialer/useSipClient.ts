@@ -16,7 +16,10 @@ import {
 } from "@/store/dialer/sip";
 import { useSelector } from "react-redux";
 import {
+  CallDirection,
+  CallDirectionValue,
   ConnectingStatus,
+  OngoingSessionState,
   RegisterState,
   SipSessionState,
 } from "@/lib/Sip/sip-type";
@@ -138,25 +141,34 @@ const useSipClient = (): SipClientType => {
         new SipAudioElements()
       );
 
-
       store.dispatch(updateSipState({ key: "ongoingSession", value: session }));
       store.dispatch(updateSipState({ key: "sessionId", value: session.id }));
+     store.dispatch(updateSipState({key:"callDirection",value:CallDirectionValue[session?.direction]}))
+     if(CallDirectionValue[session?.direction]===CallDirection.Inbound){
+     store.dispatch(updateSipState({key:"ConnectingCall",value:true}))
+     }
 
       await newSession(session);
 
       session.on(SipConstants.SESSION_RINGING, (args) => {
+
         updateSession(SipConstants.SESSION_RINGING, session, args, sessions);
+        store.dispatch(updateSipState({key:'sessionState',value:OngoingSessionState.RINGING}))
       });
 
       session.on(SipConstants.SESSION_ANSWERED, (args) => {
+        store.dispatch(updateSipState({key:'sessionState',value:OngoingSessionState.ANSWERED}))
         updateSession(SipConstants.SESSION_ANSWERED, session, args, sessions);
       });
 
       session.on(SipConstants.SESSION_FAILED, (args) => {
+                store.dispatch(updateSipState({key:'sessionState',value:OngoingSessionState.FAILED}))
+
         updateSession(SipConstants.SESSION_FAILED, session, args, sessions);
       });
 
       session.on(SipConstants.SESSION_ENDED, (args) => {
+        store.dispatch(updateSipState({key:'sessionState',value:OngoingSessionState.COMPLETED}))
         updateSession(SipConstants.SESSION_ENDED, session, args, sessions);
       });
 

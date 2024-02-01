@@ -10,7 +10,8 @@ export  interface SipSliceType{
     sessionState:OngoingSessionState|''
     ongoingSession:SipSession|{}
     sessionId:string
-    CallDirection:string
+    callDirection:string
     sessions: Map<string, SipModel.SipSessionState>
+    ConnectingCall:boolean
 
 }

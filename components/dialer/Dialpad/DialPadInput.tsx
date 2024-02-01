@@ -28,7 +28,7 @@ const DialPadInput = ({ number, setNum }: { number: string; setNum: any }) => {
     >
       <InputBase
         sx={{ fontSize: '23px', textAlign: 'center', paddingLeft: '15px', width: '100%',boxShadow:'none' }}
-        value={number}
+       
         defaultValue={number}
         onChange={changeHandler}
       />

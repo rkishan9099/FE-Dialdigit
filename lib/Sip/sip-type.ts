@@ -21,6 +21,11 @@ export enum CallDirection {
   NoCall = ''
 }
 
+export const CallDirectionValue={
+incoming:CallDirection.Inbound,
+outgoing:CallDirection.Outbound
+}
+
 export enum CallFunctionalityUsed {
   CallDialer = 'CallDialer',
   SelectedCall = 'SelectedCall',

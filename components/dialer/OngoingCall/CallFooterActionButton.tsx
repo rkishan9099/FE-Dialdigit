@@ -46,10 +46,6 @@ if(activeSession){
       justifyContent={"center"}
       alignItems={"center"}
     >
-       {createPortal(
-        <p>This child is placed in the document body.</p>,
-        document.body
-      )}
       <Card
         sx={{
           padding: "0 6px",
