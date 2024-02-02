@@ -12,8 +12,9 @@ const initialState: SipSliceType = {
   sessionState: "",
   ongoingSession: {},
   sessionId: "",
-  CallDirection: "",
+  callDirection: "",
   sessions: new Map(),
+  ConnectingCall:false
 };
 
 const slice = createSlice({
