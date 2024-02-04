@@ -2,6 +2,7 @@ import IconifyIcon from "@/@core/components/icon";
 import { CustomActionButton } from "@/@core/styles/mui/button";
 import useSipClient from "@/hooks/dialer/useSipClient";
 import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
+import { OngoingSessionState } from "@/lib/Sip/sip-type";
 import { RootState } from "@/store";
 import {
   Box,
@@ -21,6 +22,7 @@ const ActionText = styled(Typography)(({ theme }) => ({
 }));
 const CallActionButton = () => {
   const { isHolded, hold, unhold, mute, unmute, isMuted } = useSipClient();
+  const {sessionState}=useSelector((state:RootState)=>state.sip)
   return (
     <Stack
       direction={"row"}
@@ -37,30 +39,30 @@ const CallActionButton = () => {
         sx={{ color: "white", padding: "10px" }}
       >
         {isMuted() ? (
-          <CustomActionButton onClick={() => unmute()}>
+          <CustomActionButton onClick={() => unmute()} disabled={sessionState===OngoingSessionState.ANSWERED ? false : true}>
             <IconifyIcon icon={"mdi:microphone"} width={"25px"} />
             <ActionText>UnMute</ActionText>
           </CustomActionButton>
         ) : (
-          <CustomActionButton onClick={() => mute()}>
+          <CustomActionButton onClick={() => mute()} disabled={sessionState===OngoingSessionState.ANSWERED ? false : true}>
             <IconifyIcon icon={"vaadin:mute"} width={"25px"} />
             <ActionText>Mute</ActionText>
           </CustomActionButton>
         )}
 
         {isHolded() ? (
-          <CustomActionButton onClick={() => unhold()}>
+          <CustomActionButton onClick={() => unhold()} disabled={sessionState===OngoingSessionState.ANSWERED ? false : true}>
             <IconifyIcon icon={"solar:play-bold"} width={"25px"} />
             <ActionText>UnHold</ActionText>
           </CustomActionButton>
         ) : (
-          <CustomActionButton onClick={() => hold()}>
+          <CustomActionButton onClick={() => hold()} disabled={sessionState===OngoingSessionState.ANSWERED ? false : true}>
             <IconifyIcon icon={"solar:pause-bold"} width={"25px"} />
             <ActionText>Hold</ActionText>
           </CustomActionButton>
         )}
 
-        <CustomActionButton>
+        <CustomActionButton disabled={sessionState===OngoingSessionState.ANSWERED ? false : true}>
           <IconifyIcon icon={"eva:keypad-fill"} width={"25px"} />
           <ActionText>Keypad</ActionText>
         </CustomActionButton>

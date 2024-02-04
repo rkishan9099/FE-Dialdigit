@@ -11,7 +11,7 @@ const ROOTS_DASHBOARD = ''
 
 export const PATH_AUTH = {
   root: ROOTS_AUTH,
-  login: path('', '/login'),
+  login: path(ROOTS_AUTH,'/login'),
   register: path(ROOTS_AUTH, '/signup'),
   forgotPassword:path(ROOTS_AUTH,'/forgot-password'),
   loginUnprotected: path(ROOTS_AUTH, '/login-unprotected'),

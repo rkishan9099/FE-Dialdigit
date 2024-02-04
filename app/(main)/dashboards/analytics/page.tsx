@@ -1,5 +1,6 @@
 "use client";
 import IconifyIcon from "@/@core/components/icon";
+import { getUser } from "@/actions/userActions";
 import DialPad from "@/components/dialer/Dialpad/DialPad";
 import OngoingCall from "@/components/dialer/OngoingCall/OngoingCall";
 import useSipClient from "@/hooks/dialer/useSipClient";
@@ -7,7 +8,8 @@ import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
 import { useAuth } from "@/hooks/useAuth";
 import useSipFunctionality from "@/hooks/useSipFunctionality";
 import { SipUA } from "@/lib/Sip";
-import { RootState } from "@/store";
+import { RootState, store } from "@/store";
+import { sendMissedCallEmail } from "@/store/dialer/sip";
 import { Button, Divider, IconButton, Stack, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
@@ -27,9 +29,18 @@ const DashboardPage = () => {
     call(number,false);
   };
 
-  const disconnectHandler = () => {
-  // console.debug(sessions.get(sessionId))
-  console.debug(getSessionState(sessionId))
+  const disconnectHandler = async () => {
+      console.log('sdfghjkl;')
+    const storedToken = localStorage.getItem("accessToken");
+    // if (storedToken) {
+    //   if (config.headers) {
+    //     config.headers['Authorization'] = `Bearer ${storedToken}`
+    //   }
+    // }
+    // store.dispatch(sendMissedCallEmail())
+
+  getUser()
+// disConnect()
   };
 
   return (

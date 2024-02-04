@@ -2,7 +2,7 @@ import IconifyIcon from '@/@core/components/icon'
 import { CustomActionButton } from '@/@core/styles/mui/button'
 import { ProfilePicture } from '@/@core/styles/mui/customImage'
 import useSipSessionManager from '@/hooks/dialer/useSipSessionManager'
-import { Button, Card, Stack, Typography, useTheme } from '@mui/material'
+import { Button, Card, IconButton, Stack, Typography, useTheme } from '@mui/material'
 import React from 'react'
 
 const ConnectingCallDetail = () => {
@@ -17,6 +17,29 @@ const ConnectingCallDetail = () => {
               width:'100%'
             }}
           >
+            <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+          sx={{
+            padding: "5px 20px",
+          }}
+        >
+          <IconButton
+            sx={{
+              color: theme.palette.primary.contrastText,
+            }}
+          >
+            <IconifyIcon icon={"lucide:fullscreen"} />
+          </IconButton>
+          <Typography
+            sx={{
+              color: theme.palette.primary.contrastText,
+            }}
+          >
+            Connecting
+          </Typography>
+        </Stack>
             <Stack
               justifyContent={"center"}
               alignItems={"center"}
@@ -60,7 +83,7 @@ const ConnectingCallDetail = () => {
               >
                 <Button
                   sx={{
-                    background: "#44b700",
+                    background: "#EA5455",
                     color: "white"
                   }}
                 >

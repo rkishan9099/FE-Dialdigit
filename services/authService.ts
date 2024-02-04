@@ -1,6 +1,8 @@
 import axiosInstance from "@/Utils/axios";
 import { AuthApiUrl } from "@/configs/apiUrlConstant";
-import { LoginParams } from "@/types/authType";
+import { LoginParams, SignUpParams } from "@/types/authType";
+import toast from "react-hot-toast";
+
 
 class Auth{
   isError=false
@@ -20,7 +22,18 @@ class Auth{
       this.errorMessage= error?.message;
       return null
     }
-
+  }
+  async handleSignUp(data:SignUpParams){
+     try {
+       const response = await axiosInstance.post(AuthApiUrl.signup,data);
+       if(response?.data?.status==="success" &&response?.data?.statusCode===201){
+        return {status:"success",message:response?.data?.message}
+       }else{
+        return {status:"error",message:response?.data?.message}
+       }
+     } catch (error) {
+      return {status:"error",message:"Something Went Wrong"}
+     }
   }
 }
 

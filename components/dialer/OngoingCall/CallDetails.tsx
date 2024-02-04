@@ -3,6 +3,10 @@ import { IconButton, Stack, Typography, styled, useTheme } from "@mui/material";
 import React from "react";
 import CallActionButton from "./CallActionButton";
 import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { OngoingSessionState } from "@/lib/Sip/sip-type";
+import { useCallDurationTimer } from "@/hooks/dialer/useCallDurationTimer";
 
 const ProfilePicture = styled("img")(({ theme }) => ({
   width: 70,
@@ -16,15 +20,17 @@ const ProfilePicture = styled("img")(({ theme }) => ({
 
 const CallDetails = () => {
   const theme = useTheme();
-  const {getDialNumber,getActiveSession}=useSipSessionManager()
+  const { getDialNumber, sessionCount } = useSipSessionManager();
+  const { sessionState } = useSelector((state: RootState) => state.sip);
   const dialNumber = getDialNumber();
-
+  const { callTimer } = useCallDurationTimer();
   return (
     <>
       <Stack
         sx={{
           background: "rgb(103,120,240)",
           borderRadius: "10px",
+          minHeight: "250px",
         }}
       >
         <Stack
@@ -32,7 +38,7 @@ const CallDetails = () => {
           justifyContent={"space-between"}
           alignItems={"center"}
           sx={{
-            padding: "5px",
+            padding: "5px 20px",
           }}
         >
           <IconButton
@@ -47,7 +53,9 @@ const CallDetails = () => {
               color: theme.palette.primary.contrastText,
             }}
           >
-            02:00
+            {sessionState === OngoingSessionState.RINGING
+              ? "Connecting"
+              : callTimer}
           </Typography>
         </Stack>
 
@@ -61,15 +69,18 @@ const CallDetails = () => {
             Kishan Ramani
           </Typography> */}
           <Typography
-            sx={{marginTop:'5px',
-            fontWeight:'bold',
+            sx={{
+              marginTop: "5px",
+              fontWeight: "bold",
               color: theme.palette.primary.contrastText,
             }}
           >
             {dialNumber}
           </Typography>
         </Stack>
-        <CallActionButton />
+        {sessionState !== OngoingSessionState.RINGING && sessionCount() > 0 && (
+          <CallActionButton />
+        )}
       </Stack>
     </>
   );

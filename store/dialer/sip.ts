@@ -1,7 +1,9 @@
+import axiosInstance from "@/Utils/axios";
+import { UserApiUrl } from "@/configs/apiUrlConstant";
 import { SipModel, SipSession, SipUA } from "@/lib/Sip";
-import { ConnectingStatus, RegisterState } from "@/lib/Sip/sip-type";
+import { ConnectingStatus, OngoingSessionState, RegisterState } from "@/lib/Sip/sip-type";
 import { SipSliceType } from "@/types/dialer/SipSlice";
-import { createSlice } from "@reduxjs/toolkit";
+import { Dispatch, createSlice } from "@reduxjs/toolkit";
 import { enableMapSet, produce } from "immer";
 import { SessionStatus } from "jssip/lib/RTCSession";
 const initialState: SipSliceType = {
@@ -9,7 +11,7 @@ const initialState: SipSliceType = {
   connectingStatus: ConnectingStatus.Disconnected,
   connected: false,
   regState: RegisterState.UNREGISTERED,
-  sessionState: "",
+  sessionState: OngoingSessionState.RINGING,
   ongoingSession: {},
   sessionId: "",
   callDirection: "",
@@ -64,6 +66,23 @@ const slice = createSlice({
     }
   },
 });
+
+
+export function sendMissedCallEmail() {
+ 
+  return async (dispatch: Dispatch) => {
+    try {
+      const response = await axiosInstance.get(UserApiUrl.getUser)
+      console.debug('response')
+
+      return response.data
+    } catch (error) {
+
+      return error
+    }
+  }
+}
+
 export const {
   setConnectedInfo,
   setRegistererState,
@@ -72,4 +91,6 @@ export const {
   addSession,
   deleteSipSession,
 } = slice.actions;
+
+
 export default slice.reducer;

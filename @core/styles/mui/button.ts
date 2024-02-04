@@ -14,6 +14,7 @@ export const CustomActionButton = styled(IconButton)(({ theme }) => ({
     background: hexToRGBA(theme.palette.primary.main, 0.3)
   },
   '&:disabled': {
-    color: 'lightgray'
+    color: 'lightgray',
+      background: hexToRGBA(theme.palette.primary.main, 0.3)
   }
 }))

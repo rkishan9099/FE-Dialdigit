@@ -2,7 +2,6 @@
 import { SyntheticEvent, useState, useEffect, Fragment } from 'react'
 
 // ** Next Import
-import { useRouter } from 'next/router'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -39,6 +38,7 @@ import CanViewNavGroup from '@/layouts/components/acl/CanViewNavGroup'
 // ** Utils
 import { hexToRGBA } from '@/@core/utils/hex-to-rgba'
 import { hasActiveChild } from '@/@core/layouts/utils'
+import { usePathname, useRouter } from 'next/navigation'
 
 interface Props {
   item: NavGroup
@@ -92,7 +92,8 @@ const HorizontalNavGroup = (props: Props) => {
   // ** Hooks & Vars
   const theme = useTheme()
   const router = useRouter()
-  const currentURL = router.asPath
+  const  pathName=usePathname()
+  const currentURL = pathName
   const { skin, direction } = settings
   const { navSubItemIcon, menuTextTruncate, horizontalMenuToggle, horizontalMenuAnimation } = themeConfig
 
@@ -145,7 +146,7 @@ const HorizontalNavGroup = (props: Props) => {
   useEffect(() => {
     handleGroupClose()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.asPath])
+  }, [pathName])
 
   const icon = item.icon ? item.icon : navSubItemIcon
   const toggleIcon = direction === 'rtl' ? 'tabler:chevron-left' : 'tabler:chevron-right'

@@ -2,10 +2,13 @@ import IconifyIcon from "@/@core/components/icon";
 import { CustomActionButton } from "@/@core/styles/mui/button";
 import useSipClient from "@/hooks/dialer/useSipClient";
 import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
+import { OngoingSessionState } from "@/lib/Sip/sip-type";
+import { RootState } from "@/store";
 import { Card, Stack, Typography, styled, useTheme } from "@mui/material";
 import React from "react";
 import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
 
 const ActionText = styled(Typography)(({ theme }) => ({
   color: theme.palette.mode === "light" ? "black" : "white",
@@ -15,26 +18,30 @@ const ActionText = styled(Typography)(({ theme }) => ({
 
 const CallFooterActionButton = () => {
   const theme = useTheme();
-  const {getActiveSession}=useSipSessionManager();
-  const {terminate}=useSipClient();
+  const { getActiveSession, sessionCount } = useSipSessionManager();
+  const { sessionState } = useSelector((state: RootState) => state.sip);
+  const { terminate } = useSipClient();
 
   const activeSession = getActiveSession();
-
 
   const ButtonStyle = {
     color: theme.palette.mode === "light" ? "black" : "white",
     "&:hover": {
       background: theme.palette.customColors.bodyBg,
     },
+    "&:disabled": {
+      color: "lightgray",
+      background: "rgba(0,0,0,0.3)",
+    },
   };
 
-  const hangupHandler =()=>{
-if(activeSession){
-  terminate(480, "Call Finished", undefined)
-}else{
-  toast.error('No Call Running to hangup ')
-}
-  }
+  const hangupHandler = () => {
+    if (activeSession) {
+      terminate(480, "Call Finished", undefined);
+    } else {
+      toast.error("No Call Running to hangup ");
+    }
+  };
 
   return (
     <Stack
@@ -48,7 +55,8 @@ if(activeSession){
     >
       <Card
         sx={{
-          padding: "0 6px",
+          padding:
+            sessionState !== OngoingSessionState.RINGING ? "0 6px" : "0px",
           borderRadius: "30px !important",
           background: theme.palette.background.paper,
         }}
@@ -58,14 +66,26 @@ if(activeSession){
           justifyContent={"center"}
           alignItems={"center"}
           spacing={5}
-          sx={{ color: "white", padding: "10px" }}
+          sx={{
+            color: "white",
+            padding:
+              sessionState !== OngoingSessionState.RINGING ? "10px" : "0px",
+          }}
         >
-          <CustomActionButton sx={ButtonStyle}>
-            <IconifyIcon icon={"mingcute:user-add-fill"} width={"25px"} />
-            <ActionText>Add Call</ActionText>
-          </CustomActionButton>
+          {sessionState !== OngoingSessionState.RINGING &&
+            sessionCount() > 0 && (
+              <CustomActionButton
+                sx={ButtonStyle}
+                disabled={
+                  sessionState === OngoingSessionState.ANSWERED ? false : true
+                }
+              >
+                <IconifyIcon icon={"mingcute:user-add-fill"} width={"25px"} />
+                <ActionText>Add Call</ActionText>
+              </CustomActionButton>
+            )}
           <CustomActionButton
-          onClick={hangupHandler}
+            onClick={hangupHandler}
             sx={{
               background: "red",
               "&:hover": {
@@ -76,13 +96,21 @@ if(activeSession){
           >
             <IconifyIcon icon={"material-symbols:call-end"} width={"40px"} />
           </CustomActionButton>
-          <CustomActionButton sx={ButtonStyle}>
-            <IconifyIcon
-              icon={"fluent:call-transfer-16-filled"}
-              width={"25px"}
-            />
-            <ActionText>Transfer</ActionText>
-          </CustomActionButton>
+          {sessionState !== OngoingSessionState.RINGING &&
+            sessionCount() > 0 && (
+              <CustomActionButton
+                sx={ButtonStyle}
+                disabled={
+                  sessionState === OngoingSessionState.ANSWERED ? false : true
+                }
+              >
+                <IconifyIcon
+                  icon={"fluent:call-transfer-16-filled"}
+                  width={"25px"}
+                />
+                <ActionText>Transfer</ActionText>
+              </CustomActionButton>
+            )}
         </Stack>
       </Card>
     </Stack>

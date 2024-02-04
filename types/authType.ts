@@ -13,6 +13,13 @@ export type LoginParams = {
     rememberMe?: boolean
   }
   
+  export type SignUpParams = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  mobile: string;
+};
   export type LoginOTPParams = {
     phone: string
     otp: string
