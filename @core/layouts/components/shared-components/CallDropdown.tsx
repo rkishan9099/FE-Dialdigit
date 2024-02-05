@@ -33,7 +33,7 @@ const CallDropdown = (props: Props) => {
 
   return (
     <>
-      {sessionCount() > 0 ? (
+      {sessionCount() >0 ? (
         <OnGoingCallDropdown settings={settings} />
       ) : (
         <DialpadDropdown settings={settings} />

@@ -12,6 +12,7 @@ export  interface SipSliceType{
     sessionId:string
     callDirection:string
     sessions: Map<string, SipModel.SipSessionState>
-    ConnectingCall:boolean
+    ConnectingCall:boolean,
+    toggleDrawerSheet:boolean
 
 }

@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useSelector } from "react-redux";
+import DtmfDialog from "../Dialpad/Dtmf/DtmfDialog";
 
 const ActionText = styled(Typography)(({ theme }) => ({
   color: "white",
@@ -24,6 +25,7 @@ const CallActionButton = () => {
   const { isHolded, hold, unhold, mute, unmute, isMuted } = useSipClient();
   const {sessionState}=useSelector((state:RootState)=>state.sip)
   return (
+    <>
     <Stack
       direction={"row"}
       justifyContent={"center"}
@@ -62,12 +64,14 @@ const CallActionButton = () => {
           </CustomActionButton>
         )}
 
-        <CustomActionButton disabled={sessionState===OngoingSessionState.ANSWERED ? false : true}>
+        <CustomActionButton>
           <IconifyIcon icon={"eva:keypad-fill"} width={"25px"} />
           <ActionText>Keypad</ActionText>
         </CustomActionButton>
       </Stack>
     </Stack>
+    {/* <DtmfDialog /> */}
+    </>
   );
 };
 

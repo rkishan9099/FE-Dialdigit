@@ -78,9 +78,9 @@ const CallDetails = () => {
             {dialNumber}
           </Typography>
         </Stack>
-        {sessionState !== OngoingSessionState.RINGING && sessionCount() > 0 && (
           <CallActionButton />
-        )}
+        {/* {sessionState !== OngoingSessionState.RINGING && sessionCount() > 0 && (
+        )} */}
       </Stack>
     </>
   );
