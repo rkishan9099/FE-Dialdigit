@@ -14,5 +14,10 @@ export  interface SipSliceType{
     sessions: Map<string, SipModel.SipSessionState>
     ConnectingCall:boolean,
     toggleDrawerSheet:boolean
+    callTransfer:boolean
+    isBlindTransfer:boolean
+    isAttendedTransfer:boolean
+    isConference:boolean
+    isMergeCall:boolean
 
 }

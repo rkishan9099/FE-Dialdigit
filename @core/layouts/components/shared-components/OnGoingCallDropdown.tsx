@@ -144,6 +144,7 @@ const OnGoingCallDropdown = (props: Props) => {
         <Icon fontSize='1.625rem' icon='material-symbols:call-log' />
       </IconButton>
       <Menu
+      sx={{maxWidth:'350px'}}
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleDropdownClose}

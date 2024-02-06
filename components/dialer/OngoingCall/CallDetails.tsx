@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { OngoingSessionState } from "@/lib/Sip/sip-type";
 import { useCallDurationTimer } from "@/hooks/dialer/useCallDurationTimer";
+import ConferenceCallList from "./ConferenceCallList";
 
 const ProfilePicture = styled("img")(({ theme }) => ({
   width: 70,
@@ -60,7 +61,8 @@ const CallDetails = () => {
         </Stack>
 
         <Stack justifyContent={"center"} alignItems={"center"}>
-          <ProfilePicture src={"/images/avatars/1.png"} alt="profile-picture" />
+          {/* <ProfilePicture src={"/images/avatars/1.png"} alt="profile-picture" /> */}
+          <ConferenceCallList />
           {/* <Typography
             sx={{
               color: theme.palette.primary.contrastText,

@@ -4,7 +4,14 @@ import useSipClient from "@/hooks/dialer/useSipClient";
 import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
 import { OngoingSessionState } from "@/lib/Sip/sip-type";
 import { RootState } from "@/store";
-import { Card, Stack, Typography, styled, useTheme } from "@mui/material";
+import {
+  Card,
+  Popover,
+  Stack,
+  Typography,
+  styled,
+  useTheme,
+} from "@mui/material";
 import React from "react";
 import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
@@ -21,7 +28,6 @@ const CallFooterActionButton = () => {
   const { getActiveSession, sessionCount } = useSipSessionManager();
   const { sessionState } = useSelector((state: RootState) => state.sip);
   const { terminate } = useSipClient();
-
   const activeSession = getActiveSession();
 
   const ButtonStyle = {
@@ -30,7 +36,7 @@ const CallFooterActionButton = () => {
       background: theme.palette.customColors.bodyBg,
     },
     "&:disabled": {
-      color: "lightgray",
+      color: "white",
       background: "rgba(0,0,0,0.3)",
     },
   };
@@ -42,6 +48,10 @@ const CallFooterActionButton = () => {
       toast.error("No Call Running to hangup ");
     }
   };
+
+  const handleCallTransfer = ()=>{
+
+  }
 
   return (
     <Stack
@@ -56,8 +66,8 @@ const CallFooterActionButton = () => {
       <Card
         sx={{
           padding:
-            sessionState !== OngoingSessionState.RINGING ? "0 6px" : "0px",
-          borderRadius: "30px !important",
+            sessionState !== OngoingSessionState.RINGING ? "0 6px" : "6px",
+          borderRadius: "20px !important",
           background: theme.palette.background.paper,
         }}
       >
@@ -72,18 +82,18 @@ const CallFooterActionButton = () => {
               sessionState !== OngoingSessionState.RINGING ? "10px" : "0px",
           }}
         >
-          {sessionState !== OngoingSessionState.RINGING &&
-            sessionCount() > 0 && (
-              <CustomActionButton
-                sx={ButtonStyle}
-                disabled={
-                  sessionState === OngoingSessionState.ANSWERED ? false : true
-                }
-              >
-                <IconifyIcon icon={"mingcute:user-add-fill"} width={"25px"} />
-                <ActionText>Add Call</ActionText>
-              </CustomActionButton>
-            )}
+          {/* {sessionState !== OngoingSessionState.RINGING &&
+            sessionCount() > 0 && ( */}
+          <CustomActionButton
+            sx={ButtonStyle}
+            disabled={
+              sessionState === OngoingSessionState.ANSWERED ? false : true
+            }
+          >
+            <IconifyIcon icon={"mingcute:user-add-fill"} width={"25px"} />
+            <ActionText>Add Call</ActionText>
+          </CustomActionButton>
+          {/* )} */}
           <CustomActionButton
             onClick={hangupHandler}
             sx={{
@@ -96,21 +106,16 @@ const CallFooterActionButton = () => {
           >
             <IconifyIcon icon={"material-symbols:call-end"} width={"40px"} />
           </CustomActionButton>
-          {sessionState !== OngoingSessionState.RINGING &&
-            sessionCount() > 0 && (
-              <CustomActionButton
-                sx={ButtonStyle}
-                disabled={
-                  sessionState === OngoingSessionState.ANSWERED ? false : true
-                }
-              >
-                <IconifyIcon
-                  icon={"fluent:call-transfer-16-filled"}
-                  width={"25px"}
-                />
-                <ActionText>Transfer</ActionText>
-              </CustomActionButton>
-            )}
+          {/* {sessionState !== OngoingSessionState.RINGING &&
+            sessionCount() > 0 && ( */}
+          <CustomActionButton sx={ButtonStyle} onClick={handleCallTransfer}>
+            <IconifyIcon
+              icon={"fluent:call-transfer-16-filled"}
+              width={"25px"}
+            />
+            <ActionText>Transfer</ActionText>
+          </CustomActionButton>
+          {/* )} */}
         </Stack>
       </Card>
     </Stack>

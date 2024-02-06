@@ -10,6 +10,7 @@ import {
   Stack,
   Tooltip,
   styled,
+  useTheme,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import React, { useState } from "react";
@@ -18,6 +19,10 @@ import IconifyIcon from "@/@core/components/icon";
 import DialPadButtonList from "../Dialpad/DialPadButtonList";
 import DialPadInput from "../Dialpad/DialPadInput";
 import { Fascinate } from "next/font/google";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { updateSipState } from "@/store/dialer/sip";
+import { CustomActionButton, CustomCallButton } from "@/@core/styles/mui/button";
 
 const Puller = styled("div")(({ theme }) => ({
   width: 60,
@@ -30,40 +35,32 @@ const Puller = styled("div")(({ theme }) => ({
 }));
 
 const CustomCloseButton = styled(IconButton)<IconButtonProps>(({ theme }) => ({
-  top: 0,
-  right: 0,
+  top: "2px",
+  left: "2px",
+  width: "35px",
+  height: "35px",
   color: "grey.500",
   position: "absolute",
   boxShadow: theme.shadows[2],
-  transform: "translate(10px, -10px)",
   borderRadius: theme.shape.borderRadius,
   backgroundColor: `${theme.palette.background.paper} !important`,
   transition: "transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out",
-  "&:hover": {
-    transform: "translate(7px, -5px)",
-  },
 }));
 
-const CallDialPadDrawer = ({
-  open,
-  setOpen,
-}: {
-  open: boolean;
-  setOpen: any;
-}) => {
+
+const CallDialPadDrawer = () => {
+  const theme = useTheme();
   const [number, setNumber] = useState<string>("");
+  const { toggleDrawerSheet } = useSelector((state: RootState) => state.sip);
+  const dispatch = useDispatch<AppDispatch>();
   const typeNumber = (num: any) => {
     setNumber(number.concat(num));
   };
-  const handleClickAwayEvent = () => {
-    if (open) {
-      setOpen(false);
-    }
-  };
+
   return (
     <Card
       sx={{
-        height: open ? "95%" : "6%",
+        height: toggleDrawerSheet ? "100%" : "6%",
         position: "absolute",
         bottom: 0,
         right: 0,
@@ -72,25 +69,52 @@ const CallDialPadDrawer = ({
       }}
     >
       <Puller />
-
       <Stack sx={{ marginTop: "5px", padding: "12px 0" }}>
-        <Stack direction={"row"} justifyContent={"space-around"} spacing={2}>
+        {toggleDrawerSheet && (
+          <CustomCloseButton
+            type="button"
+            onClick={() =>
+              dispatch(
+                updateSipState({ key: "toggleDrawerSheet", value: false })
+              )
+            }
+          >
+            <IconifyIcon icon={"tabler:x"} width={"30"} />
+          </CustomCloseButton>
+        )}
+        <Stack sx={{ padding: "0 20px" }}>
           <DialPadInput number={number} setNum={setNumber} />
-          <IconButton type="button" sx={{ p: "10px" }} onClick={()=>setOpen(false)}>
-            <IconifyIcon icon={"tabler:x"} />
-          </IconButton>
         </Stack>
         <DialPadButtonList typeNumber={typeNumber} />
         <Stack
+          direction={"row"}
           justifyContent={"center"}
           alignItems={"center"}
-          sx={{ marginTop: "10px" }}
+          spacing={5}
+          sx={{
+             gap:'12px',
+            marginTop:'15px',
+            color: "white",
+          }}
         >
-          <Button
-            variant="outlined"
-            startIcon={<IconifyIcon icon="ic:baseline-arrow-back" />}
-            sx={{ "& .MuiButton-startIcon": { margin: 0 }, maxWidth: 60 }}
-          />
+          {/* {sessionState !== OngoingSessionState.RINGING &&
+            sessionCount() > 0 && ( */}
+          <CustomCallButton size="small" >
+            <IconifyIcon icon={"mingcute:user-add-fill"} />
+          </CustomCallButton>
+          {/* )} */}
+          <CustomCallButton>
+            <IconifyIcon icon={"material-symbols:call-end"} width={"25px"} />
+          </CustomCallButton>
+          {/* {sessionState !== OngoingSessionState.RINGING &&
+            sessionCount() > 0 && ( */}
+          <CustomCallButton>
+            <IconifyIcon
+              icon={"fluent:call-transfer-16-filled"}
+              width={"25px"}
+            />
+          </CustomCallButton>
+          {/* )} */}
         </Stack>
       </Stack>
     </Card>
