@@ -45,7 +45,6 @@ const useSipSessionManager = ():SipSessionManager=> {
     let updateState=true;
     const sessionList:any = store.getState().sip.sessions
      let state: SipModel.SipSessionState = sessionList.get(session.id);
-    console.debug('state',state)
     if (state) {
       switch (field) {
         case SipConstants.SESSION_RINGING:
@@ -94,7 +93,7 @@ const useSipSessionManager = ():SipSessionManager=> {
   };
 
   const getSessionState = (id: string):any=> {
-  const state = sessions[id];
+  const state = sessions.get(id);
     if (!state) {
       throw new Error("Session not found");
     }
@@ -152,7 +151,7 @@ const useSipSessionManager = ():SipSessionManager=> {
     }
     const state = [...sessions.values()].filter((s) => s.active);
     if (state.length > 0) {
-      return state[0].sipSession;
+      return state[state.length-1].sipSession;
     } else {
       return null
     }

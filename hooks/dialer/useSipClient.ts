@@ -23,7 +23,7 @@ import {
   RegisterState,
   SipSessionState,
 } from "@/lib/Sip/sip-type";
-import { UA, WebSocketInterface } from "jssip";
+import { UA, WebSocketInterface, debug } from "jssip";
 import {
   ConnectedEvent,
   ConnectingEvent,
@@ -56,7 +56,6 @@ const useSipClient = (): SipClientType => {
   } = useSipSessionManager();
   let sipUA: UA;
 
-
   const settings = {
     pcConfig: {
       iceServers: [{ urls: ["stun:stun.l.google.com:19302"] }],
@@ -73,6 +72,7 @@ const useSipClient = (): SipClientType => {
 
   const rtcConfig = settings.pcConfig;
   const createUA = () => {
+    debug.enable("JsSIP:*");
     sipUA = new UA({
       uri: `sip:${client.username}`,
       password: client.password,
@@ -143,32 +143,56 @@ const useSipClient = (): SipClientType => {
 
       store.dispatch(updateSipState({ key: "ongoingSession", value: session }));
       store.dispatch(updateSipState({ key: "sessionId", value: session.id }));
-     store.dispatch(updateSipState({key:"callDirection",value:CallDirectionValue[session?.direction]}))
-     if(CallDirectionValue[session?.direction]===CallDirection.Inbound){
-     store.dispatch(updateSipState({key:"ConnectingCall",value:true}))
-     }
+      store.dispatch(
+        updateSipState({
+          key: "callDirection",
+          value: CallDirectionValue[session?.direction],
+        })
+      );
+      if (CallDirectionValue[session?.direction] === CallDirection.Inbound) {
+        store.dispatch(updateSipState({ key: "ConnectingCall", value: true }));
+      }
 
       await newSession(session);
 
       session.on(SipConstants.SESSION_RINGING, (args) => {
-
         updateSession(SipConstants.SESSION_RINGING, session, args, sessions);
-        store.dispatch(updateSipState({key:'sessionState',value:OngoingSessionState.RINGING}))
+        store.dispatch(
+          updateSipState({
+            key: "sessionState",
+            value: OngoingSessionState.RINGING,
+          })
+        );
       });
 
       session.on(SipConstants.SESSION_ANSWERED, (args) => {
-        store.dispatch(updateSipState({key:'sessionState',value:OngoingSessionState.ANSWERED}))
+        store.dispatch(
+          updateSipState({
+            key: "sessionState",
+            value: OngoingSessionState.ANSWERED,
+          })
+        );
         updateSession(SipConstants.SESSION_ANSWERED, session, args, sessions);
       });
 
       session.on(SipConstants.SESSION_FAILED, (args) => {
-                store.dispatch(updateSipState({key:'sessionState',value:OngoingSessionState.FAILED}))
+        store.dispatch(
+          updateSipState({
+            key: "sessionState",
+            value: OngoingSessionState.FAILED,
+          })
+        );
 
         updateSession(SipConstants.SESSION_FAILED, session, args, sessions);
       });
 
       session.on(SipConstants.SESSION_ENDED, (args) => {
-        store.dispatch(updateSipState({key:'sessionState',value:OngoingSessionState.COMPLETED}))
+        store.dispatch(
+          updateSipState({
+            key: "sessionState",
+            value: OngoingSessionState.COMPLETED,
+          })
+        );
         updateSession(SipConstants.SESSION_ENDED, session, args, sessions);
       });
 
@@ -212,16 +236,15 @@ const useSipClient = (): SipClientType => {
     userAgent && userAgent?.stop();
   };
 
-
   const isMuted = (id: string | undefined): boolean => {
     if (id) {
       return getSession(id)?.isMuted();
     } else {
-      const activeSession = getActiveSession()
-      if(activeSession){
-        return activeSession?.isMuted()
-      }else{
-        return false
+      const activeSession = getActiveSession();
+      if (activeSession) {
+        return activeSession?.isMuted();
+      } else {
+        return false;
       }
     }
   };
@@ -312,19 +335,23 @@ const useSipClient = (): SipClientType => {
   const attendedTransfer = (number: string | number) => {
     if (number) {
       let normalizedNumber: string = normalizeNumber(`${number}`);
-      const replaceSession = sipUA.call(normalizedNumber, {
-        extraHeaders: [`X-Original-Number:${number}`],
-        mediaConstraints: { audio: true, video: false },
-        pcConfig: rtcConfig,
-      });
+      const replaceSession =
+        userAgent &&
+        userAgent?.call(normalizedNumber, {
+          extraHeaders: [`X-Original-Number:${number}`],
+          mediaConstraints: { audio: true, video: false },
+          pcConfig: rtcConfig,
+        });
       const options = {
         replaces: replaceSession,
       };
-      const activeSession = getActiveSession();
-      activeSession?.attendedTransfer(
-        replaceSession.remote_identity.uri,
-        options
-      );
+      if (replaceSession) {
+        const activeSession = getActiveSession();
+        activeSession?.attendedTransfer(
+          replaceSession.remote_identity.uri,
+          options
+        );
+      }
     }
   };
 

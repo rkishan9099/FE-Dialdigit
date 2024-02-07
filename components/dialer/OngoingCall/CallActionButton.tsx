@@ -24,10 +24,14 @@ const ActionText = styled(Typography)(({ theme }) => ({
 }));
 const CallActionButton = () => {
   const { isHolded, hold, unhold, mute, unmute, isMuted } = useSipClient();
-  const { sessionState } = useSelector((state: RootState) => state.sip);
+  const { sessionCount } = useSipSessionManager();
+  const { sessionState, isAttendedTransfer, isAddCall } = useSelector(
+    (state: RootState) => state.sip
+  );
   const dispatch = useDispatch<AppDispatch>();
   const toggleDtmf = () => {
     dispatch(updateSipState({ key: "toggleDrawerSheet", value: true }));
+    dispatch(updateSipState({ key: "toggleDTMF", value: true }));
   };
   return (
     <>
@@ -89,10 +93,12 @@ const CallActionButton = () => {
             </CustomActionButton>
           )}
 
-          <CustomActionButton onClick={toggleDtmf}>
-            <IconifyIcon icon={"eva:keypad-fill"} width={"25px"}  />
-            <ActionText>DTMF</ActionText>
-          </CustomActionButton>
+          {sessionCount() <= 1 && (
+            <CustomActionButton onClick={toggleDtmf}>
+              <IconifyIcon icon={"eva:keypad-fill"} width={"25px"} />
+              <ActionText>DTMF</ActionText>
+            </CustomActionButton>
+          )}
         </Stack>
       </Stack>
       {/* <DtmfDialog /> */}

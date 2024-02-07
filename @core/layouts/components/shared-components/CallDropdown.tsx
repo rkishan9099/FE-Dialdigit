@@ -1,15 +1,14 @@
-import { RootState, store } from "@/store";
+import { RootState } from "@/store";
 import React, { useEffect } from "react";
 import DialpadDropdown from "./DialpadDropdown";
 import OnGoingCallDropdown from "./OnGoingCallDropdown";
 import { Settings } from "@/@core/context/settingsContext";
 import { useSelector } from "react-redux";
-import useSipClient from "@/hooks/dialer/useSipClient";
 import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
 import { CallDirection, OngoingSessionState } from "@/lib/Sip/sip-type";
 import InboundConnecting from "@/components/dialer/Connecting/InboundConnecting";
-import ConnectingCallDropdown from "./ConnectingCallDropdown";
 import { useCallDurationTimer } from "@/hooks/dialer/useCallDurationTimer";
+import useSipClient from "@/hooks/dialer/useSipClient";
 
 interface Props {
   settings: Settings;
@@ -20,16 +19,23 @@ const CallDropdown = (props: Props) => {
     useSelector((state: RootState) => state.sip);
   const { sessionCount } = useSipSessionManager();
   const { TimerAction } = useCallDurationTimer();
+  const {unholdAllCall,unmuteAllCall}=useSipClient()
+  const sessionNumber = sessionCount()
 
   useEffect(() => {
-    if (sessionCount() === 1 && sessionState === OngoingSessionState.ANSWERED) {
+    if (sessionNumber === 1 && sessionState === OngoingSessionState.ANSWERED) {
       TimerAction("start");
     }
-    if(sessionCount()===0&& sessionState===OngoingSessionState.COMPLETED){
+    if(sessionNumber===0){
       TimerAction('stop')
     }
+
+if(sessionNumber>0){
+  unholdAllCall()
+  unmuteAllCall()
+}
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionState]);
+  }, [sessionState,sessionNumber]);
 
   return (
     <>

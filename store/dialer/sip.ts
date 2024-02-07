@@ -10,7 +10,6 @@ import { SipSliceType } from "@/types/dialer/SipSlice";
 import { Dispatch, createSlice } from "@reduxjs/toolkit";
 import { enableMapSet, produce } from "immer";
 
-
 const initialState: SipSliceType = {
   userAgent: null,
   connectingStatus: ConnectingStatus.Disconnected,
@@ -27,7 +26,9 @@ const initialState: SipSliceType = {
   isBlindTransfer: false,
   isAttendedTransfer: false,
   isConference: false,
-  isMergeCall:false
+  isMergeCall: false,
+  isAddCall: false,
+  toggleDTMF:false
 };
 
 const slice = createSlice({
@@ -75,6 +76,13 @@ const slice = createSlice({
     getSessionState: (state, action) => {
       state.sessions.get(action.payload);
     },
+    closeToggleDrawerSheet: (state) => {
+      state.isAttendedTransfer = false;
+      state.isBlindTransfer = false;
+      state.isAddCall = false;
+      state.toggleDrawerSheet=false
+      state.toggleDTMF=false
+    },
   },
 });
 
@@ -98,6 +106,7 @@ export const {
   updateSipState,
   addSession,
   deleteSipSession,
+  closeToggleDrawerSheet
 } = slice.actions;
 
 export default slice.reducer;

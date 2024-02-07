@@ -22,7 +22,7 @@ const ProfilePicture = styled("img")(({ theme }) => ({
 const CallDetails = () => {
   const theme = useTheme();
   const { getDialNumber, sessionCount } = useSipSessionManager();
-  const { sessionState } = useSelector((state: RootState) => state.sip);
+  const { sessionState ,isAttendedTransfer} = useSelector((state: RootState) => state.sip);
   const dialNumber = getDialNumber();
   const { callTimer } = useCallDurationTimer();
   return (
@@ -61,8 +61,15 @@ const CallDetails = () => {
         </Stack>
 
         <Stack justifyContent={"center"} alignItems={"center"}>
-          {/* <ProfilePicture src={"/images/avatars/1.png"} alt="profile-picture" /> */}
-          <ConferenceCallList />
+          {sessionCount() >1 ? (
+            <ConferenceCallList />
+          ) : (
+            <ProfilePicture
+              src={"/images/avatars/1.png"}
+              alt="profile-picture"
+            />
+          )}
+
           {/* <Typography
             sx={{
               color: theme.palette.primary.contrastText,
@@ -80,7 +87,7 @@ const CallDetails = () => {
             {dialNumber}
           </Typography>
         </Stack>
-          <CallActionButton />
+        <CallActionButton />
         {/* {sessionState !== OngoingSessionState.RINGING && sessionCount() > 0 && (
         )} */}
       </Stack>

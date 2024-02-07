@@ -1,28 +1,22 @@
 import {
-  Button,
   Card,
-  ClickAwayListener,
-  Icon,
   IconButton,
   IconButtonProps,
-  InputBase,
-  Paper,
   Stack,
   Tooltip,
   styled,
   useTheme,
 } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import React, { useState } from "react";
-import DialPad from "../Dialpad/DialPad";
+import React, { useEffect, useState } from "react";
 import IconifyIcon from "@/@core/components/icon";
 import DialPadButtonList from "../Dialpad/DialPadButtonList";
 import DialPadInput from "../Dialpad/DialPadInput";
-import { Fascinate } from "next/font/google";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { updateSipState } from "@/store/dialer/sip";
-import { CustomActionButton, CustomCallButton } from "@/@core/styles/mui/button";
+import { closeToggleDrawerSheet, updateSipState } from "@/store/dialer/sip";
+import { CustomCallButton } from "@/@core/styles/mui/button";
+import useSipClient from "@/hooks/dialer/useSipClient";
 
 const Puller = styled("div")(({ theme }) => ({
   width: 60,
@@ -45,17 +39,60 @@ const CustomCloseButton = styled(IconButton)<IconButtonProps>(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   backgroundColor: `${theme.palette.background.paper} !important`,
   transition: "transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out",
+  zIndex: 999,
 }));
-
 
 const CallDialPadDrawer = () => {
   const theme = useTheme();
   const [number, setNumber] = useState<string>("");
-  const { toggleDrawerSheet } = useSelector((state: RootState) => state.sip);
+  const { dtmf, blindTransfer, attendedTransfer, holdAllCall, call } =
+    useSipClient();
+  const {
+    toggleDrawerSheet,
+    callTransfer,
+    isAttendedTransfer,
+    isAddCall,
+    isBlindTransfer,
+    toggleDTMF,
+  } = useSelector((state: RootState) => state.sip);
   const dispatch = useDispatch<AppDispatch>();
   const typeNumber = (num: any) => {
+    if (toggleDTMF) {
+      dtmf(num);
+    }
     setNumber(number.concat(num));
   };
+  const handleCallHandler = () => {
+    dispatch(updateSipState({ key: "toggleDTMF", value: false }));
+    dispatch(updateSipState({ key: "toggleDrawerSheet", value: false }));
+  };
+
+  const blindTransferHandle = () => {
+    if (number != "") {
+      blindTransfer(number);
+    }
+  };
+
+  const attendedTransferHandle = () => {
+    if (number != "") {
+      holdAllCall();
+      attendedTransfer(number);
+      dispatch(updateSipState({ key: "toggleDrawerSheet", value: false }));
+    }
+  };
+
+  const addCallHandler = () => {
+    if (number != "") {
+      holdAllCall();
+      call(number);
+      dispatch(updateSipState({ key: "toggleDrawerSheet", value: false }));
+    }
+  };
+  useEffect(() => {
+    if (!toggleDrawerSheet) {
+      setNumber("");
+    }
+  }, [toggleDrawerSheet]);
 
   return (
     <Card
@@ -71,18 +108,11 @@ const CallDialPadDrawer = () => {
       <Puller />
       <Stack sx={{ marginTop: "5px", padding: "12px 0" }}>
         {toggleDrawerSheet && (
-          <CustomCloseButton
-            type="button"
-            onClick={() =>
-              dispatch(
-                updateSipState({ key: "toggleDrawerSheet", value: false })
-              )
-            }
-          >
+          <CustomCloseButton type="button" onClick={handleCallHandler}>
             <IconifyIcon icon={"tabler:x"} width={"30"} />
           </CustomCloseButton>
         )}
-        <Stack sx={{ padding: "0 20px" }}>
+        <Stack sx={{ paddingLeft: "20px" }}>
           <DialPadInput number={number} setNum={setNumber} />
         </Stack>
         <DialPadButtonList typeNumber={typeNumber} />
@@ -92,28 +122,43 @@ const CallDialPadDrawer = () => {
           alignItems={"center"}
           spacing={5}
           sx={{
-             gap:'12px',
-            marginTop:'15px',
+            gap: "12px",
+            marginTop: "15px",
             color: "white",
           }}
         >
           {/* {sessionState !== OngoingSessionState.RINGING &&
             sessionCount() > 0 && ( */}
-          <CustomCallButton size="small" >
-            <IconifyIcon icon={"mingcute:user-add-fill"} />
-          </CustomCallButton>
+          {isAddCall && (
+            <Tooltip title={"Add Call"}>
+              <CustomCallButton size="small" onClick={addCallHandler}>
+                <IconifyIcon icon={"mingcute:user-add-fill"} />
+              </CustomCallButton>
+            </Tooltip>
+          )}
+
           {/* )} */}
-          <CustomCallButton>
-            <IconifyIcon icon={"material-symbols:call-end"} width={"25px"} />
-          </CustomCallButton>
+          {callTransfer && isAttendedTransfer && (
+            <Tooltip title={"Attended Transfer"}>
+              <CustomCallButton onClick={attendedTransferHandle}>
+                <IconifyIcon
+                  icon={"fluent-mdl2:transfer-call"}
+                  width={"25px"}
+                />
+              </CustomCallButton>
+            </Tooltip>
+          )}
+
           {/* {sessionState !== OngoingSessionState.RINGING &&
             sessionCount() > 0 && ( */}
-          <CustomCallButton>
-            <IconifyIcon
-              icon={"fluent:call-transfer-16-filled"}
-              width={"25px"}
-            />
-          </CustomCallButton>
+          {callTransfer && isBlindTransfer && (
+            <Tooltip title={"Blind Transfer"}>
+              <CustomCallButton onClick={blindTransferHandle}>
+                <IconifyIcon icon={"wpf:call-transfer"} width={"25px"} />
+              </CustomCallButton>
+            </Tooltip>
+          )}
+
           {/* )} */}
         </Stack>
       </Stack>

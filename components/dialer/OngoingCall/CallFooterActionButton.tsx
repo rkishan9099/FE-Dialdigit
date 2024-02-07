@@ -3,9 +3,12 @@ import { CustomActionButton } from "@/@core/styles/mui/button";
 import useSipClient from "@/hooks/dialer/useSipClient";
 import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
 import { OngoingSessionState } from "@/lib/Sip/sip-type";
-import { RootState } from "@/store";
+import { AppDispatch, RootState } from "@/store";
 import {
+  Button,
   Card,
+  Menu,
+  MenuItem,
   Popover,
   Stack,
   Typography,
@@ -15,7 +18,9 @@ import {
 import React from "react";
 import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import CallTransferButton from "./CallTransferButton";
+import { updateSipState } from "@/store/dialer/sip";
 
 const ActionText = styled(Typography)(({ theme }) => ({
   color: theme.palette.mode === "light" ? "black" : "white",
@@ -26,9 +31,12 @@ const ActionText = styled(Typography)(({ theme }) => ({
 const CallFooterActionButton = () => {
   const theme = useTheme();
   const { getActiveSession, sessionCount } = useSipSessionManager();
-  const { sessionState } = useSelector((state: RootState) => state.sip);
-  const { terminate } = useSipClient();
+  const { sessionState, isAttendedTransfer } = useSelector(
+    (state: RootState) => state.sip
+  );
+  const { terminate, conference } = useSipClient();
   const activeSession = getActiveSession();
+  const dispatch = useDispatch<AppDispatch>();
 
   const ButtonStyle = {
     color: theme.palette.mode === "light" ? "black" : "white",
@@ -49,10 +57,16 @@ const CallFooterActionButton = () => {
     }
   };
 
-  const handleCallTransfer = ()=>{
+  const addCallHandler = () => {
+    dispatch(updateSipState({ key: "isAddCall", value: true }));
+    dispatch(updateSipState({ key: "toggleDrawerSheet", value: true }));
+  };
 
-  }
-
+  const mergeCallHandler = () => {
+    if (sessionCount() > 0) {
+      conference();
+    }
+  };
   return (
     <Stack
       sx={{
@@ -82,18 +96,20 @@ const CallFooterActionButton = () => {
               sessionState !== OngoingSessionState.RINGING ? "10px" : "0px",
           }}
         >
-          {/* {sessionState !== OngoingSessionState.RINGING &&
-            sessionCount() > 0 && ( */}
-          <CustomActionButton
-            sx={ButtonStyle}
-            disabled={
-              sessionState === OngoingSessionState.ANSWERED ? false : true
-            }
-          >
-            <IconifyIcon icon={"mingcute:user-add-fill"} width={"25px"} />
-            <ActionText>Add Call</ActionText>
-          </CustomActionButton>
-          {/* )} */}
+          {sessionState !== OngoingSessionState.RINGING &&
+            !isAttendedTransfer &&
+            sessionCount() > 0 && (
+              <CustomActionButton
+                sx={ButtonStyle}
+                disabled={
+                  sessionState === OngoingSessionState.ANSWERED ? false : true
+                }
+                onClick={addCallHandler}
+              >
+                <IconifyIcon icon={"mingcute:user-add-fill"} width={"25px"} />
+                <ActionText>Add Call</ActionText>
+              </CustomActionButton>
+            )}
           <CustomActionButton
             onClick={hangupHandler}
             sx={{
@@ -106,16 +122,22 @@ const CallFooterActionButton = () => {
           >
             <IconifyIcon icon={"material-symbols:call-end"} width={"40px"} />
           </CustomActionButton>
-          {/* {sessionState !== OngoingSessionState.RINGING &&
-            sessionCount() > 0 && ( */}
-          <CustomActionButton sx={ButtonStyle} onClick={handleCallTransfer}>
-            <IconifyIcon
-              icon={"fluent:call-transfer-16-filled"}
-              width={"25px"}
-            />
-            <ActionText>Transfer</ActionText>
-          </CustomActionButton>
-          {/* )} */}
+          {sessionState !== OngoingSessionState.RINGING &&
+            !isAttendedTransfer &&
+            sessionCount() > 0 && <CallTransferButton />}
+
+          {sessionCount() > 2 && (
+            <CustomActionButton
+              sx={ButtonStyle}
+              disabled={
+                sessionState === OngoingSessionState.ANSWERED ? false : true
+              }
+              onClick={mergeCallHandler}
+            >
+              <IconifyIcon icon={"mdi:call-merge"} width={"25px"} />
+              <ActionText>Merge</ActionText>
+            </CustomActionButton>
+          )}
         </Stack>
       </Card>
     </Stack>
