@@ -2,7 +2,8 @@ import IconifyIcon from "@/@core/components/icon";
 import { CustomActionButton } from "@/@core/styles/mui/button";
 import useSipClient from "@/hooks/dialer/useSipClient";
 import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
-import { RootState } from "@/store";
+import { OngoingSessionState } from "@/lib/Sip/sip-type";
+import { AppDispatch, RootState } from "@/store";
 import {
   Box,
   Button,
@@ -12,7 +13,9 @@ import {
   styled,
 } from "@mui/material";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import DtmfDialog from "../Dialpad/Dtmf/DtmfDialog";
+import { updateSipState } from "@/store/dialer/sip";
 
 const ActionText = styled(Typography)(({ theme }) => ({
   color: "white",
@@ -21,51 +24,79 @@ const ActionText = styled(Typography)(({ theme }) => ({
 }));
 const CallActionButton = () => {
   const { isHolded, hold, unhold, mute, unmute, isMuted } = useSipClient();
+  const { sessionState } = useSelector((state: RootState) => state.sip);
+  const dispatch = useDispatch<AppDispatch>();
+  const toggleDtmf = () => {
+    dispatch(updateSipState({ key: "toggleDrawerSheet", value: true }));
+  };
   return (
-    <Stack
-      direction={"row"}
-      justifyContent={"center"}
-      alignItems={"center"}
-      spacing={2}
-      sx={{ margin: "20px" }}
-    >
+    <>
       <Stack
         direction={"row"}
         justifyContent={"center"}
         alignItems={"center"}
-        spacing={1}
-        sx={{ color: "white", padding: "10px" }}
+        spacing={2}
+        sx={{ margin: "20px" }}
       >
-        {isMuted() ? (
-          <CustomActionButton onClick={() => unmute()}>
-            <IconifyIcon icon={"mdi:microphone"} width={"25px"} />
-            <ActionText>UnMute</ActionText>
-          </CustomActionButton>
-        ) : (
-          <CustomActionButton onClick={() => mute()}>
-            <IconifyIcon icon={"vaadin:mute"} width={"25px"} />
-            <ActionText>Mute</ActionText>
-          </CustomActionButton>
-        )}
+        <Stack
+          direction={"row"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          spacing={1}
+          sx={{ color: "white", padding: "10px" }}
+        >
+          {isMuted() ? (
+            <CustomActionButton
+              onClick={() => unmute()}
+              disabled={
+                sessionState === OngoingSessionState.ANSWERED ? false : true
+              }
+            >
+              <IconifyIcon icon={"mdi:microphone"} width={"25px"} />
+              <ActionText>UnMute</ActionText>
+            </CustomActionButton>
+          ) : (
+            <CustomActionButton
+              onClick={() => mute()}
+              disabled={
+                sessionState === OngoingSessionState.ANSWERED ? false : true
+              }
+            >
+              <IconifyIcon icon={"vaadin:mute"} width={"25px"} />
+              <ActionText>Mute</ActionText>
+            </CustomActionButton>
+          )}
 
-        {isHolded() ? (
-          <CustomActionButton onClick={() => unhold()}>
-            <IconifyIcon icon={"solar:play-bold"} width={"25px"} />
-            <ActionText>UnHold</ActionText>
-          </CustomActionButton>
-        ) : (
-          <CustomActionButton onClick={() => hold()}>
-            <IconifyIcon icon={"solar:pause-bold"} width={"25px"} />
-            <ActionText>Hold</ActionText>
-          </CustomActionButton>
-        )}
+          {isHolded() ? (
+            <CustomActionButton
+              onClick={() => unhold()}
+              disabled={
+                sessionState === OngoingSessionState.ANSWERED ? false : true
+              }
+            >
+              <IconifyIcon icon={"solar:play-bold"} width={"25px"} />
+              <ActionText>UnHold</ActionText>
+            </CustomActionButton>
+          ) : (
+            <CustomActionButton
+              onClick={() => hold()}
+              disabled={
+                sessionState === OngoingSessionState.ANSWERED ? false : true
+              }
+            >
+              <IconifyIcon icon={"solar:pause-bold"} width={"25px"} />
+              <ActionText>Hold</ActionText>
+            </CustomActionButton>
+          )}
 
-        <CustomActionButton>
-          <IconifyIcon icon={"eva:keypad-fill"} width={"25px"} />
-          <ActionText>Keypad</ActionText>
-        </CustomActionButton>
+          <CustomActionButton onClick={toggleDtmf}>
+            <IconifyIcon icon={"eva:keypad-fill"} width={"25px"}  />
+            <ActionText>DTMF</ActionText>
+          </CustomActionButton>
+        </Stack>
       </Stack>
-    </Stack>
+      {/* <DtmfDialog /> */}
+    </>
   );
 };
 

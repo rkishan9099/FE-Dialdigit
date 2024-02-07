@@ -35,7 +35,7 @@ const DialPad = ({ setNumber, number ,children}:PropsType) => {
   };
 
   return (
-    <Stack sx={{width:'auto'}} justifyContent={'center'} alignItems={'center'}>
+    <Stack sx={{width:'auto',height:'100%'}} justifyContent={'center'} alignItems={'center'}>
       <Card>
           <DialPadInput number={number} setNum={setNumber}/>
           <Divider />

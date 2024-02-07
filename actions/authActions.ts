@@ -3,18 +3,22 @@
 import { auth, signIn, signOut } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes/routes";
 import { AuthService } from "@/services/authService";
-import { LoginParams, LoginSchema } from "@/types/authType";
+import { LoginParams, LoginSchema, SignUpParams } from "@/types/authType";
 import { AuthError } from "next-auth";
+import toast from "react-hot-toast";
 import * as yup from "yup";
 
-export const login = async (values: yup.InferType<typeof LoginSchema>,callbackUrl:string|null=null) => {
+export const login = async (
+  values: yup.InferType<typeof LoginSchema>,
+  callbackUrl: string | null = null
+) => {
   if (!LoginSchema.isValid(values)) {
     return { error: "Invalid fields!" };
   }
   try {
     const res = await signIn("credentials", {
       ...values,
-      redirectTo:callbackUrl || DEFAULT_LOGIN_REDIRECT,
+      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
     });
     return { status: "success", message: "User Login Successfully" };
   } catch (error) {
@@ -47,4 +51,12 @@ export const login = async (values: yup.InferType<typeof LoginSchema>,callbackUr
 
 export const logout = async () => {
   await signOut();
+};
+
+export const signUp = async (data: SignUpParams) => {
+  try {
+    return AuthService.handleSignUp(data);
+  } catch (error) {
+    return { status: "error", message: "Something Went Wrong" };
+  }
 };

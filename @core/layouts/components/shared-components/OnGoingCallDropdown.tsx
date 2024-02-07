@@ -12,7 +12,7 @@ import Divider from '@mui/material/Divider'
 import Tooltip from '@mui/material/Tooltip'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
-import { styled, Theme } from '@mui/material/styles'
+import { keyframes, styled, Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import MuiMenu, { MenuProps } from '@mui/material/Menu'
 import MuiMenuItem, { MenuItemProps } from '@mui/material/MenuItem'
@@ -40,6 +40,25 @@ export type ShortcutsType = {
 
 interface Props {
   settings: Settings
+}
+
+const blinkAnimation = keyframes`
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+`
+
+const AnimationStyle = {
+  animation: `${blinkAnimation} 1.5s infinite`,
+  background: '#44b700',
+  borderColor: '#44b700',
+  color: '#285d07'
 }
 
 // ** Styled Menu component
@@ -121,10 +140,11 @@ const OnGoingCallDropdown = (props: Props) => {
 
   return (
     <Fragment>
-      <IconButton color='inherit' aria-haspopup='true' onClick={handleDropdownOpen} aria-controls='customized-menu'>
+      <IconButton color='inherit' aria-haspopup='true' onClick={handleDropdownOpen} aria-controls='customized-menu' sx={AnimationStyle}>
         <Icon fontSize='1.625rem' icon='material-symbols:call-log' />
       </IconButton>
       <Menu
+      sx={{maxWidth:'350px'}}
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleDropdownClose}

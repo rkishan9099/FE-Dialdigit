@@ -1,5 +1,5 @@
 "use client";
-import React, { ReactNode, Suspense, lazy, useEffect } from "react";
+import React, { ReactNode, Suspense, lazy, useCallback, useEffect } from "react";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import {
@@ -17,12 +17,13 @@ import AuthGuard from "@/@core/components/auth/AuthGuard";
 import FallbackSpinner from "@/@core/components/spinner";
 import { defaultACLObj } from "@/configs/acl";
 import { Provider } from "react-redux";
-import { store } from "@/store";
+import { persistor, store } from "@/store";
 import useSipClient from "@/hooks/dialer/useSipClient";
+import { CallTimerDurationProvider } from "@/context/CallTimerContext";
+import { PersistGate } from "redux-persist/integration/react";
+import { useAuth } from "@/hooks/useAuth";
 
-
-const AclGuard = lazy(()=>import("@/@core/components/auth/AclGuard"));
-
+const AclGuard = lazy(() => import("@/@core/components/auth/AclGuard"));
 
 type PropsType = {
   children: React.ReactNode;
@@ -55,14 +56,35 @@ const Layout = ({ children, type }: PropsType) => {
 
   const aclAbilities = defaultACLObj;
 
+  const { user } = useAuth();
 
+  const setAccessToken = useCallback(()=>{
+     if (user) {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken && user.accessToken) {
+        localStorage.setItem("accessToken", user?.accessToken);
+      }
+    }
+  },[user])
 
+  const setRefreshToken = useCallback(()=>{
+     if (user) {
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (!refreshToken && user.refreshToken) {
+        localStorage.setItem("refreshToken", user?.refreshToken);
+      }
+    }
+  },[user])
 
-
+  useEffect(() => {
+   setAccessToken()
+   setRefreshToken()
+  }, []);
 
   return (
     <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
       <Provider store={store}>
+        {/* <PersistGate loading={null} persistor={persistor}> */}
         <SettingsProvider>
           <SettingsConsumer>
             {({ settings }) => {
@@ -72,19 +94,21 @@ const Layout = ({ children, type }: PropsType) => {
                     {type === "main" && (
                       <Guard authGuard={authGuard} guestGuard={guestGuard}>
                         <Suspense fallback={<FallbackSpinner />}>
-
-                        <AclGuard
-                          aclAbilities={aclAbilities}
-                          guestGuard={guestGuard}
-                          authGuard={authGuard}
-                        >
-                          <Suspense fallback={<h1>Loading</h1>}>
- <UserLayout contentHeightFixed={contentHeightFixed}>
-                            {children}
-                          </UserLayout>
-                          </Suspense>
-                         
-                        </AclGuard>
+                          <AclGuard
+                            aclAbilities={aclAbilities}
+                            guestGuard={guestGuard}
+                            authGuard={authGuard}
+                          >
+                            <Suspense fallback={<h1>Loading</h1>}>
+                              <CallTimerDurationProvider>
+                                <UserLayout
+                                  contentHeightFixed={contentHeightFixed}
+                                >
+                                  {children}
+                                </UserLayout>
+                              </CallTimerDurationProvider>
+                            </Suspense>
+                          </AclGuard>
                         </Suspense>
                       </Guard>
                     )}
@@ -102,6 +126,7 @@ const Layout = ({ children, type }: PropsType) => {
             }}
           </SettingsConsumer>
         </SettingsProvider>
+        {/* </PersistGate> */}
       </Provider>
     </NextAppDirEmotionCacheProvider>
   );

@@ -28,9 +28,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <SessionProvider session={session}>
         <Layout type='main'>{children}</Layout>
-         {/* use This Element for audio call */}
         </SessionProvider>
-
         </body>
     </html>
   )
