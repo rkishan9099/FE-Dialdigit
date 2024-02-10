@@ -8,6 +8,7 @@ import { RootState } from "@/store";
 import { OngoingSessionState } from "@/lib/Sip/sip-type";
 import { useCallDurationTimer } from "@/hooks/dialer/useCallDurationTimer";
 import ConferenceCallList from "./ConferenceCallList";
+import ConferenceCallAction from "./ConferenceCallAction";
 
 const ProfilePicture = styled("img")(({ theme }) => ({
   width: 70,
@@ -21,9 +22,13 @@ const ProfilePicture = styled("img")(({ theme }) => ({
 
 const CallDetails = () => {
   const theme = useTheme();
-  const { getDialNumber, sessionCount } = useSipSessionManager();
-  const { sessionState ,isAttendedTransfer} = useSelector((state: RootState) => state.sip);
+  const { getDialNumber, sessionCount, lastDialNumber } =
+    useSipSessionManager();
+  const { sessionState, isAttendedTransfer, isMergeCall } = useSelector(
+    (state: RootState) => state.sip
+  );
   const dialNumber = getDialNumber();
+
   const { callTimer } = useCallDurationTimer();
   return (
     <>
@@ -49,19 +54,46 @@ const CallDetails = () => {
           >
             <IconifyIcon icon={"lucide:fullscreen"} />
           </IconButton>
-          <Typography
-            sx={{
-              color: theme.palette.primary.contrastText,
-            }}
-          >
-            {sessionState === OngoingSessionState.RINGING
-              ? "Connecting"
-              : callTimer}
-          </Typography>
+          {sessionCount() > 0 && (
+            <>
+              {sessionState &&
+              [OngoingSessionState.INIT, OngoingSessionState.RINGING].includes(
+                sessionState
+              ) ? (
+                <Typography
+                  sx={{
+                    color: theme.palette.primary.contrastText,
+                    fontWeight: "bold",
+                    clipPath: " inset(0 1ch 0 0)",
+                    animation: "l 1s steps(4) infinite",
+                    " @keyframes l": {
+                      to: {
+                        clipPath: "inset(0 -1ch 0 0)",
+                      },
+                    },
+                  }}
+                >
+                  Connecting...
+                </Typography>
+              ) : (
+                <Typography
+                  sx={{
+                    color: theme.palette.primary.contrastText,
+                  }}
+                >
+                  {callTimer}
+                </Typography>
+              )}
+            </>
+          )}
         </Stack>
 
         <Stack justifyContent={"center"} alignItems={"center"}>
-          {sessionCount() >1 ? (
+          {sessionCount() > 1 &&
+          sessionState &&
+          ![OngoingSessionState.INIT, OngoingSessionState.RINGING].includes(
+            sessionState
+          ) ? (
             <ConferenceCallList />
           ) : (
             <ProfilePicture
@@ -84,12 +116,21 @@ const CallDetails = () => {
               color: theme.palette.primary.contrastText,
             }}
           >
-            {dialNumber}
+            {sessionState &&
+            [OngoingSessionState.INIT, OngoingSessionState.RINGING].includes(
+              sessionState
+            )
+              ? lastDialNumber()
+              : dialNumber}
           </Typography>
         </Stack>
-        <CallActionButton />
-        {/* {sessionState !== OngoingSessionState.RINGING && sessionCount() > 0 && (
-        )} */}
+        {sessionState &&
+          ![OngoingSessionState.RINGING, OngoingSessionState.INIT].includes(
+            sessionState
+          ) &&
+          sessionCount() > 0 && (
+            <>{isMergeCall ? <ConferenceCallAction /> : <CallActionButton />}</>
+          )}
       </Stack>
     </>
   );

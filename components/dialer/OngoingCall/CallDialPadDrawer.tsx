@@ -17,6 +17,7 @@ import { AppDispatch, RootState } from "@/store";
 import { closeToggleDrawerSheet, updateSipState } from "@/store/dialer/sip";
 import { CustomCallButton } from "@/@core/styles/mui/button";
 import useSipClient from "@/hooks/dialer/useSipClient";
+import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
 
 const Puller = styled("div")(({ theme }) => ({
   width: 60,
@@ -47,6 +48,7 @@ const CallDialPadDrawer = () => {
   const [number, setNumber] = useState<string>("");
   const { dtmf, blindTransfer, attendedTransfer, holdAllCall, call } =
     useSipClient();
+  const { sessionCount } = useSipSessionManager();
   const {
     toggleDrawerSheet,
     callTransfer,
@@ -62,14 +64,19 @@ const CallDialPadDrawer = () => {
     }
     setNumber(number.concat(num));
   };
-  const handleCallHandler = () => {
+  const handleCloseHandler = () => {
     dispatch(updateSipState({ key: "toggleDTMF", value: false }));
     dispatch(updateSipState({ key: "toggleDrawerSheet", value: false }));
+    dispatch(updateSipState({ key: "isBlindTransfer", value: false }));
+    if (sessionCount() < 2) {
+      dispatch(updateSipState({ key: "isAttendedTransfer", value: false }));
+    }
   };
 
   const blindTransferHandle = () => {
     if (number != "") {
       blindTransfer(number);
+      dispatch(updateSipState({ key: "toggleDrawerSheet", value: false }));
     }
   };
 
@@ -86,6 +93,7 @@ const CallDialPadDrawer = () => {
       holdAllCall();
       call(number);
       dispatch(updateSipState({ key: "toggleDrawerSheet", value: false }));
+      dispatch(updateSipState({ key: "isMergeCall", value: false }));
     }
   };
   useEffect(() => {
@@ -108,7 +116,7 @@ const CallDialPadDrawer = () => {
       <Puller />
       <Stack sx={{ marginTop: "5px", padding: "12px 0" }}>
         {toggleDrawerSheet && (
-          <CustomCloseButton type="button" onClick={handleCallHandler}>
+          <CustomCloseButton type="button" onClick={handleCloseHandler}>
             <IconifyIcon icon={"tabler:x"} width={"30"} />
           </CustomCloseButton>
         )}

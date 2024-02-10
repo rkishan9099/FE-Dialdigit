@@ -29,7 +29,7 @@ const DialPadInput = ({ number, setNum }: { number: string; setNum: any }) => {
     >
       <InputBase
         sx={{ fontSize: '23px',  textAlign: 'center', paddingLeft: '15px', width: '100%',boxShadow:'none' }}
-        defaultValue={number}
+      value={number}
         onChange={changeHandler}
       />
       <IconButton type="button" sx={{ p: '10px' }} onClick={clearNumber}>

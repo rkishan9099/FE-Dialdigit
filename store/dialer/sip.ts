@@ -82,7 +82,10 @@ const slice = createSlice({
       state.isAddCall = false;
       state.toggleDrawerSheet=false
       state.toggleDTMF=false
+      state.isConference=false
+      state.isMergeCall=false
     },
+  
   },
 });
 

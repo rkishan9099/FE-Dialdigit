@@ -31,12 +31,22 @@ const ActionText = styled(Typography)(({ theme }) => ({
 const CallFooterActionButton = () => {
   const theme = useTheme();
   const { getActiveSession, sessionCount } = useSipSessionManager();
-  const { sessionState, isAttendedTransfer } = useSelector(
+  const { sessionState, isAttendedTransfer ,isMergeCall} = useSelector(
     (state: RootState) => state.sip
   );
-  const { terminate, conference } = useSipClient();
+  const { terminate, conference, unholdAllCall } = useSipClient();
   const activeSession = getActiveSession();
   const dispatch = useDispatch<AppDispatch>();
+
+  const buttonDisabledCondition =
+    sessionState &&
+    [
+      OngoingSessionState.RINGING,
+      OngoingSessionState.FAILED,
+      OngoingSessionState.COMPLETED,
+    ].includes(sessionState)
+      ? true
+      : false;
 
   const ButtonStyle = {
     color: theme.palette.mode === "light" ? "black" : "white",
@@ -64,7 +74,9 @@ const CallFooterActionButton = () => {
 
   const mergeCallHandler = () => {
     if (sessionCount() > 0) {
+      unholdAllCall();
       conference();
+      dispatch(updateSipState({ key: "isMergeCall", value: true }));
     }
   };
   return (
@@ -96,14 +108,15 @@ const CallFooterActionButton = () => {
               sessionState !== OngoingSessionState.RINGING ? "10px" : "0px",
           }}
         >
-          {sessionState !== OngoingSessionState.RINGING &&
-            !isAttendedTransfer &&
-            sessionCount() > 0 && (
+          {!isAttendedTransfer &&
+            sessionCount() > 0 &&
+            sessionState &&
+            ![OngoingSessionState.INIT, OngoingSessionState.RINGING].includes(
+              sessionState
+            ) && (
               <CustomActionButton
                 sx={ButtonStyle}
-                disabled={
-                  sessionState === OngoingSessionState.ANSWERED ? false : true
-                }
+                disabled={sessionCount() > 0 ? false : true}
                 onClick={addCallHandler}
               >
                 <IconifyIcon icon={"mingcute:user-add-fill"} width={"25px"} />
@@ -119,25 +132,33 @@ const CallFooterActionButton = () => {
                 color: "red",
               },
             }}
+            disabled={sessionCount() > 0 ? false : true}
           >
             <IconifyIcon icon={"material-symbols:call-end"} width={"40px"} />
           </CustomActionButton>
-          {sessionState !== OngoingSessionState.RINGING &&
-            !isAttendedTransfer &&
-            sessionCount() > 0 && <CallTransferButton />}
+          {!isAttendedTransfer &&
+            sessionCount() > 0 &&
+            sessionCount() < 2 &&
+            sessionState &&
+            ![OngoingSessionState.INIT, OngoingSessionState.RINGING].includes(
+              sessionState
+            ) && <CallTransferButton />}
 
-          {sessionCount() > 2 && (
-            <CustomActionButton
-              sx={ButtonStyle}
-              disabled={
-                sessionState === OngoingSessionState.ANSWERED ? false : true
-              }
-              onClick={mergeCallHandler}
-            >
-              <IconifyIcon icon={"mdi:call-merge"} width={"25px"} />
-              <ActionText>Merge</ActionText>
-            </CustomActionButton>
-          )}
+          {sessionCount() >= 2 &&
+            sessionState &&
+            ![OngoingSessionState.INIT, OngoingSessionState.RINGING].includes(
+              sessionState
+            ) &&
+            !isAttendedTransfer && !isMergeCall && (
+              <CustomActionButton
+                sx={ButtonStyle}
+                disabled={buttonDisabledCondition}
+                onClick={mergeCallHandler}
+              >
+                <IconifyIcon icon={"mdi:call-merge"} width={"25px"} />
+                <ActionText>Merge</ActionText>
+              </CustomActionButton>
+            )}
         </Stack>
       </Card>
     </Stack>

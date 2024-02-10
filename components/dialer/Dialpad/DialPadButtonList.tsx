@@ -1,7 +1,6 @@
 import { Stack } from "@mui/material";
 import React from "react";
 import DialPadButton from "./DialPadButton";
-import { dialpadbuttons } from "./DialPadButtonsNum";
 
 const buttons = [
   ["1", "2", "3"],

@@ -1,31 +1,37 @@
 import { SipConstants, SipModel, SipSession } from "@/lib/Sip";
-import { SipSessionState } from "@/lib/Sip/sip-type";
+import { OngoingSessionState, SipSessionState } from "@/lib/Sip/sip-type";
 import { formatPhoneNumber } from "@/lib/Sip/sip-utils";
 import { AppDispatch, RootState, store } from "@/store";
 import { addSession, deleteSipSession } from "@/store/dialer/sip";
 import { enableMapSet } from "immer";
 import { useDispatch, useSelector } from "react-redux";
 
-
 interface SipSessionManager {
-    activate:(Session:SipSession)=>void
-    updateSession:( field: string,session: SipSession,args: any, sessions: any)=>void
-    getSessionState:(id:string)=>SipModel.SipSessionState
-    getSession:(id:string)=>SipSession
-    newSession:(session:SipSession)=>void
-    sessionCount:()=>number
-    getAllSessions:()=>any[]
-    deleteSession:(id:string)=>void
-    getDialNumber:()=>string
-    getActiveSession:()=>SipSession |null
+  activate: (Session: SipSession) => void;
+  updateSession: (
+    field: string,
+    session: SipSession,
+    args: any,
+    sessions: any
+  ) => void;
+  getSessionState: (id: string) => SipModel.SipSessionState;
+  getSession: (id: string) => SipSession;
+  newSession: (session: SipSession) => void;
+  sessionCount: () => number;
+  getAllSessions: () => any[];
+  deleteSession: (id: string) => void;
+  getDialNumber: () => string;
+  getActiveSession: () => SipSession | null;
+  getActiveSessionState: () => SipModel.SipSessionState | null;
+  lastDialNumber:()=>string
 }
 
-const useSipSessionManager = ():SipSessionManager=> {
-  const {sessions}=useSelector((state:any)=>state.sip)
-  const dispatch =useDispatch<AppDispatch>()
+const useSipSessionManager = (): SipSessionManager => {
+  const { sessions } = useSelector((state: any) => state.sip);
+  const dispatch = useDispatch<AppDispatch>();
 
   const activate = (session: SipSession) => {
-    sessions.forEach((v:any, k:any) => {
+    sessions.forEach((v: any, k: any) => {
       if (k !== session.id) {
         v.active = false;
         session.setActive(false);
@@ -40,60 +46,67 @@ const useSipSessionManager = ():SipSessionManager=> {
     field: string,
     session: SipSession,
     args: any,
-    sessions:any
+    sessions: any
   ): void => {
-    let updateState=true;
-    const sessionList:any = store.getState().sip.sessions
-     let state: SipModel.SipSessionState = sessionList.get(session.id);
+    let updateState = true;
+    const sessionList: any = store.getState().sip.sessions;
+    let state: SipModel.SipSessionState = sessionList.get(session.id);
     if (state) {
       switch (field) {
         case SipConstants.SESSION_RINGING:
-          state ={...state,status:args.status}
+          state = { ...state, status: args.status };
           break;
         case SipConstants.SESSION_ANSWERED:
-          state ={...state,status:args.status}
+          state = { ...state, status: args.status };
           break;
         case SipConstants.SESSION_FAILED:
         case SipConstants.SESSION_ENDED:
-          updateState=false
-           state ={...state,status:args.status,endState:{
-            cause: args.cause,
+          updateState = false;
+          state = {
+            ...state,
             status: args.status,
-            originator: args.endState,
-            description: args.description,
-          }}
-        
+            endState: {
+              cause: args.cause,
+              status: args.status,
+              originator: args.endState,
+              description: args.description,
+            },
+          };
+
           // sessions.delete(session.id);
-          dispatch(deleteSipSession(session.id))
-          
+          dispatch(deleteSipSession(session.id));
+
           break;
         case SipConstants.SESSION_MUTED:
-           state ={...state,status:args.status}
+          state = { ...state, status: args.status };
           state.muteStatus = args.status;
           break;
         case SipConstants.SESSION_HOLD:
-           state ={...state,status:args.status,holdState: {
-            originator: args.originator,
+          state = {
+            ...state,
             status: args.status,
-          }}
+            holdState: {
+              originator: args.originator,
+              status: args.status,
+            },
+          };
           break;
         case SipConstants.SESSION_ICE_READY:
-           state ={...state,iceReady: true}
+          state = { ...state, iceReady: true };
           break;
         case SipConstants.SESSION_ACTIVE:
-           state ={...state,active: true}
+          state = { ...state, active: true };
           break;
       }
 
-      if(updateState){
- dispatch(addSession(state))      }
-
-
+      if (updateState) {
+        dispatch(addSession(state));
+      }
     }
   };
 
-  const getSessionState = (id: string):any=> {
-  const state = sessions.get(id);
+  const getSessionState = (id: string): any => {
+    const state = sessions.get(id);
     if (!state) {
       throw new Error("Session not found");
     }
@@ -105,16 +118,15 @@ const useSipSessionManager = ():SipSessionManager=> {
   };
 
   const newSession = (session: SipSession): void => {
-   
-    const sessionData ={
-       id: session.id,
+    const sessionData = {
+      id: session.id,
       sipSession: session,
       startDateTime: new Date(),
       active: true,
-      status: "init",
+      status: OngoingSessionState.INIT,
       connection: undefined,
-    }
-    dispatch(addSession(sessionData))
+    };
+    dispatch(addSession(sessionData));
   };
 
   const sessionCount = () => {
@@ -122,42 +134,74 @@ const useSipSessionManager = ():SipSessionManager=> {
   };
 
   const getAllSessions = () => {
-   return Array.from(sessions.values());
+    return Array.from(sessions.values());
   };
 
   const deleteSession = (id: string) => {
-          dispatch(deleteSipSession(id))
-
+    dispatch(deleteSipSession(id));
   };
 
-   const getDialNumber =() =>{
+  const getDialNumber = () => {
     const allSessions = getAllSessions();
     const dialNumber: string[] = [];
-    let number:string='';
+    let number: string = "";
     if (allSessions && allSessions.length > 0) {
-      allSessions.forEach((session:any) => {
+      allSessions.forEach((session: any) => {
         if (session !== null && session !== undefined) {
           dialNumber.push(formatPhoneNumber(session?.sipSession?.user));
         }
       });
-      number= dialNumber.join();
+      number = dialNumber.join();
     }
-    return number
-  }
+    return number;
+  };
 
-  const getActiveSession =():SipSession |null=> {
+  const getActiveSession = (): SipSession | null => {
     if (sessions.size === 0) {
-     return null;
+      return null;
     }
     const state = [...sessions.values()].filter((s) => s.active);
     if (state.length > 0) {
-      return state[state.length-1].sipSession;
+      return state[state.length - 1].sipSession;
     } else {
-      return null
+      return null;
     }
-  }
+  };
 
-  return {activate,updateSession,getSessionState,getSession,newSession,sessionCount,getAllSessions,deleteSession,getDialNumber,getActiveSession}
+  const getActiveSessionState = (): SipModel.SipSessionState | null => {
+    if (sessions.size === 0) {
+      return null;
+    }
+    const state = [...sessions.values()].filter((s) => s.active);
+    if (state.length > 0) {
+      return state[state.length - 1];
+    } else {
+      return null;
+    }
+  };
+  const lastDialNumber = (): string => {
+    let dialNumber = "";
+    const activeSession = getActiveSession();
+    if (activeSession) {
+      return formatPhoneNumber(activeSession.user);
+    }
+    return dialNumber;
+  };
+
+  return {
+    lastDialNumber,
+    activate,
+    updateSession,
+    getSessionState,
+    getSession,
+    getActiveSessionState,
+    newSession,
+    sessionCount,
+    getAllSessions,
+    deleteSession,
+    getDialNumber,
+    getActiveSession,
+  };
 };
 
 export default useSipSessionManager;

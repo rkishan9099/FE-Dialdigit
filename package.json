@@ -27,6 +27,7 @@
     "axios-mock-adapter": "^1.22.0",
     "chart.js": "^4.4.0",
     "clsx": "^2.0.0",
+    "cookies-next": "^4.1.1",
     "date-fns": "^2.30.0",
     "i18next-browser-languagedetector": "^7.2.0",
     "i18next-http-backend": "^2.4.2",

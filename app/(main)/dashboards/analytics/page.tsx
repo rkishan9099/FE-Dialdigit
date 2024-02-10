@@ -1,40 +1,37 @@
 "use client";
-import IconifyIcon from "@/@core/components/icon";
 import { getUser } from "@/actions/userActions";
-import DialPad from "@/components/dialer/Dialpad/DialPad";
 import OngoingCall from "@/components/dialer/OngoingCall/OngoingCall";
-import useSipClient from "@/hooks/dialer/useSipClient";
-import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
 import { useAuth } from "@/hooks/useAuth";
-import useSipFunctionality from "@/hooks/useSipFunctionality";
-import { SipUA } from "@/lib/Sip";
-import { RootState, store } from "@/store";
-import { sendMissedCallEmail } from "@/store/dialer/sip";
+import { AppDispatch } from "@/store";
 import {
   Button,
-  Card,
-  Divider,
   Grid,
-  IconButton,
   Stack,
-  TextField,
+  useMediaQuery,
 } from "@mui/material";
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, {  } from "react";
+import { useDispatch } from "react-redux";
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const media = useMediaQuery("sm");
+  const dispatch = useDispatch<AppDispatch>();
+  // const { u
 
+  const callApi = async () => {
+   const res = await getUser({name:"kishan"});
+   console.log('res',res)
+  //  console.log(await auth())
+  };
   return (
     <>
       <div>Welcome {user?.name}</div>
+      <Button onClick={callApi}>Call Api</Button>
       <Stack>
-<OngoingCall />
+        <OngoingCall />
       </Stack>
       <Grid container>
-        <Grid item xs={4}>
-          
-        </Grid>
+        <Grid item xs={4}></Grid>
         <Grid item xs={8}></Grid>
       </Grid>
     </>

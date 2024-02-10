@@ -16,22 +16,31 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DtmfDialog from "../Dialpad/Dtmf/DtmfDialog";
 import { updateSipState } from "@/store/dialer/sip";
+import { ActionText } from "@/@core/styles/mui/utilstyle";
+import { tree } from "next/dist/build/templates/app-page";
 
-const ActionText = styled(Typography)(({ theme }) => ({
-  color: "white",
-  marginTop: "7px",
-  fontSize: "12px",
-}));
 const CallActionButton = () => {
   const { isHolded, hold, unhold, mute, unmute, isMuted } = useSipClient();
   const { sessionCount } = useSipSessionManager();
   const { sessionState, isAttendedTransfer, isAddCall } = useSelector(
     (state: RootState) => state.sip
   );
+  const buttonDisabledCondition =
+    sessionState &&
+    [
+      OngoingSessionState.RINGING,
+      OngoingSessionState.FAILED,
+      OngoingSessionState.COMPLETED,
+    ].includes(sessionState)
+      ? true
+      : false;
+
   const dispatch = useDispatch<AppDispatch>();
   const toggleDtmf = () => {
     dispatch(updateSipState({ key: "toggleDrawerSheet", value: true }));
     dispatch(updateSipState({ key: "toggleDTMF", value: true }));
+    dispatch(updateSipState({ key: "isAttendedTransfer", value: false }));
+    dispatch(updateSipState({ key: "isBlindTransfer", value: false }));
   };
   return (
     <>
@@ -52,9 +61,7 @@ const CallActionButton = () => {
           {isMuted() ? (
             <CustomActionButton
               onClick={() => unmute()}
-              disabled={
-                sessionState === OngoingSessionState.ANSWERED ? false : true
-              }
+              disabled={buttonDisabledCondition}
             >
               <IconifyIcon icon={"mdi:microphone"} width={"25px"} />
               <ActionText>UnMute</ActionText>
@@ -62,9 +69,7 @@ const CallActionButton = () => {
           ) : (
             <CustomActionButton
               onClick={() => mute()}
-              disabled={
-                sessionState === OngoingSessionState.ANSWERED ? false : true
-              }
+              disabled={buttonDisabledCondition}
             >
               <IconifyIcon icon={"vaadin:mute"} width={"25px"} />
               <ActionText>Mute</ActionText>
@@ -74,9 +79,7 @@ const CallActionButton = () => {
           {isHolded() ? (
             <CustomActionButton
               onClick={() => unhold()}
-              disabled={
-                sessionState === OngoingSessionState.ANSWERED ? false : true
-              }
+              disabled={buttonDisabledCondition}
             >
               <IconifyIcon icon={"solar:play-bold"} width={"25px"} />
               <ActionText>UnHold</ActionText>
@@ -84,9 +87,7 @@ const CallActionButton = () => {
           ) : (
             <CustomActionButton
               onClick={() => hold()}
-              disabled={
-                sessionState === OngoingSessionState.ANSWERED ? false : true
-              }
+              disabled={buttonDisabledCondition}
             >
               <IconifyIcon icon={"solar:pause-bold"} width={"25px"} />
               <ActionText>Hold</ActionText>
@@ -94,7 +95,10 @@ const CallActionButton = () => {
           )}
 
           {sessionCount() <= 1 && (
-            <CustomActionButton onClick={toggleDtmf}>
+            <CustomActionButton
+              onClick={toggleDtmf}
+              disabled={buttonDisabledCondition}
+            >
               <IconifyIcon icon={"eva:keypad-fill"} width={"25px"} />
               <ActionText>DTMF</ActionText>
             </CustomActionButton>
