@@ -1,3 +1,4 @@
+'use client'
 import {
   Card,
   IconButton,
@@ -70,6 +71,7 @@ const CallDialPadDrawer = () => {
     dispatch(updateSipState({ key: "isBlindTransfer", value: false }));
     if (sessionCount() < 2) {
       dispatch(updateSipState({ key: "isAttendedTransfer", value: false }));
+      dispatch(updateSipState({key:'isAddCall',value:false}))
     }
   };
 
@@ -114,13 +116,12 @@ const CallDialPadDrawer = () => {
       }}
     >
       <Puller />
-      <Stack sx={{ marginTop: "5px", padding: "12px 0" }}>
-        {toggleDrawerSheet && (
-          <CustomCloseButton type="button" onClick={handleCloseHandler}>
+      <Stack sx={{ marginTop: "5px", padding: "12px 0",height:'100%' }} justifyContent={"center"}>
+        {toggleDrawerSheet && (<>
+         <CustomCloseButton type="button" onClick={handleCloseHandler}>
             <IconifyIcon icon={"tabler:x"} width={"30"} />
           </CustomCloseButton>
-        )}
-        <Stack sx={{ paddingLeft: "20px" }}>
+         <Stack sx={{ paddingLeft: "20px" }}>
           <DialPadInput number={number} setNum={setNumber} />
         </Stack>
         <DialPadButtonList typeNumber={typeNumber} />
@@ -169,6 +170,11 @@ const CallDialPadDrawer = () => {
 
           {/* )} */}
         </Stack>
+       
+         
+           </>
+        )}
+       
       </Stack>
     </Card>
   );

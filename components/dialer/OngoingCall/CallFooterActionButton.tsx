@@ -1,3 +1,4 @@
+'use client'
 import IconifyIcon from "@/@core/components/icon";
 import { CustomActionButton } from "@/@core/styles/mui/button";
 import useSipClient from "@/hooks/dialer/useSipClient";

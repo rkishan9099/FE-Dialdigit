@@ -97,7 +97,7 @@ const CallActionButton = () => {
           {sessionCount() <= 1 && (
             <CustomActionButton
               onClick={toggleDtmf}
-              disabled={buttonDisabledCondition}
+              // disabled={buttonDisabledCondition}
             >
               <IconifyIcon icon={"eva:keypad-fill"} width={"25px"} />
               <ActionText>DTMF</ActionText>

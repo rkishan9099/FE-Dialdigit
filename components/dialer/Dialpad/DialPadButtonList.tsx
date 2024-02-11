@@ -22,7 +22,7 @@ const DialPadButtonList = ({ typeNumber }: { typeNumber: any }) => {
               gap:'12px'
             }}
             direction="row"
-            spacing={5}
+            spacing={6}
             justifyContent={'center'} 
             alignItems={'center'}
           >

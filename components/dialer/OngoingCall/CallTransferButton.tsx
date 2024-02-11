@@ -16,6 +16,8 @@ import { Icon } from "@iconify/react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 import { updateSipState } from "@/store/dialer/sip";
+import { usePathname } from "next/navigation";
+import { PATH_DASHBOARD } from "@/routes/paths";
 
 const ActionText = styled(Typography)(({ theme }) => ({
   color: theme.palette.mode === "light" ? "black" : "white",
@@ -45,6 +47,7 @@ const CallTransferButton = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const dispatch = useDispatch<AppDispatch>();
+  const pathName = usePathname();
 
   const ButtonStyle = {
     color: theme.palette.mode === "light" ? "black" : "white",
@@ -81,7 +84,7 @@ const CallTransferButton = () => {
     <>
       <CustomActionButton sx={ButtonStyle} onClick={handleCallTransfer}>
         <IconifyIcon icon={"fluent:call-transfer-16-filled"} width={"25px"} />
-        <ActionText>Transfer</ActionText>
+        {pathName!==PATH_DASHBOARD.call.ongoingCall && <ActionText>Transfer</ActionText>}
       </CustomActionButton>
       <Menu
         anchorEl={anchorEl}
