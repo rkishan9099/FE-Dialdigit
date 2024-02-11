@@ -80,10 +80,10 @@ const CallDropdown = (props: Props) => {
 
   return (
     <>
-      {sessionCount() > 0 && pathName !== PATH_DASHBOARD.call.ongoingCall && (
+      {sessionCount() > 0 && (pathName !==PATH_DASHBOARD.dashboard.general && pathName !== PATH_DASHBOARD.call.ongoingCall ) && (
         <OnGoingCallDropdown settings={settings} />
       )}
-      {sessionCount() === 0 && <DialpadDropdown settings={settings} />}
+      {sessionCount() === 0 && pathName !==PATH_DASHBOARD.dashboard.general && <DialpadDropdown settings={settings} />}
 
       {sessionCount() > 0 &&
         ConnectingCall &&

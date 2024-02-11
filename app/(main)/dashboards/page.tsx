@@ -26,7 +26,7 @@ const DashboardPage = () => {
       <div>Welcome {user?.name}</div>
       <Button onClick={callApi}>Call Api</Button>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} sm={6}>
           {sessionCount() > 0 ? <OngoingCall /> : <CallDialpad />}
         </Grid>
       </Grid>

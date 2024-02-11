@@ -4,6 +4,7 @@ import {
   ListItemIcon,
   ListItemText,
   Menu,
+  Tooltip,
   Typography,
   styled,
   useTheme,
@@ -18,6 +19,7 @@ import { AppDispatch } from "@/store";
 import { updateSipState } from "@/store/dialer/sip";
 import { usePathname } from "next/navigation";
 import { PATH_DASHBOARD } from "@/routes/paths";
+import { update } from "@/auth";
 
 const ActionText = styled(Typography)(({ theme }) => ({
   color: theme.palette.mode === "light" ? "black" : "white",
@@ -72,20 +74,25 @@ const CallTransferButton = () => {
     dispatch(updateSipState({ key: "callTransfer", value: true }));
     dispatch(updateSipState({ key: "isBlindTransfer", value: true }));
     dispatch(updateSipState({ key: "toggleDrawerSheet", value: true }));
+    dispatch(updateSipState({ key: "isAddCall", value: false }));
+    dispatch(updateSipState({ key: "isAttendedTransfer", value: false }));
   };
 
   const attendedTransferHandler = () => {
     dispatch(updateSipState({ key: "callTransfer", value: true }));
     dispatch(updateSipState({ key: "isAttendedTransfer", value: true }));
     dispatch(updateSipState({ key: "toggleDrawerSheet", value: true }));
+    dispatch(updateSipState({ key: "isAddCall", value: false }));
+    dispatch(updateSipState({ key: "isBlindTransfer", value: false }));
   };
 
   return (
     <>
-      <CustomActionButton sx={ButtonStyle} onClick={handleCallTransfer}>
-        <IconifyIcon icon={"fluent:call-transfer-16-filled"} width={"25px"} />
-        {pathName!==PATH_DASHBOARD.call.ongoingCall && <ActionText>Transfer</ActionText>}
-      </CustomActionButton>
+      <Tooltip title={"Transfer Call"}>
+        <CustomActionButton sx={ButtonStyle} onClick={handleCallTransfer}>
+          <IconifyIcon icon={"fluent:call-transfer-16-filled"} width={"25px"} />
+        </CustomActionButton>
+      </Tooltip>
       <Menu
         anchorEl={anchorEl}
         id="account-menu"

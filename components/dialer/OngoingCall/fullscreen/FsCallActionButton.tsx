@@ -1,7 +1,6 @@
 "use client";
 import IconifyIcon from "@/@core/components/icon";
 import { CustomActionButton } from "@/@core/styles/mui/button";
-import { ActionText } from "@/@core/styles/mui/utilstyle";
 import useSipClient from "@/hooks/dialer/useSipClient";
 import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
 import { OngoingSessionState } from "@/lib/Sip/sip-type";
@@ -12,14 +11,25 @@ import React from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import CallTransferButton from "../CallTransferButton";
+import CallActionButton from "../CallActionButton";
+import ConferenceCallAction from "../ConferenceCallAction";
 
 const FsCallActionButton = () => {
   const theme = useTheme();
   const { getActiveSession, sessionCount } = useSipSessionManager();
-  const { sessionState, isAttendedTransfer, isMergeCall } = useSelector(
-    (state: RootState) => state.sip
-  );
-  const { terminate, conference, unholdAllCall } = useSipClient();
+  const { sessionState, toggleDrawerSheet, isMergeCall, isAttendedTransfer } =
+    useSelector((state: RootState) => state.sip);
+  const {
+    isHolded,
+    hold,
+    unhold,
+    mute,
+    unmute,
+    isMuted,
+    terminate,
+    conference,
+    unholdAllCall,
+  } = useSipClient();
   const activeSession = getActiveSession();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -55,6 +65,8 @@ const FsCallActionButton = () => {
 
   const addCallHandler = () => {
     dispatch(updateSipState({ key: "isAddCall", value: true }));
+    dispatch(updateSipState({ key: "isAttendedTransfer", value: false }));
+    dispatch(updateSipState({ key: "isBlindTransfer", value: false }));
     dispatch(updateSipState({ key: "toggleDrawerSheet", value: true }));
   };
 
@@ -65,6 +77,13 @@ const FsCallActionButton = () => {
       dispatch(updateSipState({ key: "isMergeCall", value: true }));
     }
   };
+  const toggleDtmf = () => {
+    dispatch(updateSipState({ key: "toggleDrawerSheet", value: true }));
+    dispatch(updateSipState({ key: "toggleDTMF", value: true }));
+    dispatch(updateSipState({ key: "isAttendedTransfer", value: false }));
+    dispatch(updateSipState({ key: "isBlindTransfer", value: false }));
+  };
+
   return (
     <Stack
       direction={"row"}
@@ -83,69 +102,81 @@ const FsCallActionButton = () => {
           direction={"row"}
           justifyContent={"center"}
           alignItems={"center"}
-          spacing={5}
+          spacing={3}
           sx={{
             color: "white",
+            flexWrap: "wrap",
           }}
         >
-          <CustomActionButton sx={ButtonStyle}>
-            <IconifyIcon icon={"mdi:microphone"} width={"25px"} />
-          </CustomActionButton>
 
-          <CustomActionButton
-            sx={ButtonStyle}
-            disabled={buttonDisabledCondition}
-          >
-            <IconifyIcon icon={"vaadin:mute"} width={"25px"} />
-          </CustomActionButton>
+          {/* Call Hold, Mute, Dtmf Buttons */}
+          {sessionState &&
+            ![OngoingSessionState.RINGING, OngoingSessionState.INIT].includes(
+              sessionState
+            ) &&
+            sessionCount() > 0 && (
+              <>
+                {isMergeCall ? <ConferenceCallAction /> : <CallActionButton />}
+              </>
+            )}
 
-          <CustomActionButton
-            sx={ButtonStyle}
-            disabled={buttonDisabledCondition}
-          >
-            <IconifyIcon icon={"solar:play-bold"} width={"25px"} />
-          </CustomActionButton>
+          {/* Add Call Button */}
+          {!isAttendedTransfer &&
+            sessionCount() > 0 &&
+            sessionState &&
+            ![OngoingSessionState.INIT, OngoingSessionState.RINGING].includes(
+              sessionState
+            ) && (
+              <CustomActionButton
+                sx={ButtonStyle}
+                disabled={sessionCount() > 0 ? false : true}
+                onClick={addCallHandler}
+              >
+                <IconifyIcon icon={"mingcute:user-add-fill"} width={"25px"} />
+              </CustomActionButton>
+            )}
 
-          <CustomActionButton
-            sx={ButtonStyle}
-            disabled={buttonDisabledCondition}
-          >
-            <IconifyIcon icon={"solar:pause-bold"} width={"25px"} />
-          </CustomActionButton>
+          {/* Blind And Attended Call Transfer Button */}
+          {!isAttendedTransfer &&
+            sessionCount() > 0 &&
+            sessionCount() < 2 &&
+            sessionState &&
+            ![OngoingSessionState.INIT, OngoingSessionState.RINGING].includes(
+              sessionState
+            ) && <CallTransferButton />}
 
-          <CustomActionButton
-            sx={ButtonStyle}
-            disabled={buttonDisabledCondition}
-          >
-            <IconifyIcon icon={"eva:keypad-fill"} width={"25px"} />
-          </CustomActionButton>
-          <CustomActionButton
-            sx={ButtonStyle}
-            disabled={sessionCount() > 0 ? false : true}
-            onClick={addCallHandler}
-          >
-            <IconifyIcon icon={"mingcute:user-add-fill"} width={"25px"} />
-          </CustomActionButton>
+          {/* Merge Call Conference Call Button */}
+          {sessionCount() >= 2 &&
+            sessionState &&
+            ![OngoingSessionState.INIT, OngoingSessionState.RINGING].includes(
+              sessionState
+            ) &&
+            !isAttendedTransfer &&
+            !isMergeCall && (
+              <CustomActionButton
+                sx={ButtonStyle}
+                disabled={buttonDisabledCondition}
+                onClick={mergeCallHandler}
+              >
+                <IconifyIcon icon={"mdi:call-merge"} width={"25px"} />
+              </CustomActionButton>
+            )}
 
+          {/* Call Hangup Button */}
           <CustomActionButton
             onClick={hangupHandler}
-            sx={{ ...ButtonStyle, background: "red", color: "whitesmoke" ,'&:hover':{
-              color:'red',
-              background:'whitesmoke'
-            }}}
-            // disabled={sessionCount() > 0 ? false : true}
+            sx={{
+              ...ButtonStyle,
+              background: "red",
+              color: "whitesmoke",
+              "&:hover": {
+                color: "red",
+                background: "whitesmoke",
+              },
+            }}
+            disabled={sessionCount() > 0 ? false : true}
           >
             <IconifyIcon icon={"material-symbols:call-end"} width={"40px"} />
-          </CustomActionButton>
-
-          <CallTransferButton />
-
-          <CustomActionButton
-            sx={ButtonStyle}
-            disabled={buttonDisabledCondition}
-            onClick={mergeCallHandler}
-          >
-            <IconifyIcon icon={"mdi:call-merge"} width={"25px"} />
           </CustomActionButton>
         </Stack>
       </Card>

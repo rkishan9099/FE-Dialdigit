@@ -1,30 +1,36 @@
+"use client";
 import IconifyIcon from "@/@core/components/icon";
 import { CustomActionButton } from "@/@core/styles/mui/button";
 import useSipClient from "@/hooks/dialer/useSipClient";
 import useSipSessionManager from "@/hooks/dialer/useSipSessionManager";
 import { OngoingSessionState } from "@/lib/Sip/sip-type";
 import { AppDispatch, RootState } from "@/store";
-import {
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  Typography,
-  styled,
-} from "@mui/material";
+import { Stack, Tooltip, useTheme } from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import DtmfDialog from "../Dialpad/Dtmf/DtmfDialog";
 import { updateSipState } from "@/store/dialer/sip";
 import { ActionText } from "@/@core/styles/mui/utilstyle";
-import { tree } from "next/dist/build/templates/app-page";
 
 const CallActionButton = () => {
+  const theme = useTheme();
   const { isHolded, hold, unhold, mute, unmute, isMuted } = useSipClient();
   const { sessionCount } = useSipSessionManager();
   const { sessionState, isAttendedTransfer, isAddCall } = useSelector(
     (state: RootState) => state.sip
   );
+
+  const ButtonStyle = {
+    color: theme.palette.mode === "light" ? "black" : "white",
+    "&:hover": {
+      background: theme.palette.customColors.bodyBg,
+    },
+    "&:disabled": {
+      background:
+        theme.palette.mode === "light" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.2)",
+      color: "rgba(255,255,255,0.5)",
+    },
+  };
+
   const buttonDisabledCondition =
     sessionState &&
     [
@@ -41,6 +47,7 @@ const CallActionButton = () => {
     dispatch(updateSipState({ key: "toggleDTMF", value: true }));
     dispatch(updateSipState({ key: "isAttendedTransfer", value: false }));
     dispatch(updateSipState({ key: "isBlindTransfer", value: false }));
+    dispatch(updateSipState({ key: "isAddCall", value: false }));
   };
   return (
     <>
@@ -59,49 +66,59 @@ const CallActionButton = () => {
           sx={{ color: "white", padding: "10px" }}
         >
           {isMuted() ? (
-            <CustomActionButton
-              onClick={() => unmute()}
-              disabled={buttonDisabledCondition}
-            >
-              <IconifyIcon icon={"mdi:microphone"} width={"25px"} />
-              <ActionText>UnMute</ActionText>
-            </CustomActionButton>
+            <Tooltip title={"UnMute"}>
+              <CustomActionButton
+                onClick={() => unmute()}
+                disabled={buttonDisabledCondition}
+                sx={ButtonStyle}
+              >
+                <IconifyIcon icon={"mdi:microphone"} width={"25px"} />
+              </CustomActionButton>
+            </Tooltip>
           ) : (
-            <CustomActionButton
-              onClick={() => mute()}
-              disabled={buttonDisabledCondition}
-            >
-              <IconifyIcon icon={"vaadin:mute"} width={"25px"} />
-              <ActionText>Mute</ActionText>
-            </CustomActionButton>
+            <Tooltip title={"Mute"}>
+              <CustomActionButton
+                onClick={() => mute()}
+                disabled={buttonDisabledCondition}
+                sx={ButtonStyle}
+              >
+                <IconifyIcon icon={"vaadin:mute"} width={"25px"} />
+              </CustomActionButton>
+            </Tooltip>
           )}
 
           {isHolded() ? (
-            <CustomActionButton
-              onClick={() => unhold()}
-              disabled={buttonDisabledCondition}
-            >
-              <IconifyIcon icon={"solar:play-bold"} width={"25px"} />
-              <ActionText>UnHold</ActionText>
-            </CustomActionButton>
+            <Tooltip title={"UnHold"}>
+              <CustomActionButton
+                onClick={() => unhold()}
+                disabled={buttonDisabledCondition}
+                sx={ButtonStyle}
+              >
+                <IconifyIcon icon={"solar:play-bold"} width={"25px"} />
+              </CustomActionButton>
+            </Tooltip>
           ) : (
-            <CustomActionButton
-              onClick={() => hold()}
-              disabled={buttonDisabledCondition}
-            >
-              <IconifyIcon icon={"solar:pause-bold"} width={"25px"} />
-              <ActionText>Hold</ActionText>
-            </CustomActionButton>
+            <Tooltip title={"Hold"}>
+              <CustomActionButton
+                onClick={() => hold()}
+                disabled={buttonDisabledCondition}
+                sx={ButtonStyle}
+              >
+                <IconifyIcon icon={"solar:pause-bold"} width={"25px"} />
+              </CustomActionButton>
+            </Tooltip>
           )}
 
           {sessionCount() <= 1 && (
-            <CustomActionButton
-              onClick={toggleDtmf}
-              // disabled={buttonDisabledCondition}
-            >
-              <IconifyIcon icon={"eva:keypad-fill"} width={"25px"} />
-              <ActionText>DTMF</ActionText>
-            </CustomActionButton>
+            <Tooltip title={"DTMF"}>
+              <CustomActionButton
+                onClick={toggleDtmf}
+                // disabled={buttonDisabledCondition}
+                sx={ButtonStyle}
+              >
+                <IconifyIcon icon={"eva:keypad-fill"} width={"25px"} />
+              </CustomActionButton>
+            </Tooltip>
           )}
         </Stack>
       </Stack>

@@ -55,8 +55,9 @@ const CallFooterActionButton = () => {
       background: theme.palette.customColors.bodyBg,
     },
     "&:disabled": {
-      color: "white",
-      background: "rgba(0,0,0,0.3)",
+      background:
+        theme.palette.mode === "light" ? "rgba(0,0,0,0.2)" : "rgba(0,0,0,0.2)",
+      color: "rgba(255,255,255,0.5)",
     },
   };
 
