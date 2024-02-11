@@ -48,7 +48,6 @@ const CallDetails = () => {
       >
   {
     sessionCount()>0 && 
-  
         <Stack
           direction={"row"}
           justifyContent={"space-between"}
