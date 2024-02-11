@@ -11,7 +11,7 @@ export interface SipClientType {
     isHolded: (id?: string | undefined) => boolean
     hold: (id?: string | undefined) => void
     unhold: (id?: string | undefined) => void
-    dtmf: (tone: number | string, id: string | undefined) => void
+    dtmf: (tone: number | string, id?: string | undefined) => void
     terminate: (sipCode: number, reason: string, id: string | undefined) => void
     blindTransfer: (number: number | string) => void
     attendedTransfer: (number: string | number) => void

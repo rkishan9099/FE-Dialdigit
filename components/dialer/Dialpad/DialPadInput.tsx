@@ -7,7 +7,6 @@ import React from 'react';
 import IconifyIcon from '@/@core/components/icon';
 
 const DialPadInput = ({ number, setNum }: { number: string; setNum: any }) => {
-  console.debug(number)
   const changeHandler = (e: any) => {
     setNum(e.target.value);
   };
@@ -24,12 +23,13 @@ const DialPadInput = ({ number, setNum }: { number: string; setNum: any }) => {
         textAlign: 'center',
         background: 'transparent !important',
         boxShadow:'none',
-        padding:'8px'
+        padding:'8px',
+       
       }}
     >
       <InputBase
-        sx={{ fontSize: '23px', textAlign: 'center', paddingLeft: '15px', width: '100%',boxShadow:'none' }}
-        defaultValue={number}
+        sx={{ fontSize: '23px',  textAlign: 'center', paddingLeft: '15px', width: '100%',boxShadow:'none' }}
+      value={number}
         onChange={changeHandler}
       />
       <IconButton type="button" sx={{ p: '10px' }} onClick={clearNumber}>

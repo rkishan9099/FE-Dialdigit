@@ -161,7 +161,7 @@ const OnGoingCallDropdown = (props: Props) => {
             userSelect: 'auto',
             p: theme => theme.spacing(4, 6),
             backgroundColor: 'transparent !important',
-            padding:'0px'
+            padding:'0px',
           }}
         >
           <OngoingCall />

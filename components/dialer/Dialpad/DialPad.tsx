@@ -24,18 +24,12 @@ type PropsType ={
 }
 
 const DialPad = ({ setNumber, number ,children}:PropsType) => {
-  const clearNumber = () => {
-    setNumber((prv: any) => prv.substring(0, prv.length - 1));
-  };
-  const changeHandler = (e: any) => {
-    setNumber(e.target.value);
-  };
   const typeNumber = (num: any) => {
-    setNumber(number.concat(num));
+    setNumber((prev:string)=>prev.concat(num));
   };
 
   return (
-    <Stack sx={{width:'auto',height:'100%'}} justifyContent={'center'} alignItems={'center'}>
+    <Stack>
       <Card>
           <DialPadInput number={number} setNum={setNumber}/>
           <Divider />
@@ -45,7 +39,7 @@ const DialPad = ({ setNumber, number ,children}:PropsType) => {
         </CardContent>
       </Card>
     </Stack>
-  );
+  )
 };
 
 export default DialPad;

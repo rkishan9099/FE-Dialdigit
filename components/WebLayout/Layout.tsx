@@ -1,5 +1,9 @@
 "use client";
-import React, { ReactNode, Suspense, lazy, useCallback, useEffect } from "react";
+import React, {
+  ReactNode,
+  Suspense,
+  lazy,
+} from "react";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import {
@@ -17,11 +21,8 @@ import AuthGuard from "@/@core/components/auth/AuthGuard";
 import FallbackSpinner from "@/@core/components/spinner";
 import { defaultACLObj } from "@/configs/acl";
 import { Provider } from "react-redux";
-import { persistor, store } from "@/store";
-import useSipClient from "@/hooks/dialer/useSipClient";
+import { store } from "@/store";
 import { CallTimerDurationProvider } from "@/context/CallTimerContext";
-import { PersistGate } from "redux-persist/integration/react";
-import { useAuth } from "@/hooks/useAuth";
 
 const AclGuard = lazy(() => import("@/@core/components/auth/AclGuard"));
 
@@ -56,34 +57,10 @@ const Layout = ({ children, type }: PropsType) => {
 
   const aclAbilities = defaultACLObj;
 
-  const { user } = useAuth();
-
-  const setAccessToken = useCallback(()=>{
-     if (user) {
-      const accessToken = localStorage.getItem("accessToken");
-      if (!accessToken && user.accessToken) {
-        localStorage.setItem("accessToken", user?.accessToken);
-      }
-    }
-  },[user])
-
-  const setRefreshToken = useCallback(()=>{
-     if (user) {
-      const refreshToken = localStorage.getItem("refreshToken");
-      if (!refreshToken && user.refreshToken) {
-        localStorage.setItem("refreshToken", user?.refreshToken);
-      }
-    }
-  },[user])
-
-  useEffect(() => {
-   setAccessToken()
-   setRefreshToken()
-  }, []);
-
   return (
     <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
-      <Provider store={store}>
+      {/* <StoreProvider> */}
+        <Provider store={store}>
         {/* <PersistGate loading={null} persistor={persistor}> */}
         <SettingsProvider>
           <SettingsConsumer>
@@ -113,7 +90,6 @@ const Layout = ({ children, type }: PropsType) => {
                       </Guard>
                     )}
                     {type === "auth" && <BlankLayout>{children}</BlankLayout>}
-
                     <ReactHotToast>
                       <Toaster
                         position={settings.toastPosition}
@@ -127,7 +103,8 @@ const Layout = ({ children, type }: PropsType) => {
           </SettingsConsumer>
         </SettingsProvider>
         {/* </PersistGate> */}
-      </Provider>
+        </Provider>
+      {/* </StoreProvider> */}
     </NextAppDirEmotionCacheProvider>
   );
 };

@@ -29,6 +29,7 @@ import DialPad from '@/components/dialer/Dialpad/DialPad'
 import IconifyIcon from '@/@core/components/icon'
 import useSipClient from '@/hooks/dialer/useSipClient'
 import toast from 'react-hot-toast'
+import CallDialpad from '@/components/dialer/Dialpad/CallDialpad'
 
 export type ShortcutsType = {
   url: string
@@ -84,8 +85,6 @@ const DialpadDropdown = (props: Props) => {
 
   // ** States
   const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null)
-  const [number, setNumber] = useState<string>("");
-    const {  call } = useSipClient();
 
   // ** Hook
   const mediaQuery = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
@@ -107,14 +106,6 @@ const DialpadDropdown = (props: Props) => {
 
 
 
-  const callHandler = () => {
-    if(number){
-    call(number);
-
-    }else{
-      toast.error('Enter Number')
-    }
-  };
 
 
 
@@ -148,19 +139,7 @@ const DialpadDropdown = (props: Props) => {
             padding:'0px'
           }}
         >
-           <DialPad number={number} setNumber={setNumber}>
-          <IconButton
-            sx={{
-              width: "56px",
-              height: "56px",
-              background: "#44b700",
-              color: "white",
-            }}
-            onClick={callHandler}
-          >
-            <IconifyIcon icon={"material-symbols:call"} fontSize={"29px"} />
-          </IconButton>
-        </DialPad>
+         <CallDialpad />
         </MenuItem>
       </Menu>
     </Fragment>

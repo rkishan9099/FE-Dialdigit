@@ -19,5 +19,7 @@ export  interface SipSliceType{
     isAttendedTransfer:boolean
     isConference:boolean
     isMergeCall:boolean
+    isAddCall:boolean
+    toggleDTMF:boolean
 
 }

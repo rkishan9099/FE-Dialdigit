@@ -1,7 +1,6 @@
 import { Stack } from "@mui/material";
 import React from "react";
 import DialPadButton from "./DialPadButton";
-import { dialpadbuttons } from "./DialPadButtonsNum";
 
 const buttons = [
   ["1", "2", "3"],
@@ -23,7 +22,7 @@ const DialPadButtonList = ({ typeNumber }: { typeNumber: any }) => {
               gap:'12px'
             }}
             direction="row"
-            spacing={5}
+            spacing={6}
             justifyContent={'center'} 
             alignItems={'center'}
           >

@@ -27,6 +27,7 @@
         "languagedetector",
         "lightgray",
         "lucide",
+        "NEXTAUTH",
         "nextjs",
         "persistor",
         "PQRS",
@@ -41,6 +42,7 @@
         "testsip",
         "timegrid",
         "UNHOLD",
+        "utilstyle",
         "Vuexy",
         "WXYZ"
     ],
