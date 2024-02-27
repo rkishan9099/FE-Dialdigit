@@ -59,4 +59,7 @@ export const PATH_DASHBOARD = {
   call: {
     ongoingCall: path(ROOTS_DASHBOARD, "/calling"),
   },
+  reports:{
+    call:path(ROOTS_DASHBOARD,'/reports/call')
+  }
 };

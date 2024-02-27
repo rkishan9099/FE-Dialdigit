@@ -18,6 +18,7 @@ class Auth{
         return null
       }
     } catch (error:any) {
+      console.log('error RFTGHTJUIKOP;[]',error)
       this.isError=true;
       this.errorMessage= error?.message;
       return null

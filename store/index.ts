@@ -18,10 +18,12 @@ import {
 // ** Reducers
 import sip from "@/store/dialer/sip";
 import users from "./users/users";
+import callReports from '@/store/reports/calls'
 
 const reducers = combineReducers({
   sip,
   users,
+  callReports
 });
 
 const persistConfig = {
