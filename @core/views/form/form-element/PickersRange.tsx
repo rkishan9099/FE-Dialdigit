@@ -32,6 +32,7 @@ const PickersRange = ({
     if (onChangeEndDate) onChangeEndDate(end)
   }
 
+  // eslint-disable-next-line react/display-name
   const CustomInput = forwardRef((props, ref) => {
     const StartDate = startDate !== null ? `${moment(startDate).format('MM-DD-YYYY')}` : null
     const EndDate = endDate !== null ? `${moment(endDate).format('MM-DD-YYYY')}` : null

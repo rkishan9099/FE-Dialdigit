@@ -9,6 +9,7 @@ interface PickerProps {
   readOnly?: boolean
 }
 
+// eslint-disable-next-line react/display-name
 const PickersComponent = forwardRef(({ ...props }: PickerProps, ref) => {
   // ** Props
   const { label, readOnly } = props

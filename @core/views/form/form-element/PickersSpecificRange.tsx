@@ -9,7 +9,7 @@ import addDays from 'date-fns/addDays'
 import DatePicker, { ReactDatePickerProps } from 'react-datepicker'
 
 // ** Types
-import { DateType } from 'src/types/forms/reactDatepickerTypes'
+import { DateType } from '@/types/forms/reactDatepickerTypes'
 
 // ** Custom Component Imports
 import CustomInput from './PickersCustomInput'

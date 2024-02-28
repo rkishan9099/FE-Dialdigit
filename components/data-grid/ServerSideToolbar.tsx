@@ -9,7 +9,7 @@ import Button from '@mui/material/Button'
 
 
 // ** Icon Imports
-import Icon from 'src/@core/components/icon'
+import Icon from '@/@core/components/icon'
 
 interface Props {
   onChange: (val: any) => void

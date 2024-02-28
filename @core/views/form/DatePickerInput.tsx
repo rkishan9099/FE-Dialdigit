@@ -33,6 +33,7 @@ const DatePickerInput = (props: PickersRangeProps) => {
     onChange(format(dates, 'MM-dd-yyyy'));
   }
 
+  // eslint-disable-next-line react/display-name
   const CustomInput = forwardRef((props: PickerProps, ref) => {
     const startDate = props.start ? format(props.start, 'MM/dd/yyyy') : null;
     const value = `${startDate !== null ? startDate : ''}`
