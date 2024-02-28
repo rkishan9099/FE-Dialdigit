@@ -13,7 +13,7 @@ import IconButton from '@mui/material/IconButton'
 import { styled, useTheme } from '@mui/material/styles'
 
 // ** Icon Imports
-import Icon from 'src/@core/components/icon'
+import Icon from '@/@core/components/icon'
 
 // ** Third Party Imports
 import { useDropzone } from 'react-dropzone'
