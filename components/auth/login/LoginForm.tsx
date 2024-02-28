@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { RHFCustomTextFiled, RHFTextField } from "@/hooks/hook-form";
 import { RHFCheckbox } from "@/hooks/hook-form/RHFCheckbox";
@@ -53,6 +53,11 @@ const LoginForm = () => {
     defaultValues: defaultValues,
     resolver: yupResolver(schema),
   });
+
+  useEffect(()=>{
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+  },[])
 
   const { handleSubmit, watch, reset } = methods;
 
