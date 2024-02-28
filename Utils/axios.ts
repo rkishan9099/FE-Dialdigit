@@ -1,25 +1,35 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { currentUser } from "@/lib/auth";
+import { logout } from "@/actions/authActions";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.HOST_API_URL,
+  baseURL: 'http://localhost:1607/api/v1'// process.env.API_BASE_URL,
 });
 
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const user = await currentUser();
-    if (user) {
-      const { accessToken } = user;
-      if (!config.headers["Authorization"]) {
-        config.headers.Authorization = `Bearer ${accessToken}`;
-      } else {
-        config.headers.Authorization = `Bearer ${accessToken}`;
+    let access_token: string = '';
+    const isServer = typeof window === 'undefined'
+    if (isServer) {
+      const user = await currentUser();
+      if (user) {
+        const user = await currentUser();
+        access_token = user?.accessToken || ''
+      }
+    } else {
+      if (typeof localStorage !== 'undefined') {
+        access_token = localStorage && localStorage.getItem('access_token') || ''
       }
     }
+    if (access_token) {
+      if (!config.headers["Authorization"]) {
+        config.headers.Authorization = `Bearer ${access_token}`;
+      } else {
+        config.headers.Authorization = `Bearer ${access_token}`;
+      }
+    }
+
     return config;
-  },
-  (error) => {
-    return Promise.reject(error);
   }
 );
 
@@ -28,23 +38,10 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async function (error) {
-    const originalRequest = error.config;
-    if ([401, 403].includes(error.response.status) && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const user = await currentUser();
-      if (user) {
-        const { refreshToken } = user;
-        console.log('refreshToken',refreshToken)
-        if (!error.config.headers["Authorization"]) {
-          error.config.headers.Authorization = `Bearer ${refreshToken}`;
-        } else {
-          error.config.headers.Authorization = `Bearer ${refreshToken}`;
-        }
-        const res = axiosInstance(originalRequest);
-        console.log("res reffress token", res);
-      }
-    }
-
+    console.debug('eerrrr',error)
+    // if ([401, 403].includes(error.response.data?.statusCode)) {
+    //   return await logout()
+    // }
     return Promise.reject(
       (error.response && error.response.data) || "Something went wrong"
     );

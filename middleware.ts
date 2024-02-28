@@ -21,7 +21,6 @@ export default auth(async (req:any) => {
 
   if (isAuthRoute) {
     if (isLoggedIn) {
-      console.log("user", req.auth);
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
     return null;

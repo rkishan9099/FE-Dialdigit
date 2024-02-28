@@ -14,3 +14,11 @@ export const  UserApiUrl ={
 getUser:path(USER_PREFIX,''),
 createUser:path(USER_PREFIX,'/')
 }
+
+
+const REPORTS_PRIFIX ='reports';
+export const ReportsApiUrl={
+  call:{
+    callReports:path(REPORTS_PRIFIX,'/call-reports'),
+  }
+}

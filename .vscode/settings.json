@@ -48,5 +48,31 @@
     ],
     "projectManager.git.baseFolders": [
         "C:\\Program Files\\Git"
-    ]
+    ],
+    "editor.autoClosingBrackets": "always",
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "editor.codeActionsOnSave": {
+
+    },
+    "editor.defaultFormatter": "Codeium.codeium",
+    "editor.fontLigatures": false,
+    "editor.fontSize": 14,
+    "editor.fontVariations": false,
+    "better-comments.highlightPlainText": true,
+    "codeium.aggressiveShutdown": true,
+    "codium.codeCompletion.enable": true,
+    "console-ninja.toolsToEnableSupportAutomaticallyFor": {
+        "live-server-extension": true
+    },
+    "console-ninja.allowConsoleLogToTriggerPredictions": true,
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact"
+    },
+    "emmet.showSuggestionsAsSnippets": true,
+    "emmet.triggerExpansionOnTab": true,
+    "emmet.useInlineCompletions": true,
+    "errorLens.fontStyleItalic": true,
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }
