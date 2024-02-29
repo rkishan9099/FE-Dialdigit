@@ -67,10 +67,6 @@ export default slice.reducer
 // ----------------------------------------------------------------------
 
 export function getCallReports(params: any = {}) {
-  if (![undefined, null, ''].includes(params?.page)) {
-    params['page'] = params?.page + 1
-  }
-
   return async (dispatch: Dispatch) => {
     dispatch(slice.actions.startLoading())
     try {

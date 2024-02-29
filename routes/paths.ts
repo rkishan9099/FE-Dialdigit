@@ -33,6 +33,9 @@ export const PATH_DASHBOARD = {
     app: path(ROOTS_DASHBOARD, "/app"),
   },
 
+  user: {
+    list: path(ROOTS_DASHBOARD, "/users"),
+  },
   chat: {
     general: path(ROOTS_DASHBOARD, "/chat"),
   },
@@ -59,7 +62,7 @@ export const PATH_DASHBOARD = {
   call: {
     ongoingCall: path(ROOTS_DASHBOARD, "/calling"),
   },
-  reports:{
-    call:path(ROOTS_DASHBOARD,'/reports/call')
-  }
+  reports: {
+    call: path(ROOTS_DASHBOARD, "/reports/call"),
+  },
 };
