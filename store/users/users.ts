@@ -12,6 +12,7 @@ interface UserStateType {
   isError: boolean;
   error: any;
   total: number;
+  selectedUser:any
 }
 const initialState: UserStateType = {
   users: [],
@@ -22,6 +23,7 @@ const initialState: UserStateType = {
   roles: [],
   isError: false,
   error: null,
+  selectedUser:null
 };
 
 const slice = createSlice({
@@ -64,6 +66,11 @@ const slice = createSlice({
       state.total = action.payload.totalItems || 0;
       state.error = null;
     },
+    getSelectedUserSuccess(state, action) {
+      if(action.payload){
+        state.selectedUser={...action.payload,name:`${action.payload.firstName} ${action.payload.lastName}`}
+      }
+    }
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
@@ -77,6 +84,8 @@ const slice = createSlice({
     });
   },
 });
+
+
 
 export const fetchUser = createAsyncThunk(
   "users/update",
@@ -94,11 +103,13 @@ export const fetchUser = createAsyncThunk(
   }
 );
 
+
+
 export function getUsersList(params: any = {}) {
   return async (dispatch: Dispatch) => {
     dispatch(slice.actions.startLoadind());
     try {
-      const response = await axiosInstance.get(UserApiUrl.getUser, params);
+      const response = await axiosInstance.post(UserApiUrl.getUser, {...params});
       dispatch(slice.actions.geuUserstSuccess(response.data));
 
       return response.data;
@@ -110,10 +121,40 @@ export function getUsersList(params: any = {}) {
   };
 }
 
+
+export function getUserById(id:string) {
+  return async (dispatch: Dispatch) => {
+    try {
+      const response = await axiosInstance.get(UserApiUrl.getUserById(id));
+      dispatch(slice.actions.getSelectedUserSuccess(response.data));
+
+      return response.data;
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+
+      return error;
+    }
+  };
+}
+
+
 export const createUser = (data: any) => {
   return async (dispatch: Dispatch) => {
     try {
       const response = await axiosInstance.post(UserApiUrl.createUser, data);
+
+      return response;
+    } catch (error) {
+      return error;
+    }
+  };
+};
+
+
+export const updateUser = (data: any) => {
+  return async (dispatch: Dispatch) => {
+    try {
+      const response = await axiosInstance.patch(UserApiUrl.updateUser(data.id), data);
 
       return response;
     } catch (error) {

@@ -1,6 +1,6 @@
 "use client";
 // ** React Imports
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import FormProvider from "@/hooks/hook-form/FormProvider";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
@@ -44,11 +44,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store";
 import { UsersType } from "@/types/apps/userTypes";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/store";
-import { createUser, getUserRoles } from "@/store/users/users";
+import { createUser, getUserRoles, getUsersList, updateUser } from "@/store/users/users";
 
 interface SidebarAddUserType {
   open: boolean;
   toggle: () => void;
+  isEdit: boolean;
 }
 
 interface UserData {
@@ -78,9 +79,9 @@ const Header = styled(Box)<BoxProps>(({ theme }) => ({
 
 const SidebarAddUser = (props: SidebarAddUserType) => {
   // ** Props
-  const { open, toggle } = props;
+  const { open, toggle, isEdit } = props;
   const [errorMessage, setErrorMessage] = useState("");
-  const { roles } = useAppSelector((state) => state.users);
+  const { roles, selectedUser } = useAppSelector((state) => state.users);
   const dispatch = useAppDispatch();
   const schema = yup.object().shape({
     email: yup.string().required("Email Field Is Required").email(),
@@ -90,16 +91,16 @@ const SidebarAddUser = (props: SidebarAddUserType) => {
     roles: yup.string().required("Roles is  Required"),
   });
 
-  useEffect(() => {
-    open && dispatch(getUserRoles());
-  }, [open]);
-  const defaultValues: any = {
-    email: "",
-    firstName: "",
-    lastName: "",
-    mobile: "",
-    roles: "",
-  };
+  const defaultValues = useMemo(() => {
+    return {
+      email: selectedUser?.email || "",
+      firstName: selectedUser?.firstName || "",
+      lastName: selectedUser?.lastName || "",
+      mobile: selectedUser?.mobile || "",
+      roles: selectedUser?.roles?._id || "",
+    };
+  }, [selectedUser, open]);
+
   const methods = useForm({
     defaultValues: defaultValues,
     resolver: yupResolver(schema),
@@ -108,12 +109,34 @@ const SidebarAddUser = (props: SidebarAddUserType) => {
 
   const onSubmit = async (data: UserData) => {
     setErrorMessage("");
-    console.debug("data", data);
+    if (isEdit) {
+      try {
+        const res: any = await dispatch(
+          updateUser({ id: selectedUser?._id, ...data })
+        );
+        console.debug("res", res);
+        if (res?.statusCode === 200 && res?.status === "success") {
+          toast.success(res?.message);
+          toggle();
+          dispatch(getUsersList())
+        } else {
+          toast.error(res?.message);
+          setErrorMessage(res?.message);
+        }
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error?.message || "Something Went Worng");
+        setErrorMessage(error.message || "Something went wrong");
+      }
+    }
     try {
       const res: any = await dispatch(createUser(data));
       console.debug("res", res);
       if (res?.statusCode === 201 && res?.status === "success") {
         toast.success(res?.message);
+        dispatch(getUsersList())
+
+        toggle();
       } else {
         toast.error(res?.message);
         setErrorMessage(res?.message);
@@ -124,6 +147,12 @@ const SidebarAddUser = (props: SidebarAddUserType) => {
     }
   };
 
+  useEffect(() => {
+    if (open) {
+      dispatch(getUserRoles());
+      reset(defaultValues);
+    }
+  }, [open]);
   const handleClose = () => {
     toggle();
     reset();
@@ -139,7 +168,7 @@ const SidebarAddUser = (props: SidebarAddUserType) => {
       sx={{ "& .MuiDrawer-paper": { width: { xs: 300, sm: 400 } } }}
     >
       <Header>
-        <Typography variant="h5">Add User</Typography>
+        <Typography variant="h5">{isEdit ? "Edit" : "Add"} User</Typography>
         <IconButton
           size="small"
           onClick={handleClose}
@@ -159,7 +188,7 @@ const SidebarAddUser = (props: SidebarAddUserType) => {
       </Header>
       <Box sx={{ p: (theme) => theme.spacing(0, 6, 6) }}>
         {errorMessage && (
-          <Alert variant="outlined" severity="error" sx={{mb:2}}>
+          <Alert variant="outlined" severity="error" sx={{ mb: 2 }}>
             {errorMessage}
           </Alert>
         )}

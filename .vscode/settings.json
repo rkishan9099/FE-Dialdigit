@@ -74,5 +74,9 @@
     "errorLens.fontStyleItalic": true,
     "[typescriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "files.autoSave": "afterDelay",
+    "workbench.colorCustomizations": {
+        
     }
 }

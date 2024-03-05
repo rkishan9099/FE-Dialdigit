@@ -10,7 +10,7 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 
 // ** Icon Imports
-import Icon from 'src/@core/components/icon'
+import Icon from '@/@core/components/icon'
 
 type Props = {
   open: boolean
@@ -58,7 +58,7 @@ const UserSuspendDialog = (props: Props) => {
             <Typography variant='h4' sx={{ mb: 5, color: 'text.secondary' }}>
               Are you sure?
             </Typography>
-            <Typography>You won't be able to revert user!</Typography>
+            <Typography>You  be able to revert user!</Typography>
           </Box>
         </DialogContent>
         <DialogActions

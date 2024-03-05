@@ -4,6 +4,14 @@ function path(root: string, sublink: string) {
   return `${root}${sublink}`;
 }
 
+export const UserTabs = Object.freeze({
+  view: "view",
+  security: "security",
+  notification: "notification",
+  "billing-plan": "billing-plan",
+  connection: "connection",
+});
+
 const ROOTS_AUTH = "/auth";
 const ROOTS_DASHBOARD = "";
 
@@ -35,6 +43,14 @@ export const PATH_DASHBOARD = {
 
   user: {
     list: path(ROOTS_DASHBOARD, "/users"),
+    tab: {
+      view: (id: string) => path(ROOTS_DASHBOARD, `/users/${id}/view`),
+      security: (id: string) => path(ROOTS_DASHBOARD, `/users/${id}/security`),
+      notification: (id: string) => path(ROOTS_DASHBOARD, `/users/${id}/notification`),
+      connection: (id: string) => path(ROOTS_DASHBOARD, `/users/${id}/connection`),
+      "billing-plan": (id: string) => path(ROOTS_DASHBOARD, `/users/${id}/billing-plan`),
+
+    },
   },
   chat: {
     general: path(ROOTS_DASHBOARD, "/chat"),

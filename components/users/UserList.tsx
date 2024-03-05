@@ -45,8 +45,9 @@ import { ThemeColor } from "@/@core/layouts/types";
 import { UserRoleType, UsersType } from "@/types/apps/userTypes";
 import TableHeader from "@/@core/views/user/list/TableHeader";
 import SidebarAddUser from "@/@core/views/user/list/AddUserDrawer";
-import { getUsersList } from "@/store/users/users";
+import { getUserById, getUserRoles, getUsersList } from "@/store/users/users";
 import { useAppSelector } from "@/lib/redux/store";
+import { PATH_DASHBOARD } from "@/routes/paths";
 
 // ** Custom Table Components Imports
 
@@ -103,7 +104,7 @@ const renderClient = (row: any) => {
   }
 };
 
-const RowOptions = ({ id }: { id: number | string }) => {
+const RowOptions = ({ id, setIsEdit }: { id: string; setIsEdit: any }) => {
   // ** Hooks
   const dispatch = useDispatch<AppDispatch>();
 
@@ -117,6 +118,10 @@ const RowOptions = ({ id }: { id: number | string }) => {
   };
   const handleRowOptionsClose = () => {
     setAnchorEl(null);
+  };
+
+  const editUser = () => {
+    setIsEdit(id);
   };
 
   return (
@@ -142,13 +147,13 @@ const RowOptions = ({ id }: { id: number | string }) => {
         <MenuItem
           component={Link}
           sx={{ "& svg": { mr: 2 } }}
-          href="/apps/user/view/account"
+          href={PATH_DASHBOARD.user.tab.view(id)}
           onClick={handleRowOptionsClose}
         >
           <Icon icon="tabler:eye" fontSize={20} />
           View
         </MenuItem>
-        <MenuItem onClick={handleRowOptionsClose} sx={{ "& svg": { mr: 2 } }}>
+        <MenuItem onClick={editUser} sx={{ "& svg": { mr: 2 } }}>
           <Icon icon="tabler:edit" fontSize={20} />
           Edit
         </MenuItem>
@@ -161,126 +166,21 @@ const RowOptions = ({ id }: { id: number | string }) => {
   );
 };
 
-const columns: GridColDef[] = [
-  {
-    flex: 0.25,
-    minWidth: 280,
-    field: "fullName",
-    headerName: "User",
-    renderCell: ({ row }: CellType) => {
-
-      return (
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          {renderClient(row)}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-start",
-              flexDirection: "column",
-            }}
-          >
-            <Typography
-              noWrap
-              component={Link}
-              href="/apps/user/view/account"
-              sx={{
-                fontWeight: 500,
-                textDecoration: "none",
-                color: "text.secondary",
-                "&:hover": { color: "primary.main" },
-              }}
-            >
-              {`${row?.firstName} ${row?.lastName}`}
-            </Typography>
-            <Typography noWrap variant="body2" sx={{ color: "text.disabled" }}>
-              {row?.email}
-            </Typography>
-          </Box>
-        </Box>
-      );
-    },
-  },
-  {
-    flex: 0.15,
-    field: "role",
-    minWidth: 170,
-    headerName: "Role",
-    renderCell: ({ row }: CellType) => {
-      return (
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <CustomAvatar
-            skin="light"
-            sx={{ mr: 4, width: 30, height: 30 }}
-            color={(userRoleObj[row.roles?.role].color as ThemeColor) || "primary"}
-          >
-            <Icon icon={userRoleObj[row.roles?.role].icon} />
-          </CustomAvatar>
-          <Typography
-            noWrap
-            sx={{ color: "text.secondary", textTransform: "capitalize" }}
-          >
-            {row.roles?.name}
-          </Typography>
-        </Box>
-      );
-    },
-  },
-  {
-    flex: 0.15,
-    minWidth: 120,
-    headerName: "Mobile",
-    field: "mobile",
-    renderCell: ({ row }: CellType) => {
-      return (
-        <Typography
-          noWrap
-          sx={{
-            fontWeight: 500,
-            color: "text.secondary",
-            textTransform: "capitalize",
-          }}
-        >
-          {row?.mobile}
-        </Typography>
-      );
-    },
-  },
-  {
-    flex: 0.1,
-    minWidth: 110,
-    field: "status",
-    headerName: "Status",
-    renderCell: ({ row }: CellType) => {
-      return (
-        <CustomChip
-          rounded
-          skin="light"
-          size="small"
-          label={row.status}
-          color={userStatusObj[row?.status]}
-          sx={{ textTransform: "capitalize" }}
-        />
-      );
-    },
-  },
-  {
-    flex: 0.1,
-    minWidth: 100,
-    sortable: false,
-    field: "actions",
-    headerName: "Actions",
-    renderCell: ({ row }: CellType) => <RowOptions id={row.id} />,
-  },
-];
-
 const UserList = () => {
   // ** State
+  const { roles } = useSelector((state: RootState) => state.users);
   const [role, setRole] = useState<string>("");
   const [plan, setPlan] = useState<string>("");
   const [value, setValue] = useState<string>("");
   const [status, setStatus] = useState<string>("");
-  const store =useAppSelector((state)=>state.users)
+  const store = useAppSelector((state) => state.users);
   const [addUserOpen, setAddUserOpen] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [filter, setFilter] = useState<any>({
+    role: "",
+    status: "",
+    searchQuery: "",
+  });
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
@@ -291,18 +191,20 @@ const UserList = () => {
 
   const handleFilter = useCallback((val: string) => {
     setValue(val);
+    setFilter({ ...filter, searchQuery: val });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRoleChange = useCallback((e: SelectChangeEvent<unknown>) => {
     setRole(e.target.value as string);
-  }, []);
-
-  const handlePlanChange = useCallback((e: SelectChangeEvent<unknown>) => {
-    setPlan(e.target.value as string);
+    setFilter({ ...filter, role: e.target.value });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleStatusChange = useCallback((e: SelectChangeEvent<unknown>) => {
     setStatus(e.target.value as string);
+    setFilter({ ...filter, status: e.target.value });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen);
@@ -311,11 +213,147 @@ const UserList = () => {
     setPaginationModel(val);
   }, []);
 
-
+  useEffect(() => {}, [paginationModel, role, status]);
 
   useEffect(() => {
     dispatch(getUsersList());
+    dispatch(getUserRoles());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const fetchUser = useCallback(() => {
+    dispatch(getUsersList({ ...paginationModel, filters: filter }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, paginationModel]);
+
+  useEffect(() => {
+    fetchUser();
+  }, [filter, paginationModel]);
+
+  const handleEditUser = async (id: string) => {
+    dispatch(getUserById(id));
+    setIsEdit(true);
+    setAddUserOpen(true);
+  };
+
+  const columns: GridColDef[] = [
+    {
+      flex: 0.25,
+      minWidth: 280,
+      field: "fullName",
+      headerName: "User",
+      renderCell: ({ row }: CellType) => {
+        return (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            {renderClient(row)}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "flex-start",
+                flexDirection: "column",
+              }}
+            >
+              <Typography
+                noWrap
+                component={Link}
+                href={PATH_DASHBOARD.user.tab.view(row?._id)}
+                sx={{
+                  fontWeight: 500,
+                  textDecoration: "none",
+                  color: "text.secondary",
+                  "&:hover": { color: "primary.main" },
+                }}
+              >
+                {`${row?.firstName} ${row?.lastName}`}
+              </Typography>
+              <Typography
+                noWrap
+                variant="body2"
+                sx={{ color: "text.disabled" }}
+              >
+                {row?.email}
+              </Typography>
+            </Box>
+          </Box>
+        );
+      },
+    },
+    {
+      flex: 0.15,
+      field: "role",
+      minWidth: 170,
+      headerName: "Role",
+      renderCell: ({ row }: CellType) => {
+        return (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <CustomAvatar
+              skin="light"
+              sx={{ mr: 4, width: 30, height: 30 }}
+              color={
+                (userRoleObj[row.roles?.role].color as ThemeColor) || "primary"
+              }
+            >
+              <Icon icon={userRoleObj[row.roles?.role].icon} />
+            </CustomAvatar>
+            <Typography
+              noWrap
+              sx={{ color: "text.secondary", textTransform: "capitalize" }}
+            >
+              {row.roles?.name}
+            </Typography>
+          </Box>
+        );
+      },
+    },
+    {
+      flex: 0.15,
+      minWidth: 120,
+      headerName: "Mobile",
+      field: "mobile",
+      renderCell: ({ row }: CellType) => {
+        return (
+          <Typography
+            noWrap
+            sx={{
+              fontWeight: 500,
+              color: "text.secondary",
+              textTransform: "capitalize",
+            }}
+          >
+            {row?.mobile}
+          </Typography>
+        );
+      },
+    },
+    {
+      flex: 0.1,
+      minWidth: 110,
+      field: "status",
+      headerName: "Status",
+      renderCell: ({ row }: CellType) => {
+        return (
+          <CustomChip
+            rounded
+            skin="light"
+            size="small"
+            label={row.status === 1 ? "Active" : "In-Active"}
+            color={userStatusObj[row?.status]}
+            sx={{ textTransform: "capitalize" }}
+          />
+        );
+      },
+    },
+    {
+      flex: 0.1,
+      minWidth: 100,
+      sortable: false,
+      field: "actions",
+      headerName: "Actions",
+      renderCell: ({ row }: CellType) => (
+        <RowOptions id={row._id} setIsEdit={handleEditUser} />
+      ),
+    },
+  ];
 
   return (
     <Grid container spacing={6.5}>
@@ -336,31 +374,16 @@ const UserList = () => {
                   }}
                 >
                   <MenuItem value="">Select Role</MenuItem>
-                  <MenuItem value="admin">Admin</MenuItem>
-                  <MenuItem value="author">Author</MenuItem>
-                  <MenuItem value="editor">Editor</MenuItem>
-                  <MenuItem value="maintainer">Maintainer</MenuItem>
-                  <MenuItem value="subscriber">Subscriber</MenuItem>
+                  {roles &&
+                    roles?.length > 0 &&
+                    roles?.map((role) => (
+                      <MenuItem key={role?._id} value={role?._id}>
+                        {role.name}
+                      </MenuItem>
+                    ))}
                 </CustomTextField>
               </Grid>
-              <Grid item sm={4} xs={12}>
-                <CustomTextField
-                  select
-                  fullWidth
-                  defaultValue="Select Plan"
-                  SelectProps={{
-                    value: plan,
-                    displayEmpty: true,
-                    onChange: (e) => handlePlanChange(e),
-                  }}
-                >
-                  <MenuItem value="">Select Plan</MenuItem>
-                  <MenuItem value="basic">Basic</MenuItem>
-                  <MenuItem value="company">Company</MenuItem>
-                  <MenuItem value="enterprise">Enterprise</MenuItem>
-                  <MenuItem value="team">Team</MenuItem>
-                </CustomTextField>
-              </Grid>
+
               <Grid item sm={4} xs={12}>
                 <CustomTextField
                   select
@@ -373,9 +396,8 @@ const UserList = () => {
                   }}
                 >
                   <MenuItem value="">Select Status</MenuItem>
-                  <MenuItem value="pending">Pending</MenuItem>
-                  <MenuItem value="active">Active</MenuItem>
-                  <MenuItem value="inactive">Inactive</MenuItem>
+                  <MenuItem value="1">Active</MenuItem>
+                  <MenuItem value="0">Inactive</MenuItem>
                 </CustomTextField>
               </Grid>
             </Grid>
@@ -399,12 +421,15 @@ const UserList = () => {
             pageSizeOptions={[10, 25, 50, 100]}
             paginationModel={paginationModel}
             onPaginationModelChange={handlePageChange}
-
           />
         </Card>
       </Grid>
 
-      <SidebarAddUser open={addUserOpen} toggle={toggleAddUserDrawer} />
+      <SidebarAddUser
+        open={addUserOpen}
+        toggle={toggleAddUserDrawer}
+        isEdit={isEdit}
+      />
     </Grid>
   );
 };

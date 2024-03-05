@@ -12,13 +12,13 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import LinearProgress from '@mui/material/LinearProgress'
 
 // ** Custom Component Import
-import CustomTextField from 'src/@core/components/mui/text-field'
+import CustomTextField from '@/@core/components/mui/text-field'
 
 // ** Third Party Imports
 import axios from 'axios'
 
 // ** Type Imports
-import { ProjectListDataType } from 'src/types/apps/userTypes'
+import { ProjectListDataType } from '@/types/apps/userTypes'
 
 interface CellType {
   row: ProjectListDataType
