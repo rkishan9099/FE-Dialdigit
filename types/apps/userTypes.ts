@@ -27,3 +27,12 @@ export type ProjectListDataType = {
   progressValue: number
   progressColor: ThemeColor
 }
+export enum UserRoleType {
+  MASTER_ADMIN = 'MASTER_ADMIN',
+  ADMIN = 'ADMIN',
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  AGENT = 'AGENT',
+  USER = 'USER',
+  CUSTOMER = 'CUSTOMER',
+  DEALER = 'DEALER',
+}

@@ -29,7 +29,7 @@ const ServerSideCallSearch = ({ onChange, filterType, onFilterType, resetFilterT
   const pickerCalendar = useDateRangePicker(null, null)
   const [filters, setFilters] = useState<any>({
     agent: '',
-    callerid_number: '',
+    callerid: '',
     destination: '',
     direction: ''
   })
@@ -37,7 +37,7 @@ const ServerSideCallSearch = ({ onChange, filterType, onFilterType, resetFilterT
   const [expanded, setExpanded] = useState<boolean>(false)
   const toggleExpand = () => {
     if (expanded) {
-      setFilters({ agent: '', callerid_number: '', destination: '', agentsName: '', direction: '' })
+      setFilters({ agent: '', callerid: '', destination_number: '', agentsName: '', direction: '' })
       pickerCalendar?.onReset && pickerCalendar?.onReset()
     }
     setExpanded(!expanded)

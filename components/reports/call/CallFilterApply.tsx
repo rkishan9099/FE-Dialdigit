@@ -55,7 +55,7 @@ const CallFilterApply = ({
           </DatePickerWrapper>
         </Grid>
        
-        <Grid item xs={4}>
+        {/* <Grid item xs={4}>
           <TextField
             size='small'
             value={filters.agent}
@@ -88,12 +88,12 @@ const CallFilterApply = ({
               }
             }}
           />
-        </Grid>
+        </Grid> */}
         <Grid item xs={4}>
           <TextField
             size='small'
-            value={filters.callerid_number}
-            onChange={event => setFilters({ ...filters, callerid_number: event.target.value })}
+            value={filters.callerid}
+            onChange={event => setFilters({ ...filters, callerid: event.target.value })}
             placeholder='Caller Id'
             InputProps={{
               startAdornment: (
@@ -106,7 +106,7 @@ const CallFilterApply = ({
                   size='small'
                   title='Clear'
                   aria-label='Clear'
-                  onClick={() => setFilters({ ...filters, callerid_number: '' })}
+                  onClick={() => setFilters({ ...filters, callerid: '' })}
                 >
                   <Icon icon='tabler:x' fontSize={20} />
                 </IconButton>
@@ -127,8 +127,8 @@ const CallFilterApply = ({
         <Grid item xs={4}>
           <TextField
             size='small'
-            value={filters.destination}
-            onChange={event => setFilters({ ...filters, destination: event.target.value })}
+            value={filters.destination_number}
+            onChange={event => setFilters({ ...filters, destination_number: event.target.value })}
             placeholder='Destination'
             InputProps={{
               startAdornment: (
@@ -141,7 +141,7 @@ const CallFilterApply = ({
                   size='small'
                   title='Clear'
                   aria-label='Clear'
-                  onClick={() => setFilters({ ...filters, destination: '' })}
+                  onClick={() => setFilters({ ...filters, destination_number: '' })}
                 >
                   <Icon icon='tabler:x' fontSize={20} />
                 </IconButton>

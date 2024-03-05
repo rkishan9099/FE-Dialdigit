@@ -16,6 +16,14 @@ createUser:path(USER_PREFIX,'/')
 }
 
 
+const ROLE_PRIFIX ='roles';
+export const RolesApiUrl ={
+  role:{
+    create:path(ROLE_PRIFIX,''),
+    get:path(ROLE_PRIFIX,'')
+  }
+}
+
 const REPORTS_PRIFIX ='reports';
 export const ReportsApiUrl={
   call:{

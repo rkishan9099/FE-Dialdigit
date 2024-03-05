@@ -1,24 +1,44 @@
 import axiosInstance from "@/Utils/axios";
-import { UserApiUrl } from "@/configs/apiUrlConstant";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { getUser } from "@/actions/userActions";
+import { RolesApiUrl, UserApiUrl } from "@/configs/apiUrlConstant";
+import { Dispatch, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 interface UserStateType {
   users: any[];
   isLoading: boolean;
   accessToken: string;
   refreshToken: string;
+  roles: any[];
+  isError: boolean;
+  error: any;
+  total: number;
 }
 const initialState: UserStateType = {
   users: [],
+  total: 0,
   isLoading: false,
   accessToken: "",
   refreshToken: "",
+  roles: [],
+  isError: false,
+  error: null,
 };
 
 const slice = createSlice({
   name: "users",
   initialState,
   reducers: {
+    // START LOADING
+    startLoadind(state) {
+      state.isLoading = true;
+    },
+
+    // HAS ERROR
+    hasError(state, action) {
+      state.isLoading = false;
+      state.error = action.payload;
+      state.users = [];
+    },
     updateUserState: (
       state,
       action: {
@@ -37,20 +57,29 @@ const slice = createSlice({
         console.error(`Invalid key: ${key}`);
       }
     },
+    geuUserstSuccess(state, action) {
+      console.debug("action", action.payload);
+      state.isLoading = false;
+      state.users = action.payload.data || [];
+      state.total = action.payload.totalItems || 0;
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
     builder.addCase(fetchUser.fulfilled, (state, action) => {
       // Add user to the state array
       // console.debug("action", action.payload);
-      state.users=action.payload.data
+      state.users = action.payload.data;
+    });
+    builder.addCase(getUserRoles.fulfilled, (state, action) => {
+      state.roles = action.payload;
     });
   },
 });
 
 export const fetchUser = createAsyncThunk(
   "users/update",
-
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(UserApiUrl.getUser);
@@ -64,6 +93,51 @@ export const fetchUser = createAsyncThunk(
     }
   }
 );
+
+export function getUsersList(params: any = {}) {
+  return async (dispatch: Dispatch) => {
+    dispatch(slice.actions.startLoadind());
+    try {
+      const response = await axiosInstance.get(UserApiUrl.getUser, params);
+      dispatch(slice.actions.geuUserstSuccess(response.data));
+
+      return response.data;
+    } catch (error) {
+      dispatch(slice.actions.hasError(error));
+
+      return error;
+    }
+  };
+}
+
+export const createUser = (data: any) => {
+  return async (dispatch: Dispatch) => {
+    try {
+      const response = await axiosInstance.post(UserApiUrl.createUser, data);
+
+      return response;
+    } catch (error) {
+      return error;
+    }
+  };
+};
+
+export const getUserRoles = createAsyncThunk(
+  "users/roles",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(RolesApiUrl.role.get);
+      return response.data;
+    } catch (err: any) {
+      if (!err?.response) {
+        throw err;
+      }
+
+      return rejectWithValue(err?.response?.data);
+    }
+  }
+);
+
 export const { updateUserState } = slice.actions;
 
 export default slice.reducer;
