@@ -114,6 +114,7 @@ const SidebarAddUser = (props: SidebarAddUserType) => {
       console.debug("res", res);
       if (res?.statusCode === 201 && res?.status === "success") {
         toast.success(res?.message);
+        toggle()
       } else {
         toast.error(res?.message);
         setErrorMessage(res?.message);

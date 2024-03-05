@@ -45,7 +45,7 @@ import { ThemeColor } from "@/@core/layouts/types";
 import { UserRoleType, UsersType } from "@/types/apps/userTypes";
 import TableHeader from "@/@core/views/user/list/TableHeader";
 import SidebarAddUser from "@/@core/views/user/list/AddUserDrawer";
-import { getUsersList } from "@/store/users/users";
+import { getUserRoles, getUsersList } from "@/store/users/users";
 import { useAppSelector } from "@/lib/redux/store";
 
 // ** Custom Table Components Imports
@@ -168,7 +168,6 @@ const columns: GridColDef[] = [
     field: "fullName",
     headerName: "User",
     renderCell: ({ row }: CellType) => {
-
       return (
         <Box sx={{ display: "flex", alignItems: "center" }}>
           {renderClient(row)}
@@ -211,7 +210,9 @@ const columns: GridColDef[] = [
           <CustomAvatar
             skin="light"
             sx={{ mr: 4, width: 30, height: 30 }}
-            color={(userRoleObj[row.roles?.role].color as ThemeColor) || "primary"}
+            color={
+              (userRoleObj[row.roles?.role].color as ThemeColor) || "primary"
+            }
           >
             <Icon icon={userRoleObj[row.roles?.role].icon} />
           </CustomAvatar>
@@ -256,7 +257,7 @@ const columns: GridColDef[] = [
           rounded
           skin="light"
           size="small"
-          label={row.status}
+          label={row.status === 1 ? "Active" : "In-Active"}
           color={userStatusObj[row?.status]}
           sx={{ textTransform: "capitalize" }}
         />
@@ -275,12 +276,18 @@ const columns: GridColDef[] = [
 
 const UserList = () => {
   // ** State
+  const { roles } = useSelector((state: RootState) => state.users);
   const [role, setRole] = useState<string>("");
   const [plan, setPlan] = useState<string>("");
   const [value, setValue] = useState<string>("");
   const [status, setStatus] = useState<string>("");
-  const store =useAppSelector((state)=>state.users)
+  const store = useAppSelector((state) => state.users);
   const [addUserOpen, setAddUserOpen] = useState<boolean>(false);
+  const [filter, setFilter] = useState<any>({
+    role: "",
+    status: "",
+    searchQuery: "",
+  });
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
@@ -291,18 +298,20 @@ const UserList = () => {
 
   const handleFilter = useCallback((val: string) => {
     setValue(val);
+    setFilter({ ...filter, searchQuery: val });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRoleChange = useCallback((e: SelectChangeEvent<unknown>) => {
     setRole(e.target.value as string);
-  }, []);
-
-  const handlePlanChange = useCallback((e: SelectChangeEvent<unknown>) => {
-    setPlan(e.target.value as string);
+    setFilter({ ...filter, role: e.target.value });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleStatusChange = useCallback((e: SelectChangeEvent<unknown>) => {
     setStatus(e.target.value as string);
+    setFilter({ ...filter, status: e.target.value });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen);
@@ -311,11 +320,22 @@ const UserList = () => {
     setPaginationModel(val);
   }, []);
 
-
+  useEffect(() => {}, [paginationModel, role, status]);
 
   useEffect(() => {
     dispatch(getUsersList());
+    dispatch(getUserRoles());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const fetchUser = useCallback(() => {
+    dispatch(getUsersList({ ...paginationModel, filters: filter }));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, paginationModel]);
+
+  useEffect(() => {
+    fetchUser()
+  }, [filter, paginationModel]);
 
   return (
     <Grid container spacing={6.5}>
@@ -336,31 +356,16 @@ const UserList = () => {
                   }}
                 >
                   <MenuItem value="">Select Role</MenuItem>
-                  <MenuItem value="admin">Admin</MenuItem>
-                  <MenuItem value="author">Author</MenuItem>
-                  <MenuItem value="editor">Editor</MenuItem>
-                  <MenuItem value="maintainer">Maintainer</MenuItem>
-                  <MenuItem value="subscriber">Subscriber</MenuItem>
+                  {roles &&
+                    roles?.length > 0 &&
+                    roles?.map((role) => (
+                      <MenuItem key={role?._id} value={role?._id}>
+                        {role.name}
+                      </MenuItem>
+                    ))}
                 </CustomTextField>
               </Grid>
-              <Grid item sm={4} xs={12}>
-                <CustomTextField
-                  select
-                  fullWidth
-                  defaultValue="Select Plan"
-                  SelectProps={{
-                    value: plan,
-                    displayEmpty: true,
-                    onChange: (e) => handlePlanChange(e),
-                  }}
-                >
-                  <MenuItem value="">Select Plan</MenuItem>
-                  <MenuItem value="basic">Basic</MenuItem>
-                  <MenuItem value="company">Company</MenuItem>
-                  <MenuItem value="enterprise">Enterprise</MenuItem>
-                  <MenuItem value="team">Team</MenuItem>
-                </CustomTextField>
-              </Grid>
+
               <Grid item sm={4} xs={12}>
                 <CustomTextField
                   select
@@ -373,9 +378,8 @@ const UserList = () => {
                   }}
                 >
                   <MenuItem value="">Select Status</MenuItem>
-                  <MenuItem value="pending">Pending</MenuItem>
-                  <MenuItem value="active">Active</MenuItem>
-                  <MenuItem value="inactive">Inactive</MenuItem>
+                  <MenuItem value="1">Active</MenuItem>
+                  <MenuItem value="0">Inactive</MenuItem>
                 </CustomTextField>
               </Grid>
             </Grid>
@@ -399,7 +403,6 @@ const UserList = () => {
             pageSizeOptions={[10, 25, 50, 100]}
             paginationModel={paginationModel}
             onPaginationModelChange={handlePageChange}
-
           />
         </Card>
       </Grid>

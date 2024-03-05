@@ -55,9 +55,9 @@
 
     },
     "editor.defaultFormatter": "Codeium.codeium",
-    "editor.fontLigatures": false,
+    "editor.fontLigatures": true,
     "editor.fontSize": 14,
-    "editor.fontVariations": false,
+    "editor.fontVariations": true,
     "better-comments.highlightPlainText": true,
     "codeium.aggressiveShutdown": true,
     "codium.codeCompletion.enable": true,

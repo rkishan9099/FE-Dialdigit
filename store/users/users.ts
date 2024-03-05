@@ -95,10 +95,11 @@ export const fetchUser = createAsyncThunk(
 );
 
 export function getUsersList(params: any = {}) {
+  console.debug("sss", params);
   return async (dispatch: Dispatch) => {
     dispatch(slice.actions.startLoadind());
     try {
-      const response = await axiosInstance.get(UserApiUrl.getUser, params);
+      const response = await axiosInstance.post(UserApiUrl.getUser, {...params});
       dispatch(slice.actions.geuUserstSuccess(response.data));
 
       return response.data;

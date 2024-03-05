@@ -11,7 +11,7 @@ export const  AuthApiUrl ={
 
 const USER_PREFIX ='users';
 export const  UserApiUrl ={
-getUser:path(USER_PREFIX,''),
+getUser:path(USER_PREFIX,'/get-users'),
 createUser:path(USER_PREFIX,'/')
 }
 
