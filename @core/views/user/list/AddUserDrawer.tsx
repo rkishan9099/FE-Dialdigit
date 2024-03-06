@@ -119,7 +119,6 @@ const SidebarAddUser = (props: SidebarAddUserType) => {
         const res: any = await dispatch(
           updateUser({ id: selectedUser?._id, ...data })
         );
-        console.debug("res", res);
         if (res?.statusCode === 200 && res?.status === "success") {
           toast.success(res?.message);
           toggle();
@@ -212,7 +211,7 @@ const SidebarAddUser = (props: SidebarAddUserType) => {
           />
           <RHFCustomTextFiled
             name="email"
-            label="Eamil"
+            label="Email"
             sx={{ mb: 4 }}
             size="small"
           />

@@ -12,7 +12,7 @@ interface UserStateType {
   isError: boolean;
   error: any;
   total: number;
-  selectedUser:any
+  selectedUser: any;
 }
 const initialState: UserStateType = {
   users: [],
@@ -23,7 +23,7 @@ const initialState: UserStateType = {
   roles: [],
   isError: false,
   error: null,
-  selectedUser:null
+  selectedUser: null,
 };
 
 const slice = createSlice({
@@ -67,10 +67,13 @@ const slice = createSlice({
       state.error = null;
     },
     getSelectedUserSuccess(state, action) {
-      if(action.payload){
-        state.selectedUser={...action.payload,name:`${action.payload.firstName} ${action.payload.lastName}`}
+      if (action.payload) {
+        state.selectedUser = {
+          ...action.payload,
+          name: `${action.payload.firstName} ${action.payload.lastName}`,
+        };
       }
-    }
+    },
   },
   extraReducers: (builder) => {
     // Add reducers for additional action types here, and handle loading state as needed
@@ -84,8 +87,6 @@ const slice = createSlice({
     });
   },
 });
-
-
 
 export const fetchUser = createAsyncThunk(
   "users/update",
@@ -103,14 +104,14 @@ export const fetchUser = createAsyncThunk(
   }
 );
 
-
-
 export function getUsersList(params: any = {}) {
   console.debug("sss", params);
   return async (dispatch: Dispatch) => {
     dispatch(slice.actions.startLoadind());
     try {
-      const response = await axiosInstance.post(UserApiUrl.getUser, {...params});
+      const response = await axiosInstance.post(UserApiUrl.getUser, {
+        ...params,
+      });
       dispatch(slice.actions.geuUserstSuccess(response.data));
 
       return response.data;
@@ -122,8 +123,7 @@ export function getUsersList(params: any = {}) {
   };
 }
 
-
-export function getUserById(id:string) {
+export function getUserById(id: string) {
   return async (dispatch: Dispatch) => {
     try {
       const response = await axiosInstance.get(UserApiUrl.getUserById(id));
@@ -138,7 +138,6 @@ export function getUserById(id:string) {
   };
 }
 
-
 export const createUser = (data: any) => {
   return async (dispatch: Dispatch) => {
     try {
@@ -151,11 +150,25 @@ export const createUser = (data: any) => {
   };
 };
 
-
 export const updateUser = (data: any) => {
   return async (dispatch: Dispatch) => {
     try {
-      const response = await axiosInstance.patch(UserApiUrl.updateUser(data.id), data);
+      const response = await axiosInstance.patch(
+        UserApiUrl.updateUser(data.id),
+        data
+      );
+
+      return response;
+    } catch (error) {
+      return error;
+    }
+  };
+};
+
+export const deleteUser = (id: string) => {
+  return async (dispatch: Dispatch) => {
+    try {
+      const response = await axiosInstance.delete(UserApiUrl.deleteUser(id));
 
       return response;
     } catch (error) {

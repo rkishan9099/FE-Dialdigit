@@ -36,18 +36,22 @@ import { getInitials } from "@/@core/utils/get-initials";
 
 // ** Actions Imports
 
-// ** Third Party Components
-import axios from "axios";
-
 // ** Types Imports
 import { RootState, AppDispatch } from "@/store";
 import { ThemeColor } from "@/@core/layouts/types";
 import { UserRoleType, UsersType } from "@/types/apps/userTypes";
 import TableHeader from "@/@core/views/user/list/TableHeader";
 import SidebarAddUser from "@/@core/views/user/list/AddUserDrawer";
-import { getUserById, getUserRoles, getUsersList } from "@/store/users/users";
+import {
+  deleteUser,
+  getUserById,
+  getUserRoles,
+  getUsersList,
+} from "@/store/users/users";
 import { useAppSelector } from "@/lib/redux/store";
 import { PATH_DASHBOARD } from "@/routes/paths";
+import DeleteConfirmDiallog from "@/@core/components/diallog/DeleteConfirmDiallog";
+import toast from "react-hot-toast";
 
 // ** Custom Table Components Imports
 
@@ -104,7 +108,15 @@ const renderClient = (row: any) => {
   }
 };
 
-const RowOptions = ({ id, setIsEdit }: { id: string; setIsEdit: any }) => {
+const RowOptions = ({
+  id,
+  setIsEdit,
+  deleteHandler,
+}: {
+  id: string;
+  setIsEdit: any;
+  deleteHandler: any;
+}) => {
   // ** Hooks
   const dispatch = useDispatch<AppDispatch>();
 
@@ -157,7 +169,13 @@ const RowOptions = ({ id, setIsEdit }: { id: string; setIsEdit: any }) => {
           <Icon icon="tabler:edit" fontSize={20} />
           Edit
         </MenuItem>
-        <MenuItem sx={{ "& svg": { mr: 2 } }}>
+        <MenuItem
+          sx={{ "& svg": { mr: 2 } }}
+          onClick={() => {
+            deleteHandler(id);
+            setAnchorEl(null);
+          }}
+        >
           <Icon icon="tabler:trash" fontSize={20} />
           Delete
         </MenuItem>
@@ -176,6 +194,8 @@ const UserList = () => {
   const store = useAppSelector((state) => state.users);
   const [addUserOpen, setAddUserOpen] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [confirmDelete, setConfirmDelete] = useState<string>("");
+  const [open, setOpen] = useState<boolean>(false);
   const [filter, setFilter] = useState<any>({
     role: "",
     status: "",
@@ -236,6 +256,10 @@ const UserList = () => {
     setAddUserOpen(true);
   };
 
+  const confimDeleteHandler = (id: string) => {
+    setOpen(true);
+    setConfirmDelete(id);
+  };
   const columns: GridColDef[] = [
     {
       flex: 0.25,
@@ -350,91 +374,113 @@ const UserList = () => {
       field: "actions",
       headerName: "Actions",
       renderCell: ({ row }: CellType) => (
-        <RowOptions id={row._id} setIsEdit={handleEditUser} />
+        <RowOptions
+          id={row._id}
+          setIsEdit={handleEditUser}
+          deleteHandler={confimDeleteHandler}
+        />
       ),
     },
   ];
 
+  const deleteUserHandler = async () => {
+    const res: any = await dispatch(deleteUser(confirmDelete));
+    if (res?.statusCode === 200 && res?.status === "success") {
+      setOpen(false);
+      toast.success(res?.message);
+      dispatch(getUsersList());
+    } else {
+      toast.error(res?.message);
+    }
+  };
   useEffect(() => {
     fetchUser();
   }, [filter, paginationModel]);
 
   return (
-    <Grid container spacing={6.5}>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title="Search Filters" />
-          <CardContent>
-            <Grid container spacing={6}>
-              <Grid item sm={4} xs={12}>
-                <CustomTextField
-                  select
-                  fullWidth
-                  defaultValue="Select Role"
-                  SelectProps={{
-                    value: role,
-                    displayEmpty: true,
-                    onChange: (e) => handleRoleChange(e),
-                  }}
-                >
-                  <MenuItem value="">Select Role</MenuItem>
-                  {roles &&
-                    roles?.length > 0 &&
-                    roles?.map((role) => (
-                      <MenuItem key={role?._id} value={role?._id}>
-                        {role.name}
-                      </MenuItem>
-                    ))}
-                </CustomTextField>
-              </Grid>
+    <>
+      <Grid container spacing={6.5}>
+        <Grid item xs={12}>
+          <Card>
+            <CardHeader title="Search Filters" />
+            <CardContent>
+              <Grid container spacing={6}>
+                <Grid item sm={4} xs={12}>
+                  <CustomTextField
+                    select
+                    fullWidth
+                    defaultValue="Select Role"
+                    SelectProps={{
+                      value: role,
+                      displayEmpty: true,
+                      onChange: (e) => handleRoleChange(e),
+                    }}
+                  >
+                    <MenuItem value="">Select Role</MenuItem>
+                    {roles &&
+                      roles?.length > 0 &&
+                      roles?.map((role) => (
+                        <MenuItem key={role?._id} value={role?._id}>
+                          {role.name}
+                        </MenuItem>
+                      ))}
+                  </CustomTextField>
+                </Grid>
 
-              <Grid item sm={4} xs={12}>
-                <CustomTextField
-                  select
-                  fullWidth
-                  defaultValue="Select Status"
-                  SelectProps={{
-                    value: status,
-                    displayEmpty: true,
-                    onChange: (e) => handleStatusChange(e),
-                  }}
-                >
-                  <MenuItem value="">Select Status</MenuItem>
-                  <MenuItem value="1">Active</MenuItem>
-                  <MenuItem value="0">Inactive</MenuItem>
-                </CustomTextField>
+                <Grid item sm={4} xs={12}>
+                  <CustomTextField
+                    select
+                    fullWidth
+                    defaultValue="Select Status"
+                    SelectProps={{
+                      value: status,
+                      displayEmpty: true,
+                      onChange: (e) => handleStatusChange(e),
+                    }}
+                  >
+                    <MenuItem value="">Select Status</MenuItem>
+                    <MenuItem value="1">Active</MenuItem>
+                    <MenuItem value="0">Inactive</MenuItem>
+                  </CustomTextField>
+                </Grid>
               </Grid>
-            </Grid>
-          </CardContent>
-          <Divider sx={{ m: "0 !important" }} />
-          <TableHeader
-            value={value}
-            handleFilter={handleFilter}
-            toggle={toggleAddUserDrawer}
-          />
-          <DataGrid
-            getRowId={(row) => row._id} // Specify the _id property as the unique identifierssss
-            rowHeight={75}
-            autoHeight
-            rows={store.users}
-            rowCount={store.total}
-            columns={columns}
-            loading={store.isLoading}
-            paginationMode="server"
-            disableRowSelectionOnClick
-            pageSizeOptions={[10, 25, 50, 100]}
-            paginationModel={paginationModel}
-            onPaginationModelChange={handlePageChange}
-          />
-        </Card>
+            </CardContent>
+            <Divider sx={{ m: "0 !important" }} />
+            <TableHeader
+              value={value}
+              handleFilter={handleFilter}
+              toggle={toggleAddUserDrawer}
+            />
+            <DataGrid
+              getRowId={(row) => row._id} // Specify the _id property as the unique identifierssss
+              rowHeight={75}
+              autoHeight
+              rows={store.users}
+              rowCount={store.total}
+              columns={columns}
+              loading={store.isLoading}
+              paginationMode="server"
+              disableRowSelectionOnClick
+              pageSizeOptions={[10, 25, 50, 100]}
+              paginationModel={paginationModel}
+              onPaginationModelChange={handlePageChange}
+            />
+          </Card>
+        </Grid>
+
+        <SidebarAddUser
+          open={addUserOpen}
+          toggle={toggleAddUserDrawer}
+          isEdit={isEdit}
+        />
       </Grid>
-
-      <SidebarAddUser
-        open={addUserOpen}
-        toggle={toggleAddUserDrawer}
-        isEdit={isEdit}
+      <DeleteConfirmDiallog
+        show={open}
+        setShow={setOpen}
+        confimHandler={deleteUserHandler}
+        msg={"User"}
       />
-    </Grid>
+    </>
   );
 };
 
