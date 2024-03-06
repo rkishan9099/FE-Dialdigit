@@ -355,6 +355,10 @@ const UserList = () => {
     },
   ];
 
+  useEffect(() => {
+    fetchUser();
+  }, [filter, paginationModel]);
+
   return (
     <Grid container spacing={6.5}>
       <Grid item xs={12}>

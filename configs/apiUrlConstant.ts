@@ -14,7 +14,7 @@ export const UserApiUrl = {
   getUser: path(USER_PREFIX, "/get-users"),
   createUser: path(USER_PREFIX, "/"),
   getUserById: (id: string) => path(USER_PREFIX, "/" + id),
-  updateUser: (id: string) => path(USER_PREFIX, "/"+id),
+  updateUser: (id: string) => path(USER_PREFIX, "/" + id),
 };
 
 const ROLE_PRIFIX = "roles";

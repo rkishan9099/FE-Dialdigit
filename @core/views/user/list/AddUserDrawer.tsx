@@ -44,7 +44,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store";
 import { UsersType } from "@/types/apps/userTypes";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/store";
-import { createUser, getUserRoles, getUsersList, updateUser } from "@/store/users/users";
+import {
+  createUser,
+  getUserRoles,
+  getUsersList,
+  updateUser,
+} from "@/store/users/users";
 
 interface SidebarAddUserType {
   open: boolean;
@@ -118,7 +123,7 @@ const SidebarAddUser = (props: SidebarAddUserType) => {
         if (res?.statusCode === 200 && res?.status === "success") {
           toast.success(res?.message);
           toggle();
-          dispatch(getUsersList())
+          dispatch(getUsersList());
         } else {
           toast.error(res?.message);
           setErrorMessage(res?.message);
@@ -134,7 +139,7 @@ const SidebarAddUser = (props: SidebarAddUserType) => {
       console.debug("res", res);
       if (res?.statusCode === 201 && res?.status === "success") {
         toast.success(res?.message);
-        dispatch(getUsersList())
+        dispatch(getUsersList());
 
         toggle();
       } else {
