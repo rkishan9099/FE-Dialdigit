@@ -42,8 +42,8 @@ import useSipSessionManager from "./useSipSessionManager";
 const useSipClient = (): SipClientType => {
   const { user } = useAuth();
   const { userAgent, sessions } = useSelector((state: RootState) => state.sip);
-  const sipServerAddress = "wss://testsip.digitechnobits.com:7443";
-  const sipServer = "testsip.digitechnobits.com";
+  const sipServerAddress = "wss://digit.digitechnobits.com:7443";
+  const sipServer = "digit.digitechnobits.com";
   const sessionManager = new SessionManager();
   const EmitterEvent = new events.EventEmitter();
   const {
@@ -65,7 +65,7 @@ const useSipClient = (): SipClientType => {
   };
 
   const client = {
-    username: `${user?.sipExtension}@testsip.digitechnobits.com`,
+    username: `${user?.sipExtension}@digit.digitechnobits.com`,
     password: user?.sipPassword || "",
     name: user?.name || user?.sipExtension || "",
   };
