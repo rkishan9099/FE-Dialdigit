@@ -1,6 +1,4 @@
-import UserProfile from "@/@core/views/user/user-profile/UserProfile";
 import UserTabViewPage from "@/@core/views/user/view/UserTabViewPage";
-import UserViewRight from "@/@core/views/user/view/UserViewRight";
 import { PATH_DASHBOARD, UserTabs } from "@/routes/paths";
 import { redirect } from "next/navigation";
 import React from "react";
