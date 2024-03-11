@@ -46,10 +46,12 @@ export const PATH_DASHBOARD = {
     tab: {
       view: (id: string) => path(ROOTS_DASHBOARD, `/users/${id}/view`),
       security: (id: string) => path(ROOTS_DASHBOARD, `/users/${id}/security`),
-      notification: (id: string) => path(ROOTS_DASHBOARD, `/users/${id}/notification`),
-      connection: (id: string) => path(ROOTS_DASHBOARD, `/users/${id}/connection`),
-      "billing-plan": (id: string) => path(ROOTS_DASHBOARD, `/users/${id}/billing-plan`),
-
+      notification: (id: string) =>
+        path(ROOTS_DASHBOARD, `/users/${id}/notification`),
+      connection: (id: string) =>
+        path(ROOTS_DASHBOARD, `/users/${id}/connection`),
+      "billing-plan": (id: string) =>
+        path(ROOTS_DASHBOARD, `/users/${id}/billing-plan`),
     },
   },
   chat: {
@@ -80,5 +82,10 @@ export const PATH_DASHBOARD = {
   },
   reports: {
     call: path(ROOTS_DASHBOARD, "/reports/call"),
+  },
+
+  numbers: {
+    list: path(ROOTS_DASHBOARD, "/numbers"),
+    add:path(ROOTS_DASHBOARD, "/numbers/add"),
   },
 };

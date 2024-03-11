@@ -42,6 +42,20 @@ const navigation = (): VerticalNavItemsType => {
         },
       ],
     },
+    {
+      sectionTitle: "Phone System",
+    },
+    {
+      title: "Phone System",
+      icon: "carbon:phone-ip",
+      children: [
+        {
+          title: "Number",
+          path: PATH_DASHBOARD.numbers.list,
+          icon: "fluent-emoji-high-contrast:input-numbers",
+        },
+      ],
+    },
   ];
 };
 

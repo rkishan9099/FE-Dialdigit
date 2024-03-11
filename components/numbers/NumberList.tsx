@@ -40,7 +40,6 @@ import { getInitials } from "@/@core/utils/get-initials";
 import { RootState, AppDispatch } from "@/store";
 import { ThemeColor } from "@/@core/layouts/types";
 import { UserRoleType, UsersType } from "@/types/apps/userTypes";
-import TableHeader from "@/@core/views/user/list/TableHeader";
 import SidebarAddUser from "@/@core/views/user/list/AddUserDrawer";
 import {
   deleteUser,
@@ -53,6 +52,8 @@ import { PATH_DASHBOARD } from "@/routes/paths";
 import DeleteConfirmDiallog from "@/@core/components/diallog/DeleteConfirmDiallog";
 import toast from "react-hot-toast";
 import { Stack } from "@mui/material";
+import TableHeader from "@/@core/views/Table/TableHeader";
+import { useRouter } from "next/navigation";
 
 // ** Custom Table Components Imports
 
@@ -185,7 +186,7 @@ const RowOptions = ({
   );
 };
 
-const UserList = () => {
+const NumberList = () => {
   // ** State
   const { roles } = useSelector((state: RootState) => state.users);
   const [role, setRole] = useState<string>("");
@@ -209,6 +210,8 @@ const UserList = () => {
 
   // ** Hooks
   const dispatch = useDispatch<AppDispatch>();
+
+  const router =useRouter();
 
   const handleFilter = useCallback((val: string) => {
     setValue(val);
@@ -431,6 +434,10 @@ const UserList = () => {
       toast.error(res?.message);
     }
   };
+
+  const addNumberHandle =()=>{
+    router.replace(PATH_DASHBOARD.numbers.add)
+  }
   useEffect(() => {
     fetchUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -488,7 +495,8 @@ const UserList = () => {
             <TableHeader
               value={value}
               handleFilter={handleFilter}
-              toggle={toggleAddUserDrawer}
+              buttonLabel="Add Number"
+              onClickHandle={addNumberHandle}
             />
             <DataGrid
               getRowId={(row) => row._id} // Specify the _id property as the unique identifierssss
@@ -523,4 +531,4 @@ const UserList = () => {
   );
 };
 
-export default UserList;
+export default NumberList;
