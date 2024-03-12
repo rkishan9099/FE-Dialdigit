@@ -78,5 +78,8 @@
     "files.autoSave": "afterDelay",
     "workbench.colorCustomizations": {
         
+    },
+    "[json]": {
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
     }
 }

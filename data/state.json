@@ -1,0 +1,254 @@
+[
+      {
+        "name": "Alabama",
+        "code": "AL",
+        "areaCode": "205"
+      },
+      {
+        "name": "Alaska",
+        "code": "AK",
+        "areaCode": "907"
+      },
+      {
+        "name": "Arizona",
+        "code": "AZ",
+        "areaCode": "480"
+      },
+      {
+        "name": "Arkansas",
+        "code": "AR",
+        "areaCode": "479"
+      },
+      {
+        "name": "California",
+        "code": "CA",
+        "areaCode": "510"
+      },
+      {
+        "name": "Colorado",
+        "code": "CO",
+        "areaCode": "303"
+      },
+      {
+        "name": "Connecticut",
+        "code": "CT",
+        "areaCode": "860"
+      },
+      {
+        "name": "Delaware",
+        "code": "DE",
+        "areaCode": "302"
+      },
+      {
+        "name": "Florida",
+        "code": "FL",
+        "areaCode": "305"
+      },
+      {
+        "name": "Georgia",
+        "code": "GA",
+        "areaCode": "404"
+      },
+      {
+        "name": "Hawaii",
+        "code": "HI",
+        "areaCode": "808"
+      },
+      {
+        "name": "Idaho",
+        "code": "ID",
+        "areaCode": "208"
+      },
+      {
+        "name": "Illinois",
+        "code": "IL",
+        "areaCode": "312"
+      },
+      {
+        "name": "Indiana",
+        "code": "IN",
+        "areaCode": "317"
+      },
+      {
+        "name": "Iowa",
+        "code": "IA",
+        "areaCode": "319"
+      },
+      {
+        "name": "Kansas",
+        "code": "KS",
+        "areaCode": "316"
+      },
+      {
+        "name": "Kentucky",
+        "code": "KY",
+        "areaCode": "502"
+      },
+      {
+        "name": "Louisiana",
+        "code": "LA",
+        "areaCode": "504"
+      },
+      {
+        "name": "Maine",
+        "code": "ME",
+        "areaCode": "207"
+      },
+      {
+        "name": "Maryland",
+        "code": "MD",
+        "areaCode": "410"
+      },
+      {
+        "name": "Massachusetts",
+        "code": "MA",
+        "areaCode": "617"
+      },
+      {
+        "name": "Michigan",
+        "code": "MI",
+        "areaCode": "313"
+      },
+      {
+        "name": "Minnesota",
+        "code": "MN",
+        "areaCode": "612"
+      },
+      {
+        "name": "Mississippi",
+        "code": "MS",
+        "areaCode": "228"
+      },
+      {
+        "name": "Missouri",
+        "code": "MO",
+        "areaCode": "314"
+      },
+      {
+        "name": "Montana",
+        "code": "MT",
+        "areaCode": "406"
+      },
+      {
+        "name": "Nebraska",
+        "code": "NE",
+        "areaCode": "402"
+      },
+      {
+        "name": "Nevada",
+        "code": "NV",
+        "areaCode": "702"
+      },
+      {
+        "name": "New Hampshire",
+        "code": "NH",
+        "areaCode": "603"
+      },
+      {
+        "name": "New Jersey",
+        "code": "NJ",
+        "areaCode": "201"
+      },
+      {
+        "name": "New Mexico",
+        "code": "NM",
+        "areaCode": "505"
+      },
+      {
+        "name": "New York",
+        "code": "NY",
+        "areaCode": "212"
+      },
+      {
+        "name": "North Carolina",
+        "code": "NC",
+        "areaCode": "704"
+      },
+      {
+        "name": "North Dakota",
+        "code": "ND",
+        "areaCode": "701"
+      },
+      {
+        "name": "Ohio",
+        "code": "OH",
+        "areaCode": "614"
+      },
+      {
+        "name": "Oklahoma",
+        "code": "OK",
+        "areaCode": "405"
+      },
+      {
+        "name": "Oregon",
+        "code": "OR",
+        "areaCode": "503"
+      },
+      {
+        "name": "Pennsylvania",
+        "code": "PA",
+        "areaCode": "215"
+      },
+      {
+        "name": "Rhode Island",
+        "code": "RI",
+        "areaCode": "401"
+      },
+      {
+        "name": "South Carolina",
+        "code": "SC",
+        "areaCode": "803"
+      },
+      {
+        "name": "South Dakota",
+        "code": "SD",
+        "areaCode": "605"
+      },
+      {
+        "name": "Tennessee",
+        "code": "TN",
+        "areaCode": "615"
+      },
+      {
+        "name": "Texas",
+        "code": "TX",
+        "areaCode": "214"
+      },
+      {
+        "name": "Utah",
+        "code": "UT",
+        "areaCode": "801"
+      },
+      {
+        "name": "Vermont",
+        "code": "VT",
+        "areaCode": "802"
+      },
+      {
+        "name": "Virginia",
+        "code": "VA",
+        "areaCode": "703"
+      },
+      {
+        "name": "Washington",
+        "code": "WA",
+        "areaCode": "206"
+      },
+      {
+        "name": "West Virginia",
+        "code": "WV",
+        "areaCode": "304"
+      },
+      {
+        "name": "Wisconsin",
+        "code": "WI",
+        "areaCode": "414"
+      },
+      {
+        "name": "Wyoming",
+        "code": "WY",
+        "areaCode": "307"
+      }
+    ]
+  
+  
