@@ -47,9 +47,21 @@ import countries from "@/data/contries.json";
 import states from "@/data/state.json";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { RHFMultiSelect, RHFSelect } from "@/hooks/hook-form";
+import {
+  RHFAutocomplete,
+  RHFCustomSelect,
+  RHFCustomTextFiled,
+  RHFMultiSelect,
+  RHFSelect,
+} from "@/hooks/hook-form";
 import FormProvider from "@/hooks/hook-form/FormProvider";
 import label from "@/@core/components/label";
+import Autocomplete from "@/@core/theme/overrides/autocomplete";
+import * as yup from "yup";
+import { RHFCustomAutocomplete } from "@/hooks/hook-form/RHFAutocomplete";
+import { Stack } from "@mui/material";
+import { RHFCheckbox } from "@/hooks/hook-form/RHFCheckbox";
+import NumberSelection from "./purcasenumber/NumberSelection";
 
 interface State {
   password: string;
@@ -124,11 +136,33 @@ const NumberType = [
   },
 ];
 
+// ** Hooks
+
+const defaultSearchNumbers = {
+  countryCode: "US",
+  voiceEnabled: true,
+  smsEnabled: true,
+  faxEnabled: true,
+  contains: "",
+  type: "local",
+  areaCode: "",
+};
+const serchNumberSchema = yup.object().shape({
+  countryCode: yup.string().required("Country Code is required"),
+  voiceEnabled: yup.boolean(),
+  smsEnabled: yup.boolean(),
+  faxEnabled: yup.boolean(),
+  contains: yup.string(),
+  type: yup.string().required("Type is required"),
+  areaCode: yup.string(),
+});
 const PurchaseNumber = () => {
   // ** States
   const [email, setEmail] = useState<string>("");
   const [google, setGoogle] = useState<string>("");
-  const [country, setCountry] = useState<string>("");
+  const [country, setCountry] = useState<string>("US");
+  const [areaCode, setAreaCode] = useState<string>("US");
+
   const [twitter, setTwitter] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
@@ -163,74 +197,116 @@ const PurchaseNumber = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  const serachNumberMethod = useForm({
+    defaultValues: defaultSearchNumbers,
+    resolver: yupResolver(serchNumberSchema),
+  });
+
+
   const { handleSubmit, watch, reset } = methods;
+
+  const handleSearch = async (data: any) => {
+    console.table(data);
+  };
   const getStepContent = (step: number) => {
     switch (step) {
       case 0:
         return (
-          <Fragment>
-            <Grid item xs={12} sm={6}>
-              <CustomAutocomplete
-                fullWidth
-                options={countries}
-                id="autocomplete-custom"
-                getOptionLabel={(option: any) => `${option?.name} (${option?.code}) +${option?.number}` || ""}
-                defaultValue={"US"}
-                value={"US"}
-                renderInput={(params) => (
-                  <CustomTextField
-                    {...params}
-                    label="Select Country"
-                    placeholder="Favorites"
+          <Stack
+            sx={{
+              padding: "15px",
+              width: "100%",
+              "& form": {
+                width: "100%",
+              },
+            }}
+          >
+            <FormProvider
+              methods={serachNumberMethod}
+              onSubmit={serachNumberMethod.handleSubmit(handleSearch)}
+            >
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4} mb={2}>
+                  <RHFCustomAutocomplete
+                    fullWidth
+                    size="small"
+                    name="countryCode"
+                    options={countries}
+                    getOptionLabel={(option: any) =>
+                      `+${option.number} ${option.name} (${option.code})`
+                    }
+                    label="Select country"
+                    placeholder={"Select country"}
                   />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <CustomAutocomplete
-                fullWidth
-                options={NumberType}
-                id="autocomplete-custom-type"
-                getOptionLabel={(option: any) => option?.label || ""}
-                defaultValue={"Local"}
-                value={"Local"}
-                renderInput={(params) => (
-                  <CustomTextField
-                    {...params}
-                    label="Select Country"
-                    placeholder="Favorites"
+                </Grid>
+                <Grid item xs={12} sm={4} mb={2}>
+                  <RHFCustomAutocomplete
+                    fullWidth
+                    size="small"
+                    name="areaCode"
+                    options={states}
+                    getOptionLabel={(option: any) =>
+                      `${option.name} (${option.areaCode})`
+                    }
+                    label="Select Area"
+                    placeholder="Select Area"
                   />
-                )}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <CustomTextField
-                fullWidth
-                type="email"
-                label="Email"
-                value={email}
-                placeholder="carterleonard@gmail.com"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <CustomAutocomplete
-                fullWidth
-                options={states}
-                id="autocomplete-custom-state"
-                getOptionLabel={(option: any) => `(${option?.areaCode}) ${option?.name}`  || ""}
-                defaultValue={"Local"}
-                value={"Local"}
-                renderInput={(params) => (
-                  <CustomTextField
-                    {...params}
-                    label="Select Area Code"
-                    placeholder="Favorites"
+                </Grid>
+                <Grid item xs={12} sm={4} mb={2}>
+                  <RHFCustomSelect
+                    name="type"
+                    size="small"
+                    fullWidth
+                    native
+                    label="Number Type"
+                  >
+                    <option value="local">Local</option>
+                    <option value="toll-free">Toll Free</option>
+                  </RHFCustomSelect>
+                </Grid>
+                <Grid item xs={12} sm={4} mb={2}>
+                  <RHFCustomTextFiled
+                    name="contain"
+                    label="Search By Digit"
+                    placeholder="Search By Digit"
+                    size="small"
                   />
-                )}
-              />
-            </Grid>
-          </Fragment>
+                </Grid>
+
+                <Grid item xs={12} sm={4} mb={2}>
+                  <Stack>
+                    <Typography>Capabiliites</Typography>
+                    <Stack direction="row" spacing={1}>
+                      <RHFCheckbox name="voiceEnabled" label={"Voice"} />
+                      <RHFCheckbox name="smsEnabled" label={"SMS"} />
+                      <RHFCheckbox name="faxEnabled" label={"Fax"} />
+                    </Stack>
+                  </Stack>
+                </Grid>
+
+                <Grid item xs={12} sm={4} mb={2}>
+                  <Stack
+                    direction={"row"}
+                    alignItems={"center"}
+                    spacing={3}
+                    sx={{ height: "100%" }}
+                  >
+                    <Button variant="contained" type="submit">Search</Button>
+                    <Button
+                      variant="tonal"
+                      color="secondary"
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                    >
+                      Reset
+                    </Button>
+                  </Stack>
+                </Grid>
+              </Grid>
+            </FormProvider>
+            <Divider>Avilable Number</Divider>
+            <NumberSelection />
+          </Stack>
         );
       case 1:
         return (

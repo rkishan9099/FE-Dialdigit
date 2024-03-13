@@ -32,3 +32,10 @@ export const ReportsApiUrl = {
     callReports: path(REPORTS_PRIFIX, "/call-reports"),
   },
 };
+
+
+
+const NUMBER_PRIFIX = "numbers"
+export const NumberApiUrl = {
+  availableNumber: path(NUMBER_PRIFIX, "/available-number"),
+}

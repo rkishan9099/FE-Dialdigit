@@ -4,10 +4,12 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import sip from "@/store/dialer/sip";
 import users from "@/store/users/users";
 import { TypedUseSelectorHook, useDispatch, useSelector ,useStore } from "react-redux";
+import number from "@/store/dialer/number/number";
 
 const reducers = combineReducers({
   sip,
   users,
+  number
 });
 export const makeStore = () => {
   return configureStore({

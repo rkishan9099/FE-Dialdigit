@@ -15,6 +15,7 @@ import {
   TextFieldProps,
   FormHelperText
 } from '@mui/material'
+import CustomTextField from '@/@core/components/mui/text-field'
 
 // ----------------------------------------------------------------------
 
@@ -63,6 +64,50 @@ export function RHFSelect({ name, native, maxHeight = 220, helperText, children,
         >
           {children}
         </TextField>
+      )}
+    />
+  )
+}
+
+
+export function RHFCustomSelect({ name, native, maxHeight = 220, helperText, children, ...other }: RHFSelectProps) {
+  const { control } = useFormContext()
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState: { error } }) => (
+        <CustomTextField
+          {...field}
+          select
+          fullWidth
+          SelectProps={{
+            native,
+            MenuProps: {
+              PaperProps: {
+                sx: {
+                  ...(!native && {
+                    px: 1,
+                    maxHeight: typeof maxHeight === 'number' ? maxHeight : 'unset',
+                    '& .MuiMenuItem-root': {
+                      px: 1,
+                      borderRadius: 0.75,
+                      typography: 'body2',
+                      textTransform: 'capitalize'
+                    }
+                  })
+                }
+              }
+            },
+            sx: { textTransform: 'capitalize' }
+          }}
+          error={!!error}
+          helperText={error ? error?.message : helperText}
+          {...other}
+        >
+          {children}
+        </CustomTextField>
       )}
     />
   )

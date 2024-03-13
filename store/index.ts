@@ -19,10 +19,12 @@ import {
 import sip from "@/store/dialer/sip";
 import users from "./users/users";
 import callReports from '@/store/reports/calls'
+import number from "./dialer/number/number";
 
 const reducers = combineReducers({
   sip,
   users,
+  number,
   callReports
 });
 
