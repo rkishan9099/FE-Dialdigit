@@ -20,12 +20,14 @@ import sip from "@/store/dialer/sip";
 import users from "./users/users";
 import callReports from '@/store/reports/calls'
 import number from "./dialer/number/number";
+import chat from "./chat";
 
 const reducers = combineReducers({
   sip,
   users,
   number,
-  callReports
+  callReports,
+  chat
 });
 
 const persistConfig = {

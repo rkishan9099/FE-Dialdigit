@@ -33,9 +33,18 @@ export const ReportsApiUrl = {
   },
 };
 
-
-
-const NUMBER_PRIFIX = "numbers"
+const NUMBER_PRIFIX = "numbers";
 export const NumberApiUrl = {
   availableNumber: path(NUMBER_PRIFIX, "/available-number"),
-}
+  createPaymentIntent: path(NUMBER_PRIFIX, "/create-payment-intent"),
+  purchaseNumber: path(NUMBER_PRIFIX, "/purchase-number"),
+  getNumbers: path(NUMBER_PRIFIX, ""),
+  deleteUser: (id: string) => path(NUMBER_PRIFIX, "/" + id),
+  releaseNumber: (id: string) => path(NUMBER_PRIFIX, "/release-number/" + id),
+  activeSubcription:path(NUMBER_PRIFIX,"/active-subscription")
+};
+
+const PAYMENT_PRIFIX = "payment";
+export const PaymentApiUrl = {
+  createPaymentIntent: path(PAYMENT_PRIFIX, "/create-payment-intent"),
+};

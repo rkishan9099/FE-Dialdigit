@@ -30,6 +30,11 @@ const navigation = (): VerticalNavItemsType => {
       icon:'iconoir:user'
     },
     {
+      title: 'Chat',
+      icon: 'tabler:messages',
+      path: PATH_DASHBOARD.chat.root
+    },
+    {
       sectionTitle: "Reports",
     },
     {

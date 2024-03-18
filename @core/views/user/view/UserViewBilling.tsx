@@ -1,6 +1,6 @@
-'use client'
+"use client";
 // ** React Imports
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect, useMemo } from "react";
 
 // ** MUI Imports
 import Box from "@mui/material/Box";
@@ -38,10 +38,22 @@ import Icon from "@/@core/components/icon";
 import CustomChip from "@/@core/components/mui/chip";
 import CustomTextField from "@/@core/components/mui/text-field";
 
-
-
 // ** Types
 import { ThemeColor } from "@/@core/layouts/types";
+import { useAppDispatch, useAppSelector } from "@/lib/redux/store";
+import { getUserActiveSubcription } from "@/store/dialer/number/number";
+import moment from "moment";
+import Cards, { Focused } from "react-credit-cards-2";
+import * as Payment from "payment";
+
+// ** Styles Import
+import "react-credit-cards-2/dist/es/styles-compiled.css";
+
+import {
+  formatCVC,
+  formatCreditCardNumber,
+  formatExpirationDate,
+} from "@/@core/utils/format";
 
 // ** Styled Component Imports
 
@@ -106,31 +118,85 @@ const data: DataType[] = [
 
 const UserViewBilling = () => {
   // ** States
+  const { activeSubscription } = useAppSelector((state) => state.number);
+
+  // ** States
+  const [cvc, setCvc] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [focus, setFocus] = useState<Focused>();
+  const [cardId, setCardId] = useState<number>(0);
+  const [expiry, setExpiry] = useState<string>("");
+  const [cardNumber, setCardNumber] = useState<string>("");
   const [dialogTitle, setDialogTitle] = useState<string>("Add");
   const [openEditCard, setOpenEditCard] = useState<boolean>(false);
   const [openAddressCard, setOpenAddressCard] = useState<boolean>(false);
   const [openUpgradePlans, setOpenUpgradePlans] = useState<boolean>(false);
+  const [subscriptionDialogOpen, setSubscriptionDialogOpen] =
+    useState<boolean>(false);
 
-  // Handle Edit Card dialog and get card ID
-  const handleEditCardClickOpen = (id: number) => {
-    setDialogTitle("Edit");
-    setOpenEditCard(true);
-  };
+  const dispatch = useAppDispatch();
 
-  const handleAddCardClickOpen = () => {
-    setDialogTitle("Add");
-    setOpenEditCard(true);
-  };
+  useEffect(() => {
+    dispatch(getUserActiveSubcription());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const handleEditCardClose = () => {
-    setDialogTitle("Add");
-    setOpenEditCard(false);
-  };
+  const remainingDay = useMemo(() => {
+    let day = 0;
+    if (activeSubscription) {
+      day = moment(activeSubscription.endDate).diff(moment(), "days");
+    }
+    return day;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSubscription]);
 
   // Handle Upgrade Plan dialog
   const handleUpgradePlansClickOpen = () => setOpenUpgradePlans(true);
   const handleUpgradePlansClose = () => setOpenUpgradePlans(false);
 
+  // Handle Edit Card dialog and get card ID
+  const handleEditCardClickOpen = (id: number) => {
+    setDialogTitle("Edit");
+    setCardId(id);
+    setCardNumber(data[id].cardNumber);
+    setName(data[id].name);
+    setCvc(data[id].cardCvc);
+    setExpiry(data[id].expiryDate);
+    setOpenEditCard(true);
+  };
+
+  const handleAddCardClickOpen = () => {
+    setDialogTitle("Add");
+    setCardNumber("");
+    setName("");
+    setCvc("");
+    setExpiry("");
+    setOpenEditCard(true);
+  };
+
+  const handleEditCardClose = () => {
+    setDialogTitle("Add");
+    setCardNumber("");
+    setName("");
+    setCvc("");
+    setExpiry("");
+    setOpenEditCard(false);
+  };
+
+  const handleBlur = () => setFocus(undefined);
+
+  const handleInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
+    if (target.name === "number") {
+      target.value = formatCreditCardNumber(target.value, Payment);
+      setCardNumber(target.value);
+    } else if (target.name === "expiry") {
+      target.value = formatExpirationDate(target.value);
+      setExpiry(target.value);
+    } else if (target.name === "cvc") {
+      target.value = formatCVC(target.value, cardNumber, Payment);
+      setCvc(target.value);
+    }
+  };
 
   return (
     <Grid container spacing={6}>
@@ -150,7 +216,13 @@ const UserViewBilling = () => {
                 </Box>
                 <Box sx={{ mb: 3 }}>
                   <Typography sx={{ fontWeight: 500 }}>
-                    Active until Dec 09, 2023
+                    Active until{" "}
+                    <strong>
+                      {activeSubscription?.purchaseDate &&
+                        moment(activeSubscription?.purchaseDate).format(
+                          "MMM DD, YYYY"
+                        )}
+                    </strong>
                   </Typography>
                   <Typography variant="body2">
                     We will send you a notification upon Subscription expiration
@@ -159,7 +231,7 @@ const UserViewBilling = () => {
                 <div>
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Typography sx={{ mr: 2, fontWeight: 500 }}>
-                      $199 Per Month
+                      ${activeSubscription?.amount} Per Month
                     </Typography>
                     <CustomChip
                       rounded
@@ -176,18 +248,20 @@ const UserViewBilling = () => {
               </Grid>
 
               <Grid item xs={12} md={6} sx={{ mt: [4, 4, 0] }}>
-                <Alert icon={false} severity="warning" sx={{ mb: 4 }}>
-                  <AlertTitle
-                    sx={{
-                      fontWeight: 500,
-                      fontSize: "1.125rem",
-                      mb: (theme) => `${theme.spacing(2.5)} !important`,
-                    }}
-                  >
-                    We need your attention!
-                  </AlertTitle>
-                  Your plan requires updates
-                </Alert>
+                {remainingDay <= 10 && (
+                  <Alert icon={false} severity="warning" sx={{ mb: 4 }}>
+                    <AlertTitle
+                      sx={{
+                        fontWeight: 500,
+                        fontSize: "1.125rem",
+                        mb: (theme) => `${theme.spacing(2.5)} !important`,
+                      }}
+                    >
+                      We need your attention!
+                    </AlertTitle>
+                    Your plan requires updates
+                  </Alert>
+                )}
                 <Box
                   sx={{
                     display: "flex",
@@ -197,16 +271,16 @@ const UserViewBilling = () => {
                 >
                   <Typography sx={{ fontWeight: 500 }}>Days</Typography>
                   <Typography sx={{ fontWeight: 500 }}>
-                    24 of 30 Days
+                    {30 - remainingDay} of 30 Days
                   </Typography>
                 </Box>
                 <LinearProgress
-                  value={80}
+                  value={(30 - remainingDay / 30) * 100}
                   variant="determinate"
                   sx={{ mb: 1.5, height: 10 }}
                 />
                 <Typography sx={{ color: "text.secondary" }}>
-                  6 days remaining
+                  {remainingDay} days remaining
                 </Typography>
               </Grid>
 
@@ -226,11 +300,7 @@ const UserViewBilling = () => {
                 >
                   Upgrade Plan
                 </Button>
-                <Button
-                  variant="tonal"
-                  color="error"
-                 
-                >
+                <Button variant="tonal" color="error">
                   Cancel Subscription
                 </Button>
               </Grid>
@@ -357,12 +427,7 @@ const UserViewBilling = () => {
                   </Typography>
                   <Sub>/ month</Sub>
                 </Box>
-                <Button
-                  color="error"
-                  variant="tonal"
-                  sx={{ mt: 2 }}
-                 
-                >
+                <Button color="error" variant="tonal" sx={{ mt: 2 }}>
                   Cancel Subscription
                 </Button>
               </Box>
@@ -488,6 +553,107 @@ const UserViewBilling = () => {
               >
                 {dialogTitle} card for future billing
               </DialogContentText>
+              <form>
+                <Grid container spacing={6}>
+                  <Grid item xs={12}>
+                    <Cards
+                      cvc={cvc}
+                      focused={focus}
+                      expiry={expiry}
+                      name={name}
+                      number={cardNumber}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid container spacing={6}>
+                      <Grid item xs={12}>
+                        <CustomTextField
+                          fullWidth
+                          name="number"
+                          value={cardNumber}
+                          autoComplete="off"
+                          label="Card Number"
+                          onBlur={handleBlur}
+                          onChange={handleInputChange}
+                          placeholder="0000 0000 0000 0000"
+                          onFocus={(e) => setFocus(e.target.name as Focused)}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={8}>
+                        <CustomTextField
+                          fullWidth
+                          name="name"
+                          value={name}
+                          autoComplete="off"
+                          onBlur={handleBlur}
+                          label="Name on Card"
+                          placeholder="John Doe"
+                          onChange={(e) => setName(e.target.value)}
+                          onFocus={(e) => setFocus(e.target.name as Focused)}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <CustomTextField
+                          fullWidth
+                          name="expiry"
+                          label="Expiry"
+                          value={expiry}
+                          onBlur={handleBlur}
+                          placeholder="MM/YY"
+                          onChange={handleInputChange}
+                          inputProps={{ maxLength: "5" }}
+                          onFocus={(e) => setFocus(e.target.name as Focused)}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={8}>
+                        <CustomTextField
+                          select
+                          fullWidth
+                          label="Card Status"
+                          id="user-view-billing-edit-card-status"
+                          defaultValue={
+                            data[cardId].cardStatus
+                              ? data[cardId].cardStatus
+                              : ""
+                          }
+                        >
+                          <MenuItem value="Primary">Primary</MenuItem>
+                          <MenuItem value="Expired">Expired</MenuItem>
+                          <MenuItem value="Active">Active</MenuItem>
+                        </CustomTextField>
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <CustomTextField
+                          fullWidth
+                          name="cvc"
+                          label="CVC"
+                          value={cvc}
+                          autoComplete="off"
+                          onBlur={handleBlur}
+                          onChange={handleInputChange}
+                          onFocus={(e) => setFocus(e.target.name as Focused)}
+                          placeholder={
+                            Payment.fns.cardType(cardNumber) === "amex"
+                              ? "1234"
+                              : "123"
+                          }
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <FormControlLabel
+                          control={<Switch defaultChecked />}
+                          label="Save Card for future billing?"
+                          sx={{
+                            "& .MuiTypography-root": {
+                              color: "text.secondary",
+                            },
+                          }}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </form>
             </DialogContent>
             <DialogActions
               sx={{

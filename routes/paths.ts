@@ -40,7 +40,9 @@ export const PATH_DASHBOARD = {
   general: {
     app: path(ROOTS_DASHBOARD, "/app"),
   },
-
+  payment: {
+    complition: path(ROOTS_DASHBOARD, "/payment/completion"),
+  },
   user: {
     list: path(ROOTS_DASHBOARD, "/users"),
     tab: {
@@ -55,7 +57,7 @@ export const PATH_DASHBOARD = {
     },
   },
   chat: {
-    general: path(ROOTS_DASHBOARD, "/chat"),
+    root: path(ROOTS_DASHBOARD, "/chat"),
   },
   dashboard: {
     general: path(ROOTS_DASHBOARD, "/dashboards"),
@@ -86,6 +88,6 @@ export const PATH_DASHBOARD = {
 
   numbers: {
     list: path(ROOTS_DASHBOARD, "/numbers"),
-    add:path(ROOTS_DASHBOARD, "/numbers/add"),
+    add: path(ROOTS_DASHBOARD, "/numbers/add"),
   },
 };

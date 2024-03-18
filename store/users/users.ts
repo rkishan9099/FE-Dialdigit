@@ -105,7 +105,6 @@ export const fetchUser = createAsyncThunk(
 );
 
 export function getUsersList(params: any = {}) {
-  console.debug("sss", params);
   return async (dispatch: Dispatch) => {
     dispatch(slice.actions.startLoadind());
     try {

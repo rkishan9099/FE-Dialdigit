@@ -13,10 +13,21 @@ import {
   TableHead,
   TableRow,
   Typography,
+  styled,
 } from "@mui/material";
 import React, { useEffect } from "react";
+import PerfectScrollbarComponent from 'react-perfect-scrollbar'
 
-const NumberSelection = () => {
+const PerfectScrollbar = styled(PerfectScrollbarComponent)({
+  maxHeight: '30rem'
+})
+
+type PropsType = {
+  setSelectedNumber: (number: any) => void;
+  selectedNumber: any;
+};
+const NumberSelection = (props: PropsType) => {
+  const { selectedNumber, setSelectedNumber } = props;
   const dispatch = useAppDispatch();
   const { avilableNumbers } = useAppSelector((state) => state.number);
 
@@ -24,6 +35,8 @@ const NumberSelection = () => {
     dispatch(getAvailableNumber({ type: "local", countryCode: "US" }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -79,8 +92,8 @@ const NumberSelection = () => {
                         {number?.friendlyName}
                       </Typography>
                       <Typography>
-                        {number?.locality}, {number?.region}{" "}
-                        {number?.isoCountry}
+                        {number?.locality && `${number?.locality},`}{" "}
+                        {number?.region} {number?.isoCountry}
                       </Typography>
                     </Stack>
                   </TableCell>
@@ -128,7 +141,22 @@ const NumberSelection = () => {
 
                   <TableCell>
                     {" "}
-                    <Button variant="contained">Buy Now</Button>
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        setSelectedNumber(number);
+                      }}
+                      disabled={
+                        selectedNumber &&
+                        selectedNumber?.phoneNumber === number?.phoneNumber
+                          ? true
+                          : false
+                      }
+                    >
+                    { selectedNumber?.phoneNumber === number?.phoneNumber
+                          ? "Selected"
+                          : "Select"}
+                    </Button>
                   </TableCell>
                 </TableRow>
               );

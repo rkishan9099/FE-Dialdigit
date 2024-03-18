@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 // ** React Imports
 import { useState, useEffect, MouseEvent, useCallback } from "react";
@@ -54,6 +55,12 @@ import toast from "react-hot-toast";
 import { Stack } from "@mui/material";
 import TableHeader from "@/@core/views/Table/TableHeader";
 import { useRouter } from "next/navigation";
+import {
+  deleteNumber,
+  fetchNumbers,
+  releaseNumber,
+} from "@/store/dialer/number/number";
+import { formatPhoneNumber } from "@/lib/Sip/sip-utils";
 
 // ** Custom Table Components Imports
 
@@ -61,7 +68,7 @@ interface UserRoleChipType {
   [key: string]: { icon: string; color: string };
 }
 
-interface UserStatusType {
+interface NumberStatusType {
   [key: string]: ThemeColor;
 }
 
@@ -79,10 +86,10 @@ const userRoleObj: UserRoleChipType = {
   AGENT: { icon: "tabler:user", color: "warning" },
 };
 
-const userStatusObj: UserStatusType = {
-  1: "success",
-  2: "warning",
-  0: "secondary",
+const numberStatusObj: NumberStatusType = {
+  Active: "success",
+  Pending: "warning",
+  Release: "error",
 };
 
 // ** renders client column
@@ -138,6 +145,17 @@ const RowOptions = ({
     setIsEdit(id);
   };
 
+  const releaseNumberHandle = async () => {
+    const res: any = await dispatch(releaseNumber(id));
+    if (res && res?.status === "success") {
+      toast.success(res?.message);
+      dispatch(fetchNumbers());
+    } else {
+      toast.error(res?.message);
+    }
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <IconButton size="small" onClick={handleRowOptionsClick}>
@@ -171,6 +189,10 @@ const RowOptions = ({
           <Icon icon="tabler:edit" fontSize={20} />
           Edit
         </MenuItem>
+        <MenuItem onClick={releaseNumberHandle} sx={{ "& svg": { mr: 2 } }}>
+          <Icon icon="humbleicons:arrow-go-forward" fontSize={20} />
+          Release Number
+        </MenuItem>
         <MenuItem
           sx={{ "& svg": { mr: 2 } }}
           onClick={() => {
@@ -188,156 +210,46 @@ const RowOptions = ({
 
 const NumberList = () => {
   // ** State
-  const { roles } = useSelector((state: RootState) => state.users);
-  const [role, setRole] = useState<string>("");
-  const [plan, setPlan] = useState<string>("");
   const [value, setValue] = useState<string>("");
-  const [status, setStatus] = useState<string>("");
-  const store = useAppSelector((state) => state.users);
-  const [addUserOpen, setAddUserOpen] = useState<boolean>(false);
+  const { numbers, isLoading } = useAppSelector((state) => state.number);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [confirmDelete, setConfirmDelete] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
-  const [filter, setFilter] = useState<any>({
-    role: "",
-    status: "",
-    searchQuery: "",
-  });
-  const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: 10,
-  });
 
   // ** Hooks
   const dispatch = useDispatch<AppDispatch>();
 
-  const router =useRouter();
-
-  const handleFilter = useCallback((val: string) => {
-    setValue(val);
-    setFilter({ ...filter, searchQuery: val });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleRoleChange = useCallback((e: SelectChangeEvent<unknown>) => {
-    setRole(e.target.value as string);
-    setFilter({ ...filter, role: e.target.value });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleStatusChange = useCallback((e: SelectChangeEvent<unknown>) => {
-    setStatus(e.target.value as string);
-    setFilter({ ...filter, status: e.target.value });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const toggleAddUserDrawer = () => setAddUserOpen(!addUserOpen);
-
-  const handlePageChange = useCallback((val: any) => {
-    setPaginationModel(val);
-  }, []);
-
-  useEffect(() => {}, [paginationModel, role, status]);
+  const router = useRouter();
 
   useEffect(() => {
-    dispatch(getUsersList());
-    dispatch(getUserRoles());
+    dispatch(fetchNumbers());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const fetchUser = useCallback(() => {
-    dispatch(getUsersList({ ...paginationModel, filters: filter }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, paginationModel]);
-
-  useEffect(() => {
-    fetchUser();
-  }, [filter, paginationModel]);
 
   const handleEditUser = async (id: string) => {
     dispatch(getUserById(id));
     setIsEdit(true);
-    setAddUserOpen(true);
   };
 
   const confimDeleteHandler = (id: string) => {
-    setOpen(true);
     setConfirmDelete(id);
+    setOpen(true);
   };
+
+  const handleSearch = (val: string) => {
+    setValue(val);
+  };
+
+  useEffect(() => {
+    dispatch(fetchNumbers({ searchQuery: value }));
+  }, [value]);
+
   const columns: GridColDef[] = [
-    {
-      flex: 0.25,
-      minWidth: 280,
-      field: "fullName",
-      headerName: "User",
-      renderCell: ({ row }: CellType) => {
-        return (
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            {renderClient(row)}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "flex-start",
-                flexDirection: "column",
-              }}
-            >
-              <Typography
-                noWrap
-                component={Link}
-                href={PATH_DASHBOARD.user.tab.view(row?._id)}
-                sx={{
-                  fontWeight: 500,
-                  textDecoration: "none",
-                  color: "text.secondary",
-                  "&:hover": { color: "primary.main" },
-                }}
-              >
-                {`${row?.firstName} ${row?.lastName}`}
-              </Typography>
-              <Typography
-                noWrap
-                variant="body2"
-                sx={{ color: "text.disabled" }}
-              >
-                {row?.email}
-              </Typography>
-            </Box>
-          </Box>
-        );
-      },
-    },
-    {
-      flex: 0.15,
-      field: "role",
-      minWidth: 170,
-      headerName: "Role",
-      renderCell: ({ row }: CellType) => {
-        return (
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <CustomAvatar
-              skin="light"
-              sx={{ mr: 4, width: 30, height: 30 }}
-              color={
-                (userRoleObj[row.roles?.role].color as ThemeColor) || "primary"
-              }
-            >
-              <Icon icon={userRoleObj[row.roles?.role].icon} />
-            </CustomAvatar>
-            <Typography
-              noWrap
-              sx={{ color: "text.secondary", textTransform: "capitalize" }}
-            >
-              {row.roles?.name}
-            </Typography>
-          </Box>
-        );
-      },
-    },
     {
       flex: 0.15,
       minWidth: 120,
-      headerName: "Mobile",
-      field: "mobile",
+      headerName: "Number",
+      field: "number",
       renderCell: ({ row }: CellType) => {
         return (
           <Typography
@@ -348,7 +260,7 @@ const NumberList = () => {
               textTransform: "capitalize",
             }}
           >
-            {row?.mobile}
+            {row?.numberDetails?.friendlyName || formatPhoneNumber(row?.number)}
           </Typography>
         );
       },
@@ -357,20 +269,56 @@ const NumberList = () => {
     {
       flex: 0.1,
       minWidth: 110,
+      field: "assignUser",
+      headerName: "Assign User",
+      renderCell: ({ row }: CellType) => {
+        return (
+          <Stack>
+            {row?.assignUser?.length > 0 ? (
+              <Stack>
+                {row?.assignUser?.map((user: any) => (
+                  <CustomChip
+                    key={user?._id}
+                    rounded
+                    skin="light"
+                    size="small"
+                    label={`${user?.firstName} ${user?.lastName}`}
+                    color={"success"}
+                    sx={{ textTransform: "capitalize", fontWeight: 600 }}
+                  />
+                ))}
+              </Stack>
+            ) : (
+              <CustomChip
+                rounded
+                skin="light"
+                size="small"
+                label={"NA"}
+                color={"error"}
+                sx={{ textTransform: "capitalize" }}
+              />
+            )}
+          </Stack>
+        );
+      },
+    },
+    {
+      flex: 0.1,
+      minWidth: 110,
       field: "extention",
       headerName: "Extension",
       renderCell: ({ row }: CellType) => {
         return (
           <Stack>
-            {row?.extention?.length > 0 ? (
+            {row?.assignExtention?.length > 0 ? (
               <Stack>
-                {row?.extention?.map((extention: any) => (
+                {row?.assignExtention?.map((extention: any) => (
                   <CustomChip
-                    key={extention?._id}
+                    key={extention}
                     rounded
                     skin="light"
                     size="small"
-                    label={extention?.username}
+                    label={extention}
                     color={"info"}
                     sx={{ textTransform: "capitalize", fontWeight: 600 }}
                   />
@@ -401,8 +349,8 @@ const NumberList = () => {
             rounded
             skin="light"
             size="small"
-            label={row.status === 1 ? "Active" : "In-Active"}
-            color={userStatusObj[row?.status]}
+            label={row.status}
+            color={numberStatusObj[row?.status]}
             sx={{ textTransform: "capitalize" }}
           />
         );
@@ -424,108 +372,61 @@ const NumberList = () => {
     },
   ];
 
-  const deleteUserHandler = async () => {
-    const res: any = await dispatch(deleteUser(confirmDelete));
+  const deleteNumberHandler = async () => {
+    const res: any = await dispatch(deleteNumber(confirmDelete));
+    setConfirmDelete("");
+    setOpen(false);
     if (res?.statusCode === 200 && res?.status === "success") {
-      setOpen(false);
       toast.success(res?.message);
-      dispatch(getUsersList());
+      dispatch(fetchNumbers());
     } else {
       toast.error(res?.message);
     }
   };
 
-  const addNumberHandle =()=>{
-    router.replace(PATH_DASHBOARD.numbers.add)
-  }
-  useEffect(() => {
-    fetchUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, paginationModel]);
+  const addNumberHandle = () => {
+    router.replace(PATH_DASHBOARD.numbers.add);
+  };
 
   return (
     <>
       <Grid container spacing={6.5}>
         <Grid item xs={12}>
           <Card>
-            <CardHeader title="Search Filters" />
-            <CardContent>
-              <Grid container spacing={6}>
-                <Grid item sm={4} xs={12}>
-                  <CustomTextField
-                    select
-                    fullWidth
-                    defaultValue="Select Role"
-                    SelectProps={{
-                      value: role,
-                      displayEmpty: true,
-                      onChange: (e) => handleRoleChange(e),
-                    }}
-                  >
-                    <MenuItem value="">Select Role</MenuItem>
-                    {roles &&
-                      roles?.length > 0 &&
-                      roles?.map((role) => (
-                        <MenuItem key={role?._id} value={role?._id}>
-                          {role.name}
-                        </MenuItem>
-                      ))}
-                  </CustomTextField>
-                </Grid>
+            <Stack
+              direction={"row"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+            >
+              <CardHeader title="Numbers" />
 
-                <Grid item sm={4} xs={12}>
-                  <CustomTextField
-                    select
-                    fullWidth
-                    defaultValue="Select Status"
-                    SelectProps={{
-                      value: status,
-                      displayEmpty: true,
-                      onChange: (e) => handleStatusChange(e),
-                    }}
-                  >
-                    <MenuItem value="">Select Status</MenuItem>
-                    <MenuItem value="1">Active</MenuItem>
-                    <MenuItem value="0">Inactive</MenuItem>
-                  </CustomTextField>
-                </Grid>
-              </Grid>
-            </CardContent>
-            <Divider sx={{ m: "0 !important" }} />
-            <TableHeader
-              value={value}
-              handleFilter={handleFilter}
-              buttonLabel="Add Number"
-              onClickHandle={addNumberHandle}
-            />
+              <TableHeader
+                value={value}
+                handleFilter={handleSearch}
+                buttonLabel="Add Number"
+                onClickHandle={addNumberHandle}
+              />
+            </Stack>
+
             <DataGrid
               getRowId={(row) => row._id} // Specify the _id property as the unique identifierssss
               rowHeight={75}
               autoHeight
-              rows={store.users}
-              rowCount={store.total}
+              rows={numbers || []}
+              rowCount={numbers?.length || 0}
               columns={columns}
-              loading={store.isLoading}
-              paginationMode="server"
+              loading={isLoading}
               disableRowSelectionOnClick
               pageSizeOptions={[10, 25, 50, 100]}
-              paginationModel={paginationModel}
-              onPaginationModelChange={handlePageChange}
             />
           </Card>
         </Grid>
-
-        <SidebarAddUser
-          open={addUserOpen}
-          toggle={toggleAddUserDrawer}
-          isEdit={isEdit}
-        />
       </Grid>
       <DeleteConfirmDiallog
         show={open}
         setShow={setOpen}
-        confimHandler={deleteUserHandler}
-        msg={"User"}
+        confimHandler={deleteNumberHandler}
+        msg={"Number"}
       />
     </>
   );

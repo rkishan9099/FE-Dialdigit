@@ -86,6 +86,8 @@ const CustomRadioBasic = (props: CustomRadioBasicProps) => {
               : { '&:hover': { borderColor: theme => `rgba(${theme.palette.customColors.main}, 0.25)` } })
           }}
         >
+     
+          {renderData()}
           <Radio
             name={name}
             size='small'
@@ -93,9 +95,8 @@ const CustomRadioBasic = (props: CustomRadioBasicProps) => {
             value={value}
             onChange={handleChange}
             checked={selected === value}
-            sx={{ mb: -2, mt: -2.5, ml: -2.75 }}
+            sx={{ mb: -2, mt: -2.5, ml: 2.75 }}
           />
-          {renderData()}
         </Box>
       </Grid>
     )

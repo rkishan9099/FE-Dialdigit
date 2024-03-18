@@ -1,5 +1,5 @@
 // form
-import { useFormContext, Controller } from 'react-hook-form'
+import { useFormContext, Controller } from "react-hook-form";
 // @mui
 import {
   Checkbox,
@@ -8,18 +8,18 @@ import {
   FormControl,
   FormHelperText,
   FormControlLabel,
-  FormControlLabelProps
-} from '@mui/material'
+  FormControlLabelProps,
+} from "@mui/material";
 
 // ----------------------------------------------------------------------
 
-interface RHFCheckboxProps extends Omit<FormControlLabelProps, 'control'> {
-  name: string
-  helperText?: React.ReactNode
+interface RHFCheckboxProps extends Omit<FormControlLabelProps, "control"> {
+  name: string;
+  helperText?: React.ReactNode;
 }
 
 export function RHFCheckbox({ name, helperText, ...other }: RHFCheckboxProps) {
-  const { control } = useFormContext()
+  const { control } = useFormContext();
 
   return (
     <Controller
@@ -27,31 +27,36 @@ export function RHFCheckbox({ name, helperText, ...other }: RHFCheckboxProps) {
       control={control}
       render={({ field, fieldState: { error } }) => (
         <div>
-          <FormControlLabel control={<Checkbox {...field} checked={field.value} />} {...other} />
-
+          <FormControlLabel
+            control={<Checkbox {...field} checked={field.value} />}
+            {...other}
+          />
           {(!!error || helperText) && (
-            <FormHelperText error={!!error}>{error ? error?.message : helperText}</FormHelperText>
+            <FormHelperText error={!!error} className="custom_label">
+              {error ? error?.message : helperText}
+            </FormHelperText>
           )}
         </div>
       )}
     />
-  )
+  );
 }
 
 // ----------------------------------------------------------------------
 
-interface RHFMultiCheckboxProps extends Omit<FormControlLabelProps, 'control' | 'label'> {
-  name: string
-  options: { label: string; value: any }[]
-  grid?: boolean
-  gridColumn?: number
-  row?: boolean
-  label?: string
-  spacing?: number
-  helperText?: React.ReactNode
-  defaultSelected: string[]
-  icon: any
-  checkedIcon: any
+interface RHFMultiCheckboxProps
+  extends Omit<FormControlLabelProps, "control" | "label"> {
+  name: string;
+  options: { label: string; value: any }[];
+  grid?: boolean;
+  gridColumn?: number;
+  row?: boolean;
+  label?: string;
+  spacing?: number;
+  helperText?: React.ReactNode;
+  defaultSelected: string[];
+  icon: any;
+  checkedIcon: any;
 }
 
 export function RHFMultiCheckbox({
@@ -68,19 +73,21 @@ export function RHFMultiCheckbox({
   defaultSelected,
   ...other
 }: RHFMultiCheckboxProps) {
-  const { control } = useFormContext()
+  const { control } = useFormContext();
 
   const getSelected = (selectedItems: string[], item: string) =>
-    selectedItems?.includes(item) ? selectedItems?.filter(value => value !== item) : [...selectedItems, item]
+    selectedItems?.includes(item)
+      ? selectedItems?.filter((value) => value !== item)
+      : [...selectedItems, item];
 
   return (
     <Controller
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => (
-        <FormControl component='fieldset'>
+        <FormControl component="fieldset">
           {label && (
-            <FormLabel component='legend' sx={{ typography: 'body2' }}>
+            <FormLabel component="legend" sx={{ typography: "body2" }}>
               {label}
             </FormLabel>
           )}
@@ -88,36 +95,39 @@ export function RHFMultiCheckbox({
           <FormGroup
             sx={{
               ...(grid && {
-                display: 'grid',
+                display: "grid",
                 gridTemplateColumns: `repeat(${gridColumn}, 1fr)`, // Set grid template columns to display 4 checkboxes in one row
-                gridGap: '8px' // Add grid gap for spacing between checkboxes
+                gridGap: "8px", // Add grid gap for spacing between checkboxes
               }),
               ...(row && {
-                flexDirection: 'row'
+                flexDirection: "row",
               }),
-              '& .MuiFormControlLabel-root': {
-                '&:not(:last-of-type)': {
-                  mb: spacing || 0
+              "& .MuiFormControlLabel-root": {
+                "&:not(:last-of-type)": {
+                  mb: spacing || 0,
                 },
                 ...(row && {
                   mr: 0,
-                  '&:not(:last-of-type)': {
-                    mr: spacing || 2
-                  }
-                })
-              }
+                  "&:not(:last-of-type)": {
+                    mr: spacing || 2,
+                  },
+                }),
+              },
             }}
           >
-            {options.map(option => (
+            {options.map((option) => (
               <FormControlLabel
                 key={option.value}
                 control={
                   <Checkbox
                     checked={
                       field?.value?.includes(option.value) ||
-                      (defaultSelected && defaultSelected.includes(option.value)) // Set default selected option
+                      (defaultSelected &&
+                        defaultSelected.includes(option.value)) // Set default selected option
                     }
-                    onChange={() => field.onChange(getSelected(field.value, option.value))}
+                    onChange={() =>
+                      field.onChange(getSelected(field.value, option.value))
+                    }
                     icon={icon}
                     checkedIcon={checkedIcon}
                   />
@@ -136,5 +146,5 @@ export function RHFMultiCheckbox({
         </FormControl>
       )}
     />
-  )
+  );
 }
